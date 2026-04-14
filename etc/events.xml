@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="catalog_product_save_before">
+        <observer name="panth_seo_product_auto_url_key"
+                  instance="Panth\AdvancedSEO\Observer\Product\AutoUrlKey"/>
+    </event>
+    <event name="catalog_product_save_after">
+        <observer name="panth_seo_product_save_after"
+                  instance="Panth\AdvancedSEO\Observer\Product\SaveAfter"/>
+        <observer name="panth_seo_indexnow_product"
+                  instance="Panth\AdvancedSEO\Observer\IndexNow\EntityChangeObserver"/>
+        <observer name="panth_seo_indexing_api_product"
+                  instance="Panth\AdvancedSEO\Observer\SearchConsole\EntityChangeObserver"/>
+    </event>
+    <event name="catalog_category_save_after">
+        <observer name="panth_seo_category_save_after"
+                  instance="Panth\AdvancedSEO\Observer\Category\SaveAfter"/>
+        <observer name="panth_seo_indexnow_category"
+                  instance="Panth\AdvancedSEO\Observer\IndexNow\EntityChangeObserver"/>
+        <observer name="panth_seo_indexing_api_category"
+                  instance="Panth\AdvancedSEO\Observer\SearchConsole\EntityChangeObserver"/>
+    </event>
+    <event name="cms_page_save_after">
+        <observer name="panth_seo_cms_save_after"
+                  instance="Panth\AdvancedSEO\Observer\Cms\SaveAfter"/>
+        <observer name="panth_seo_indexnow_cms"
+                  instance="Panth\AdvancedSEO\Observer\IndexNow\EntityChangeObserver"/>
+        <observer name="panth_seo_indexing_api_cms"
+                  instance="Panth\AdvancedSEO\Observer\SearchConsole\EntityChangeObserver"/>
+    </event>
+    <event name="catalog_category_move_after">
+        <observer name="panth_seo_category_move_after"
+                  instance="Panth\AdvancedSEO\Observer\Category\MoveAfter"/>
+    </event>
+    <!--
+        NOTE: We subscribe to `model_delete_before` (dispatched first in
+        AbstractModel::beforeDelete) rather than `catalog_product_delete_before`
+        so we run BEFORE Magento_CatalogUrlRewrite's `process_url_rewrite_removing`
+        observer, which deletes the url_rewrite rows we need to read.
+    -->
+    <event name="model_delete_before">
+        <observer name="panth_seo_product_delete_before"
+                  instance="Panth\AdvancedSEO\Observer\Redirect\ProductDeleteBefore"/>
+        <observer name="panth_seo_category_delete_before"
+                  instance="Panth\AdvancedSEO\Observer\Redirect\CategoryDeleteBefore"/>
+        <observer name="panth_seo_cms_page_delete_before"
+                  instance="Panth\AdvancedSEO\Observer\Redirect\CmsPageDeleteBefore"/>
+    </event>
+    <event name="catalog_entity_attribute_save_after">
+        <observer name="panth_seo_filter_attribute_option_save"
+                  instance="Panth\AdvancedSEO\Observer\FilterUrl\AttributeOptionSave"/>
+    </event>
+</config>

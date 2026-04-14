@@ -1,0 +1,57 @@
+<?php
+/**
+ * GA4 gtag.js snippet with enhanced ecommerce events.
+ *
+ * Outputs the standard Google Analytics 4 script tag and optional
+ * enhanced ecommerce dataLayer pushes. Hyva-safe (standard Google
+ * script tags, no jQuery).
+ *
+ * @var \Panth\AdvancedSEO\Block\Head\GoogleAnalytics $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+if (!$block->isEnabled()) {
+    return;
+}
+
+// Block::getMeasurementId() enforces the [A-Za-z0-9_-]{1,64} whitelist; an
+// invalid admin value returns '' so isEnabled() above already short-circuits.
+// We re-assert the shape here as defence-in-depth so the template cannot be
+// reused with an unvalidated value from a future refactor.
+$rawMeasurementId = (string) $block->getMeasurementId();
+if (!preg_match('/^[A-Za-z0-9_\-]{1,64}$/', $rawMeasurementId)) {
+    return;
+}
+$measurementIdAttr = $escaper->escapeHtmlAttr($rawMeasurementId);
+// json_encode gives us a safe JS-string literal (quotes + escapes).
+$measurementIdJson = json_encode($rawMeasurementId, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+$ecomJs = $block->getEnhancedEcommerceJs();
+?>
+<!-- Panth Advanced SEO: Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=<?= /* @noEscape */ $measurementIdAttr ?>"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', <?= /* @noEscape */ $measurementIdJson ?>);
+// Panth SEO: global helper for add_to_cart events (Hyva Alpine + Luma RequireJS).
+window.panthSeoGa4 = window.panthSeoGa4 || {
+    addToCart: function (item) {
+        if (typeof window.gtag !== 'function' || !item) { return; }
+        var payload = {
+            currency: item.currency || 'USD',
+            value: Number(item.price) * (Number(item.quantity) || 1),
+            items: [{
+                item_id: String(item.item_id || item.sku || ''),
+                item_name: String(item.item_name || item.name || ''),
+                price: Number(item.price) || 0,
+                quantity: Number(item.quantity) || 1,
+                currency: item.currency || 'USD'
+            }]
+        };
+        window.gtag('event', 'add_to_cart', payload);
+    }
+};
+<?php if ($ecomJs !== ''): ?>
+<?= /* @noEscape */ $ecomJs ?>
+<?php endif; ?>
+</script>

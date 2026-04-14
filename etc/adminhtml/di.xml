@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Form data provider virtual types: use GenericFormDataProvider so that
+         form components receive data keyed by entity ID (avoids the
+         searchResultToOutput / getCustomAttributes mismatch). -->
+    <virtualType name="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\HreflangFormDataProvider" type="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\GenericFormDataProvider">
+        <arguments>
+            <argument name="collection" xsi:type="object">Panth\AdvancedSEO\Model\ResourceModel\HreflangGroup\Collection</argument>
+        </arguments>
+    </virtualType>
+    <!-- RuleFormDataProvider is a real class now (decodes conditions/actions for edit form) -->
+    <virtualType name="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\FilterMetaFormDataProvider" type="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\GenericFormDataProvider">
+        <arguments>
+            <argument name="collection" xsi:type="object">Panth\AdvancedSEO\Model\ResourceModel\CategoryFilterMeta\Collection</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\CustomCanonicalFormDataProvider" type="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\GenericFormDataProvider">
+        <arguments>
+            <argument name="collection" xsi:type="object">Panth\AdvancedSEO\Model\ResourceModel\CustomCanonical\Collection</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\FilterRewriteFormDataProvider" type="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\GenericFormDataProvider">
+        <arguments>
+            <argument name="collection" xsi:type="object">Panth\AdvancedSEO\Model\ResourceModel\FilterRewrite\Collection</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- SERP Preview: inject live Google snippet preview into product/category edit forms -->
+    <type name="Magento\Catalog\Ui\DataProvider\Product\Form\ProductDataProvider">
+        <plugin name="panth_seo_product_serp_preview"
+                type="Panth\AdvancedSEO\Plugin\Admin\SerpPreviewPlugin"
+                sortOrder="10"/>
+        <plugin name="panth_seo_product_seo_fields"
+                type="Panth\AdvancedSEO\Plugin\Admin\ProductSeoFieldsPlugin"
+                sortOrder="30"/>
+    </type>
+    <type name="Magento\Catalog\Model\Category\DataProvider">
+        <plugin name="panth_seo_category_serp_preview"
+                type="Panth\AdvancedSEO\Plugin\Admin\CategorySerpPreviewPlugin"
+                sortOrder="10"/>
+        <plugin name="panth_seo_category_breadcrumb_priority"
+                type="Panth\AdvancedSEO\Plugin\Breadcrumb\CategoryFormPriorityPlugin"
+                sortOrder="20"/>
+        <plugin name="panth_seo_category_score_widget"
+                type="Panth\AdvancedSEO\Plugin\Admin\CategorySeoScorePlugin"
+                sortOrder="25"/>
+        <plugin name="panth_seo_category_seo_fields"
+                type="Panth\AdvancedSEO\Plugin\Admin\CategorySeoFieldsPlugin"
+                sortOrder="30"/>
+        <plugin name="panth_seo_category_canonical_form"
+                type="Panth\AdvancedSEO\Plugin\Canonical\CategoryFormPlugin"
+                sortOrder="40"/>
+    </type>
+
+    <!-- Product save: persist custom canonical URL -->
+    <type name="Magento\Catalog\Controller\Adminhtml\Product\Save">
+        <plugin name="panth_seo_product_seo_fields_save"
+                type="Panth\AdvancedSEO\Plugin\Admin\ProductSeoFieldsSavePlugin"
+                sortOrder="30"/>
+    </type>
+
+    <!-- CMS page form: meta_robots + hreflang_identifier + custom canonical fields -->
+    <type name="Magento\Cms\Model\Page\DataProvider">
+        <plugin name="panth_seo_cms_page_seo_fields"
+                type="Panth\AdvancedSEO\Plugin\Admin\CmsPageSeoFieldsPlugin"
+                sortOrder="30"/>
+        <plugin name="panth_seo_cms_canonical_form"
+                type="Panth\AdvancedSEO\Plugin\Canonical\CmsPageFormPlugin"
+                sortOrder="40"/>
+    </type>
+
+    <!-- CMS page save: persist meta_robots + hreflang_identifier -->
+    <type name="Magento\Cms\Controller\Adminhtml\Page\Save">
+        <plugin name="panth_seo_cms_page_seo_fields_save"
+                type="Panth\AdvancedSEO\Plugin\Admin\CmsPageSeoFieldsSavePlugin"
+                sortOrder="30"/>
+    </type>
+
+    <!--
+        Third-party Panth module AI integrations.
+
+        SAFE: Magento silently ignores plugin declarations for non-existent
+        target classes during DI compilation. Each plugin also includes an
+        internal class_exists() check as an extra safety net.
+    -->
+
+    <!-- FAQ: AI buttons on FAQ item edit form -->
+    <type name="Panth\Faq\Model\Item\DataProvider">
+        <plugin name="panth_seo_faq_item_ai"
+                type="Panth\AdvancedSEO\Plugin\ThirdParty\FaqItemAiPlugin"
+                sortOrder="100"/>
+    </type>
+
+    <!-- Testimonials: AI buttons on testimonial edit form -->
+    <type name="Panth\Testimonials\Model\Testimonial\DataProvider">
+        <plugin name="panth_seo_testimonial_ai"
+                type="Panth\AdvancedSEO\Plugin\ThirdParty\TestimonialAiPlugin"
+                sortOrder="100"/>
+    </type>
+
+    <!-- BannerSlider: AI buttons on slide edit form -->
+    <type name="Panth\BannerSlider\Ui\DataProvider\SlideFormDataProvider">
+        <plugin name="panth_seo_banner_slide_ai"
+                type="Panth\AdvancedSEO\Plugin\ThirdParty\BannerSlideAiPlugin"
+                sortOrder="100"/>
+    </type>
+
+    <!-- DynamicForms: AI buttons on form edit page -->
+    <type name="Panth\DynamicForms\Ui\DataProvider\FormDataProvider">
+        <plugin name="panth_seo_dynamic_form_ai"
+                type="Panth\AdvancedSEO\Plugin\ThirdParty\DynamicFormAiPlugin"
+                sortOrder="100"/>
+    </type>
+</config>

@@ -1,0 +1,12 @@
+<?php
+/**
+ * Google Search Console site verification meta tag.
+ *
+ * @var \Panth\AdvancedSEO\Block\Head\SearchConsoleVerification $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+if (!$block->hasVerificationCode()) {
+    return;
+}
+?>
+<meta name="google-site-verification" content="<?= $escaper->escapeHtmlAttr($block->getVerificationCode()) ?>"/>

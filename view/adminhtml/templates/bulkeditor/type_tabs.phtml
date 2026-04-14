@@ -1,0 +1,30 @@
+<?php
+/** @var \Magento\Backend\Block\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+
+/** @var \Panth\AdvancedSEO\ViewModel\BulkEditorTypeTabs $viewModel */
+$viewModel = $block->getData('view_model');
+$currentType = $viewModel->getCurrentType();
+
+$tabs = [
+    'product' => ['label' => 'Products', 'icon' => '📦'],
+    'category' => ['label' => 'Categories', 'icon' => '📁'],
+    'cms' => ['label' => 'CMS Pages', 'icon' => '📄'],
+];
+?>
+<div style="margin-bottom:15px;">
+    <div style="display:flex;gap:0;border-bottom:2px solid #ddd;">
+        <?php foreach ($tabs as $type => $tab): ?>
+            <?php
+            $isActive = ($type === $currentType);
+            $url = $block->getUrl('panth_seo/bulkeditor/index', ['type' => $type]);
+            $style = $isActive
+                ? 'padding:10px 25px;font-size:14px;font-weight:bold;background:#fff;border:2px solid #ddd;border-bottom:2px solid #fff;margin-bottom:-2px;border-radius:4px 4px 0 0;cursor:default;color:#333;text-decoration:none;display:inline-block;'
+                : 'padding:10px 25px;font-size:14px;background:#f5f5f5;border:1px solid transparent;border-radius:4px 4px 0 0;cursor:pointer;color:#666;text-decoration:none;display:inline-block;';
+            ?>
+            <a href="<?= $escaper->escapeUrl($url) ?>" style="<?= $escaper->escapeHtmlAttr($style) ?>">
+                <?= $escaper->escapeHtml($tab['icon']) ?> <?= $escaper->escapeHtml(__($tab['label'])) ?>
+            </a>
+        <?php endforeach; ?>
+    </div>
+</div>

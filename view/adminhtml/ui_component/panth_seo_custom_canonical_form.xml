@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_seo_custom_canonical_form.panth_seo_custom_canonical_form_data_source</item>
+        </item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="delete" class="Panth\AdvancedSEO\Block\Adminhtml\GenericDeleteButton"/>
+            <button name="save_and_continue" class="Panth\AdvancedSEO\Block\Adminhtml\GenericSaveAndContinueButton"/>
+            <button name="save" class="Panth\AdvancedSEO\Block\Adminhtml\GenericSaveButton"/>
+            <button name="back" class="Panth\AdvancedSEO\Block\Adminhtml\GenericBackButton"/>
+        </buttons>
+        <namespace>panth_seo_custom_canonical_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>panth_seo_custom_canonical_form.panth_seo_custom_canonical_form_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="panth_seo_custom_canonical_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="panth_seo/customcanonical/save"/>
+        </settings>
+        <dataProvider class="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\CustomCanonicalFormDataProvider" name="panth_seo_custom_canonical_form_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>canonical_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <!-- Source: Which page gets the canonical override -->
+    <fieldset name="source" sortOrder="10">
+        <settings>
+            <label translate="true">Source Page (Which page to override)</label>
+        </settings>
+        <field name="canonical_id" formElement="input">
+            <settings>
+                <visible>false</visible>
+                <dataType>text</dataType>
+            </settings>
+        </field>
+        <field name="source_entity_type" formElement="select" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Page Type</label>
+                <dataScope>source_entity_type</dataScope>
+                <notice translate="true">Select the type of page whose canonical URL you want to override.</notice>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="product" xsi:type="array">
+                                <item name="value" xsi:type="string">product</item>
+                                <item name="label" xsi:type="string" translate="true">Product</item>
+                            </option>
+                            <option name="category" xsi:type="array">
+                                <item name="value" xsi:type="string">category</item>
+                                <item name="label" xsi:type="string" translate="true">Category</item>
+                            </option>
+                            <option name="cms_page" xsi:type="array">
+                                <item name="value" xsi:type="string">cms_page</item>
+                                <item name="label" xsi:type="string" translate="true">CMS Page</item>
+                            </option>
+                        </options>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="source_entity_id" formElement="input" sortOrder="20">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Page ID</label>
+                <dataScope>source_entity_id</dataScope>
+                <notice translate="true">Enter the Product ID, Category ID, or CMS Page ID. You can find this in the entity's edit page URL (e.g., /id/47/).</notice>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                    <rule name="validate-digits" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="store_id" formElement="select" sortOrder="30">
+            <settings>
+                <dataType>int</dataType>
+                <label translate="true">Store View</label>
+                <dataScope>store_id</dataScope>
+                <notice translate="true">Select "All Store Views" to apply globally, or choose a specific store.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\Cms\Ui\Component\Listing\Column\Cms\Options"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="is_active" formElement="select" sortOrder="40">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Active</label>
+                <dataScope>is_active</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\Config\Model\Config\Source\Yesno"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- Target: What canonical URL to use -->
+    <fieldset name="target" sortOrder="20">
+        <settings>
+            <label translate="true">Canonical Target (What URL to use)</label>
+        </settings>
+        <field name="target_url" formElement="input" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Canonical URL</label>
+                <dataScope>target_url</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <notice translate="true">The canonical URL to output in the &lt;link rel="canonical"&gt; tag. Use a full URL (https://example.com/page.html) or relative path (/page.html).</notice>
+            </settings>
+        </field>
+        <field name="target_entity_type" formElement="select" sortOrder="20">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Target Entity Type (Optional)</label>
+                <dataScope>target_entity_type</dataScope>
+                <notice translate="true">If pointing to another Magento entity, select its type. The system will auto-generate the URL from the entity. Otherwise leave as "None" and enter the URL above.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="empty" xsi:type="array">
+                                <item name="value" xsi:type="string"></item>
+                                <item name="label" xsi:type="string" translate="true">-- None (use Canonical URL above) --</item>
+                            </option>
+                            <option name="product" xsi:type="array">
+                                <item name="value" xsi:type="string">product</item>
+                                <item name="label" xsi:type="string" translate="true">Product</item>
+                            </option>
+                            <option name="category" xsi:type="array">
+                                <item name="value" xsi:type="string">category</item>
+                                <item name="label" xsi:type="string" translate="true">Category</item>
+                            </option>
+                            <option name="cms_page" xsi:type="array">
+                                <item name="value" xsi:type="string">cms_page</item>
+                                <item name="label" xsi:type="string" translate="true">CMS Page</item>
+                            </option>
+                        </options>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="target_entity_id" formElement="input" sortOrder="30">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Target Entity ID (Optional)</label>
+                <dataScope>target_entity_id</dataScope>
+                <validation>
+                    <rule name="validate-digits" xsi:type="boolean">true</rule>
+                </validation>
+                <notice translate="true">Only needed if Target Entity Type is set. Enter the target entity's ID and the system will resolve its URL automatically.</notice>
+            </settings>
+        </field>
+    </fieldset>
+
+    <!-- Instructions -->
+    <htmlContent name="canonical_instructions" sortOrder="30">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="label" xsi:type="string" translate="true">Examples &amp; Use Cases</item>
+                <item name="collapsible" xsi:type="boolean">true</item>
+                <item name="opened" xsi:type="boolean">false</item>
+            </item>
+        </argument>
+        <block class="Magento\Backend\Block\Template" name="panth_seo_canonical_instructions" template="Panth_AdvancedSEO::customcanonical/form_instructions.phtml"/>
+    </htmlContent>
+</form>

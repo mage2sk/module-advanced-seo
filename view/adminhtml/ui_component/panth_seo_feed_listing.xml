@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_seo_feed_listing.panth_seo_feed_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <spinner>panth_seo_feed_listing_columns</spinner>
+        <deps>
+            <dep>panth_seo_feed_listing.panth_seo_feed_listing_data_source</dep>
+        </deps>
+        <buttons>
+            <button name="add">
+                <url path="*/*/new"/>
+                <class>primary</class>
+                <label translate="true">Add New Feed Profile</label>
+            </button>
+        </buttons>
+    </settings>
+    <dataSource name="panth_seo_feed_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">feed_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider" name="panth_seo_feed_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>feed_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filters name="listing_filters"/>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+    <columns name="panth_seo_feed_listing_columns">
+        <column name="feed_id">
+            <settings>
+                <label translate="true">ID</label>
+                <sorting>asc</sorting>
+                <filter>textRange</filter>
+            </settings>
+        </column>
+        <column name="name">
+            <settings>
+                <label translate="true">Name</label>
+                <filter>text</filter>
+            </settings>
+        </column>
+        <column name="feed_type" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <label translate="true">Feed Type</label>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <options class="Panth\AdvancedSEO\Model\Config\Source\FeedType"/>
+            </settings>
+        </column>
+        <column name="store_id" class="Magento\Store\Ui\Component\Listing\Column\Store">
+            <settings>
+                <label translate="true">Store View</label>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+                <sortable>false</sortable>
+            </settings>
+        </column>
+        <column name="filename" class="Panth\AdvancedSEO\Ui\Component\Listing\Column\FeedFileLink">
+            <settings>
+                <label translate="true">Filename</label>
+                <filter>text</filter>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+            </settings>
+        </column>
+        <column name="product_count">
+            <settings>
+                <label translate="true">Products</label>
+                <filter>textRange</filter>
+            </settings>
+        </column>
+        <column name="file_size">
+            <settings>
+                <label translate="true">File Size</label>
+                <filter>textRange</filter>
+            </settings>
+        </column>
+        <column name="generated_at" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date">
+            <settings>
+                <label translate="true">Last Generated</label>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+            </settings>
+        </column>
+        <column name="is_active" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <label translate="true">Active</label>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <options class="Magento\Config\Model\Config\Source\Yesno"/>
+            </settings>
+        </column>
+        <actionsColumn name="actions" class="Panth\AdvancedSEO\Ui\Component\Listing\Column\FeedActions">
+            <settings>
+                <indexField>feed_id</indexField>
+            </settings>
+        </actionsColumn>
+    </columns>
+</listing>

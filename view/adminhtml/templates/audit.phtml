@@ -1,0 +1,120 @@
+<?php
+/** @var \Panth\AdvancedSEO\Block\Adminhtml\Audit $block */
+
+$low   = $block->getLowScoringEntities();
+$dupes = $block->getDuplicates();
+$crawlSummary = $block->getLastCrawlSummary();
+$crawlUrl   = $block->getUrl('panth_seo/audit/crawl');
+$resultsUrl = $block->getUrl('panth_seo/audit/crawlResults');
+$formKey    = $block->getFormKey();
+?>
+<div class="panth-seo-audit">
+    <h1><?= $block->escapeHtml(__('SEO Audit')) ?></h1>
+
+    <!-- Crawl Audit Section -->
+    <div class="panth-seo-audit-crawl" style="margin-bottom:30px; padding:20px; background:#f8f8f8; border:1px solid #ddd; border-radius:4px;">
+        <h2 style="margin-top:0;"><?= $block->escapeHtml(__('Crawl Audit')) ?></h2>
+
+        <div style="display:flex; gap:12px; align-items:center; margin-bottom:16px;">
+            <form method="post" action="<?= $block->escapeUrl($crawlUrl) ?>" style="display:inline;">
+                <input type="hidden" name="form_key" value="<?= $block->escapeHtmlAttr($formKey) ?>"/>
+                <button type="submit" class="action-primary" title="<?= $block->escapeHtmlAttr(__('Run Crawl')) ?>">
+                    <span><?= $block->escapeHtml(__('Run Crawl')) ?></span>
+                </button>
+            </form>
+            <a href="<?= $block->escapeUrl($resultsUrl) ?>" class="action-secondary" title="<?= $block->escapeHtmlAttr(__('View Crawl Results')) ?>">
+                <span><?= $block->escapeHtml(__('View Crawl Results')) ?></span>
+            </a>
+        </div>
+
+        <?php if ($crawlSummary !== null): ?>
+            <h3><?= $block->escapeHtml(__('Last Crawl Summary')) ?></h3>
+            <table class="data-table" style="max-width:500px;">
+                <tbody>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('Pages Crawled')) ?></strong></td>
+                        <td><?= (int) ($crawlSummary['total_pages'] ?? 0) ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('HTTP 200 (OK)')) ?></strong></td>
+                        <td style="color:#185b00; font-weight:600;"><?= (int) ($crawlSummary['status_200'] ?? 0) ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('HTTP 301 (Redirect)')) ?></strong></td>
+                        <td style="color:#b8860b; font-weight:600;"><?= (int) ($crawlSummary['status_301'] ?? 0) ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('HTTP 404 (Not Found)')) ?></strong></td>
+                        <td style="color:#e22626; font-weight:600;"><?= (int) ($crawlSummary['status_404'] ?? 0) ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('HTTP 5xx (Server Error)')) ?></strong></td>
+                        <td style="color:#e22626; font-weight:600;"><?= (int) ($crawlSummary['status_5xx'] ?? 0) ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('Pages with Issues')) ?></strong></td>
+                        <td style="color:<?= ((int) ($crawlSummary['pages_with_issues'] ?? 0)) > 0 ? '#e22626' : '#185b00' ?>; font-weight:600;">
+                            <?= (int) ($crawlSummary['pages_with_issues'] ?? 0) ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('Last Crawled')) ?></strong></td>
+                        <td><?= $block->escapeHtml((string) ($crawlSummary['last_crawled_at'] ?? __('N/A'))) ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        <?php else: ?>
+            <p><?= $block->escapeHtml(__('No crawl results yet. Click "Run Crawl" to start an audit.')) ?></p>
+        <?php endif; ?>
+    </div>
+
+    <h2><?= $block->escapeHtml(__('Low-scoring entities')) ?></h2>
+    <?php if (!$low): ?>
+        <p><?= $block->escapeHtml(__('No low-scoring entities — nice!')) ?></p>
+    <?php else: ?>
+        <table class="data-table">
+            <thead><tr>
+                <th><?= $block->escapeHtml(__('Type')) ?></th>
+                <th><?= $block->escapeHtml(__('Entity ID')) ?></th>
+                <th><?= $block->escapeHtml(__('Store')) ?></th>
+                <th><?= $block->escapeHtml(__('Score')) ?></th>
+                <th><?= $block->escapeHtml(__('Grade')) ?></th>
+            </tr></thead>
+            <tbody>
+            <?php foreach ($low as $row): ?>
+                <tr>
+                    <td><?= $block->escapeHtml((string)($row['entity_type'] ?? '')) ?></td>
+                    <td><?= (int)($row['entity_id'] ?? 0) ?></td>
+                    <td><?= (int)($row['store_id'] ?? 0) ?></td>
+                    <td><?= (int)($row['score'] ?? 0) ?></td>
+                    <td><?= $block->escapeHtml((string)($row['grade'] ?? '')) ?></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
+
+    <h2><?= $block->escapeHtml(__('Near-duplicate meta')) ?></h2>
+    <?php if (!$dupes): ?>
+        <p><?= $block->escapeHtml(__('No duplicates found.')) ?></p>
+    <?php else: ?>
+        <table class="data-table">
+            <thead><tr>
+                <th><?= $block->escapeHtml(__('Field')) ?></th>
+                <th><?= $block->escapeHtml(__('Store')) ?></th>
+                <th><?= $block->escapeHtml(__('Hash')) ?></th>
+                <th><?= $block->escapeHtml(__('Count')) ?></th>
+            </tr></thead>
+            <tbody>
+            <?php foreach ($dupes as $row): ?>
+                <tr>
+                    <td><?= $block->escapeHtml((string)($row['field'] ?? '')) ?></td>
+                    <td><?= (int)($row['store_id'] ?? 0) ?></td>
+                    <td><?= $block->escapeHtml(substr((string)($row['hash'] ?? ''), 0, 12)) ?></td>
+                    <td><?= (int)($row['count'] ?? 0) ?></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
+</div>

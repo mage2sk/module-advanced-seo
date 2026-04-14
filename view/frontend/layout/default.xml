@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!--
+  Panth_AdvancedSEO: All frontend head blocks registered on default handle.
+  Hyva + Luma safe: no JS, no RequireJS, no x-magento-init.
+  All output is server-rendered via ViewModels.
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="head.additional">
+            <arguments>
+                <argument name="view_model_meta" xsi:type="object">Panth\AdvancedSEO\ViewModel\Meta</argument>
+                <argument name="view_model_canonical" xsi:type="object">Panth\AdvancedSEO\ViewModel\Canonical</argument>
+            </arguments>
+            <block class="Panth\AdvancedSEO\Block\Head\StructuredData"
+                   name="panth_seo.structured_data"
+                   template="Panth_AdvancedSEO::head/structured_data.phtml"
+                   cacheable="true">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Panth\AdvancedSEO\ViewModel\StructuredData</argument>
+                </arguments>
+            </block>
+            <!-- Hreflang rendered inline via canonical.phtml -->
+            <block class="Panth\AdvancedSEO\Block\Head\Canonical"
+                   name="panth_seo.canonical"
+                   template="Panth_AdvancedSEO::head/canonical.phtml"
+                   cacheable="true">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Panth\AdvancedSEO\ViewModel\Canonical</argument>
+                    <argument name="view_model_og" xsi:type="object">Panth\AdvancedSEO\ViewModel\OpenGraph</argument>
+                    <argument name="view_model_tw" xsi:type="object">Panth\AdvancedSEO\ViewModel\TwitterCard</argument>
+                    <argument name="view_model_hreflang" xsi:type="object">Panth\AdvancedSEO\ViewModel\Hreflang</argument>
+                </arguments>
+            </block>
+            <!--
+                OG and Twitter tags are rendered inline via canonical.phtml
+                to work around Hyva head.additional child block rendering limits.
+            -->
+            <block class="Panth\AdvancedSEO\Block\Head\SpeculationRules"
+                   name="panth_seo.speculation_rules"
+                   template="Panth_AdvancedSEO::head/speculation_rules.phtml"
+                   cacheable="true"/>
+            <block class="Panth\AdvancedSEO\Block\Head\GoogleAnalytics"
+                   name="panth_seo.google_analytics"
+                   template="Panth_AdvancedSEO::head/google_analytics.phtml"
+                   cacheable="true"/>
+            <block class="Panth\AdvancedSEO\Block\Head\SearchConsoleVerification"
+                   name="panth_seo.search_console_verification"
+                   template="Panth_AdvancedSEO::head/search_console_verification.phtml"
+                   cacheable="true"/>
+        </referenceBlock>
+    </body>
+</page>

@@ -1,0 +1,23 @@
+<?php /** @var \Magento\Backend\Block\Template $block */ ?>
+<div style="background:#E3F2FD;border:1px solid #1976D2;border-radius:4px;padding:15px 20px;margin-bottom:20px;font-size:13px;line-height:1.7;">
+    <strong style="font-size:14px;color:#1565C0;">How Meta Templates Work</strong>
+    <p style="margin:8px 0 0;">
+        Meta Templates generate SEO meta data (title, description, keywords, OG tags) for products, categories, and CMS pages
+        using <strong>token-based patterns</strong> like <code>{{name}} - {{brand}} | {{store.name}}</code>.
+    </p>
+    <ol style="margin:8px 0 0;padding-left:20px;">
+        <li>Create a template with patterns using available tokens (see "Available Template Variables" section in edit form)</li>
+        <li>Set conditions to restrict which entities the template applies to (optional)</li>
+        <li>Click <strong>"Apply Now"</strong> to render patterns and write results to product/category EAV attributes</li>
+        <li>Or enable <strong>"Cron Auto-Apply"</strong> to apply automatically on schedule</li>
+    </ol>
+    <p style="margin:8px 0 0;color:#555;">
+        <strong>Templates vs Rules:</strong> Templates write rendered meta to the database (bulk, pre-computed).
+        SEO Rules evaluate conditions in real-time on every page load (no Apply needed).
+        Use Templates for bulk generation, Rules for conditional overrides (like NOINDEX).
+    </p>
+    <p style="margin:5px 0 0;color:#555;">
+        <strong>Precedence:</strong> Override (AI/manual) &rarr; Rule &rarr; Template &rarr; Native entity values.
+        If a Rule and Template both set meta_title, the Rule wins.
+    </p>
+</div>

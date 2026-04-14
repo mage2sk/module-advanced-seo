@@ -1,0 +1,24 @@
+<?php
+/**
+ * Speculation Rules API — browser-level prefetch/prerender hints.
+ *
+ * Outputs a <script type="speculationrules"> tag containing JSON rules
+ * for the browser to prefetch and prerender navigations on hover.
+ * This is a JSON blob, not executable JS — Hyva-safe.
+ *
+ * @var \Panth\AdvancedSEO\Block\Head\SpeculationRules $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+if (!$block->isEnabled()) {
+    return;
+}
+
+$json = $block->getSpeculationRulesJson();
+if ($json === '' || $json === '{}') {
+    return;
+}
+?>
+<script type="speculationrules">
+<?= /* @noEscape */ $json ?>
+
+</script>

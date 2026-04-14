@@ -1,0 +1,62 @@
+{
+    "name": "mage2kishan/module-advanced-seo",
+    "description": "Panth Advanced SEO — enterprise-grade SEO suite for Magento 2: meta templates, rules engine, AI content generation, structured data (JSON-LD), hreflang, canonical URLs, redirects & 404 management, XML/HTML sitemaps, robots & LLM bot policy, SEO scoring & audit, social meta (OpenGraph/Twitter), image SEO, cross-linking, filter URL control, IndexNow, llms.txt, product feeds, and analytics. Hyva and Luma compatible.",
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "license": "proprietary",
+    "keywords": [
+        "magento2",
+        "magento2-module",
+        "seo",
+        "meta-templates",
+        "structured-data",
+        "json-ld",
+        "hreflang",
+        "canonical",
+        "redirects",
+        "sitemap",
+        "robots",
+        "ai-seo",
+        "opengraph",
+        "hyva",
+        "panth"
+    ],
+    "homepage": "https://kishansavaliya.com",
+    "support": {
+        "email": "kishansavaliyakb@gmail.com",
+        "source": "https://kishansavaliya.com"
+    },
+    "authors": [
+        {
+            "name": "Kishan Savaliya",
+            "email": "kishansavaliyakb@gmail.com",
+            "homepage": "https://kishansavaliya.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "~8.1.0||~8.2.0||~8.3.0||~8.4.0",
+        "mage2kishan/module-core": "^1.0",
+        "magento/framework": "^103.0",
+        "magento/module-store": "^101.1",
+        "magento/module-catalog": "^104.0",
+        "magento/module-cms": "^104.0",
+        "magento/module-url-rewrite": "^102.0",
+        "magento/module-catalog-url-rewrite": "^100.4",
+        "magento/module-sitemap": "^100.4",
+        "magento/module-backend": "^102.0",
+        "magento/module-ui": "^101.2",
+        "magento/module-config": "^101.2"
+    },
+    "suggest": {
+        "hyva-themes/magento2-default-theme": "For Hyva frontend compatibility (no jQuery, TailwindCSS, AlpineJS)."
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Panth\\AdvancedSEO\\": ""
+        }
+    }
+}

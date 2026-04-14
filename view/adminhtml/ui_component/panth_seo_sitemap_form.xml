@@ -1,0 +1,592 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_seo_sitemap_form.panth_seo_sitemap_form_data_source</item>
+        </item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="delete" class="Panth\AdvancedSEO\Block\Adminhtml\GenericDeleteButton"/>
+            <button name="generate" class="Panth\AdvancedSEO\Block\Adminhtml\Sitemap\Edit\GenerateButton"/>
+            <button name="save_and_continue" class="Panth\AdvancedSEO\Block\Adminhtml\Sitemap\Edit\SaveAndContinueButton"/>
+            <button name="save" class="Panth\AdvancedSEO\Block\Adminhtml\Sitemap\Edit\SaveButton"/>
+            <button name="back" class="Panth\AdvancedSEO\Block\Adminhtml\Sitemap\Edit\BackButton"/>
+        </buttons>
+        <namespace>panth_seo_sitemap_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>panth_seo_sitemap_form.panth_seo_sitemap_form_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="panth_seo_sitemap_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="panth_seo/sitemap/save"/>
+        </settings>
+        <dataProvider class="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\SitemapProfileFormDataProvider" name="panth_seo_sitemap_form_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>profile_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <!-- ========== General ========== -->
+    <fieldset name="general" sortOrder="10">
+        <settings>
+            <label translate="true">General</label>
+        </settings>
+        <field name="profile_id" formElement="input">
+            <settings>
+                <visible>false</visible>
+                <dataType>text</dataType>
+            </settings>
+        </field>
+        <field name="name" formElement="input" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Profile Name</label>
+                <dataScope>name</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="store_id" formElement="select" sortOrder="20">
+            <settings>
+                <dataType>int</dataType>
+                <label translate="true">Store View</label>
+                <dataScope>store_id</dataScope>
+                <notice translate="true">Select "All Store Views" to generate a sitemap covering all stores, or choose a specific store view.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\Cms\Ui\Component\Listing\Column\Cms\Options"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="is_active" formElement="checkbox" sortOrder="30">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="number">1</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Active</label>
+                <dataScope>is_active</dataScope>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <prefer>toggle</prefer>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- ========== Entity Types ========== -->
+    <fieldset name="entity_types_fieldset" sortOrder="20">
+        <settings>
+            <label translate="true">Entity Types</label>
+        </settings>
+        <field name="entity_types" formElement="multiselect" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Include Entity Types</label>
+                <dataScope>entity_types</dataScope>
+                <notice translate="true">Select which entity types to include in the sitemap.</notice>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+            <formElements>
+                <multiselect>
+                    <settings>
+                        <options>
+                            <option name="product" xsi:type="array">
+                                <item name="value" xsi:type="string">product</item>
+                                <item name="label" xsi:type="string" translate="true">Products</item>
+                            </option>
+                            <option name="category" xsi:type="array">
+                                <item name="value" xsi:type="string">category</item>
+                                <item name="label" xsi:type="string" translate="true">Categories</item>
+                            </option>
+                            <option name="cms" xsi:type="array">
+                                <item name="value" xsi:type="string">cms</item>
+                                <item name="label" xsi:type="string" translate="true">CMS Pages</item>
+                            </option>
+                            <option name="custom" xsi:type="array">
+                                <item name="value" xsi:type="string">custom</item>
+                                <item name="label" xsi:type="string" translate="true">Custom Links</item>
+                            </option>
+                        </options>
+                    </settings>
+                </multiselect>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- ========== Product Settings ========== -->
+    <fieldset name="product_settings" sortOrder="30">
+        <settings>
+            <label translate="true">Product Settings</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="changefreq_product" formElement="select" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Change Frequency</label>
+                <dataScope>changefreq_product</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="always" xsi:type="array">
+                                <item name="value" xsi:type="string">always</item>
+                                <item name="label" xsi:type="string">Always</item>
+                            </option>
+                            <option name="hourly" xsi:type="array">
+                                <item name="value" xsi:type="string">hourly</item>
+                                <item name="label" xsi:type="string">Hourly</item>
+                            </option>
+                            <option name="daily" xsi:type="array">
+                                <item name="value" xsi:type="string">daily</item>
+                                <item name="label" xsi:type="string">Daily</item>
+                            </option>
+                            <option name="weekly" xsi:type="array">
+                                <item name="value" xsi:type="string">weekly</item>
+                                <item name="label" xsi:type="string">Weekly</item>
+                            </option>
+                            <option name="monthly" xsi:type="array">
+                                <item name="value" xsi:type="string">monthly</item>
+                                <item name="label" xsi:type="string">Monthly</item>
+                            </option>
+                            <option name="yearly" xsi:type="array">
+                                <item name="value" xsi:type="string">yearly</item>
+                                <item name="label" xsi:type="string">Yearly</item>
+                            </option>
+                            <option name="never" xsi:type="array">
+                                <item name="value" xsi:type="string">never</item>
+                                <item name="label" xsi:type="string">Never</item>
+                            </option>
+                        </options>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="priority_product" formElement="input" sortOrder="20">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Priority</label>
+                <dataScope>priority_product</dataScope>
+                <notice translate="true">Value between 0.0 and 1.0. Default: 0.8</notice>
+                <validation>
+                    <rule name="validate-number" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="exclude_out_of_stock" formElement="checkbox" sortOrder="30">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="number">0</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Exclude Out of Stock Products</label>
+                <dataScope>exclude_out_of_stock</dataScope>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <prefer>toggle</prefer>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="exclude_noindex" formElement="checkbox" sortOrder="40">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="number">1</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Exclude NOINDEX Pages</label>
+                <dataScope>exclude_noindex</dataScope>
+                <notice translate="true">Exclude pages with NOINDEX robots directive from the sitemap.</notice>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <prefer>toggle</prefer>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="include_images" formElement="checkbox" sortOrder="50">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="number">1</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Include Product Images</label>
+                <dataScope>include_images</dataScope>
+                <notice translate="true">Add image:image tags for product images in the sitemap.</notice>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <prefer>toggle</prefer>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- ========== Category Settings ========== -->
+    <fieldset name="category_settings" sortOrder="40">
+        <settings>
+            <label translate="true">Category Settings</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="changefreq_category" formElement="select" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Change Frequency</label>
+                <dataScope>changefreq_category</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="always" xsi:type="array">
+                                <item name="value" xsi:type="string">always</item>
+                                <item name="label" xsi:type="string">Always</item>
+                            </option>
+                            <option name="hourly" xsi:type="array">
+                                <item name="value" xsi:type="string">hourly</item>
+                                <item name="label" xsi:type="string">Hourly</item>
+                            </option>
+                            <option name="daily" xsi:type="array">
+                                <item name="value" xsi:type="string">daily</item>
+                                <item name="label" xsi:type="string">Daily</item>
+                            </option>
+                            <option name="weekly" xsi:type="array">
+                                <item name="value" xsi:type="string">weekly</item>
+                                <item name="label" xsi:type="string">Weekly</item>
+                            </option>
+                            <option name="monthly" xsi:type="array">
+                                <item name="value" xsi:type="string">monthly</item>
+                                <item name="label" xsi:type="string">Monthly</item>
+                            </option>
+                            <option name="yearly" xsi:type="array">
+                                <item name="value" xsi:type="string">yearly</item>
+                                <item name="label" xsi:type="string">Yearly</item>
+                            </option>
+                            <option name="never" xsi:type="array">
+                                <item name="value" xsi:type="string">never</item>
+                                <item name="label" xsi:type="string">Never</item>
+                            </option>
+                        </options>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="priority_category" formElement="input" sortOrder="20">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Priority</label>
+                <dataScope>priority_category</dataScope>
+                <notice translate="true">Value between 0.0 and 1.0. Default: 0.6</notice>
+                <validation>
+                    <rule name="validate-number" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+    </fieldset>
+
+    <!-- ========== CMS Settings ========== -->
+    <fieldset name="cms_settings" sortOrder="50">
+        <settings>
+            <label translate="true">CMS Page Settings</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="changefreq_cms" formElement="select" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Change Frequency</label>
+                <dataScope>changefreq_cms</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="always" xsi:type="array">
+                                <item name="value" xsi:type="string">always</item>
+                                <item name="label" xsi:type="string">Always</item>
+                            </option>
+                            <option name="hourly" xsi:type="array">
+                                <item name="value" xsi:type="string">hourly</item>
+                                <item name="label" xsi:type="string">Hourly</item>
+                            </option>
+                            <option name="daily" xsi:type="array">
+                                <item name="value" xsi:type="string">daily</item>
+                                <item name="label" xsi:type="string">Daily</item>
+                            </option>
+                            <option name="weekly" xsi:type="array">
+                                <item name="value" xsi:type="string">weekly</item>
+                                <item name="label" xsi:type="string">Weekly</item>
+                            </option>
+                            <option name="monthly" xsi:type="array">
+                                <item name="value" xsi:type="string">monthly</item>
+                                <item name="label" xsi:type="string">Monthly</item>
+                            </option>
+                            <option name="yearly" xsi:type="array">
+                                <item name="value" xsi:type="string">yearly</item>
+                                <item name="label" xsi:type="string">Yearly</item>
+                            </option>
+                            <option name="never" xsi:type="array">
+                                <item name="value" xsi:type="string">never</item>
+                                <item name="label" xsi:type="string">Never</item>
+                            </option>
+                        </options>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="priority_cms" formElement="input" sortOrder="20">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Priority</label>
+                <dataScope>priority_cms</dataScope>
+                <notice translate="true">Value between 0.0 and 1.0. Default: 0.5</notice>
+                <validation>
+                    <rule name="validate-number" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="priority_homepage" formElement="input" sortOrder="30">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Homepage Priority</label>
+                <dataScope>priority_homepage</dataScope>
+                <notice translate="true">Priority for the homepage URL. Value between 0.0 and 1.0. Default: 1.0</notice>
+                <validation>
+                    <rule name="validate-number" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+    </fieldset>
+
+    <!-- ========== Custom Links ========== -->
+    <fieldset name="custom_links_fieldset" sortOrder="60">
+        <settings>
+            <label translate="true">Custom Links</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="custom_links" formElement="textarea" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Custom URLs</label>
+                <dataScope>custom_links</dataScope>
+                <notice translate="true">One URL per line. Format: URL,changefreq,priority (e.g., https://example.com/page,weekly,0.7). The changefreq and priority parts are optional.</notice>
+            </settings>
+            <formElements>
+                <textarea>
+                    <settings>
+                        <rows>8</rows>
+                    </settings>
+                </textarea>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- ========== Advanced ========== -->
+    <fieldset name="advanced" sortOrder="70">
+        <settings>
+            <label translate="true">Advanced Settings</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="max_urls_per_file" formElement="input" sortOrder="10">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Max URLs per File</label>
+                <dataScope>max_urls_per_file</dataScope>
+                <notice translate="true">Google allows a maximum of 50,000 URLs per sitemap file. When exceeded, multiple files are created with a sitemap index.</notice>
+                <validation>
+                    <rule name="validate-number" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="include_video" formElement="checkbox" sortOrder="20">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="number">0</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Include Video Sitemap</label>
+                <dataScope>include_video</dataScope>
+                <notice translate="true">Add video:video tags for product videos in the sitemap.</notice>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <prefer>toggle</prefer>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="include_hreflang" formElement="checkbox" sortOrder="30">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="number">0</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Include Hreflang Tags</label>
+                <dataScope>include_hreflang</dataScope>
+                <notice translate="true">Add xhtml:link hreflang alternate tags for multi-language stores.</notice>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <prefer>toggle</prefer>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="output_path" formElement="input" sortOrder="40">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Output Path</label>
+                <dataScope>output_path</dataScope>
+                <notice translate="true">Relative path from pub/ directory. Use {store_code} placeholder for store-specific directories. Default: sitemap/panth/{store_code}/</notice>
+            </settings>
+        </field>
+    </fieldset>
+
+    <!-- ========== Scheduling ========== -->
+    <fieldset name="scheduling" sortOrder="80">
+        <settings>
+            <label translate="true">Scheduling</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="cron_enabled" formElement="checkbox" sortOrder="10">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="number">0</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Enable Cron Auto-Generation</label>
+                <dataScope>cron_enabled</dataScope>
+                <notice translate="true">When enabled, this sitemap profile will be regenerated automatically on the configured schedule.</notice>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <prefer>toggle</prefer>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="cron_schedule" formElement="input" sortOrder="20">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Cron Schedule</label>
+                <dataScope>cron_schedule</dataScope>
+                <notice translate="true">Cron expression (e.g., "0 2 * * *" for daily at 2:00 AM). Default: 0 2 * * *</notice>
+            </settings>
+        </field>
+    </fieldset>
+
+    <!-- ========== Generation Status (Read-Only) ========== -->
+    <fieldset name="status" sortOrder="90">
+        <settings>
+            <label translate="true">Generation Status</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="last_generated_at" formElement="input" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Last Generated At</label>
+                <dataScope>last_generated_at</dataScope>
+                <disabled>true</disabled>
+                <notice translate="true">Timestamp of the last sitemap generation. Read-only.</notice>
+            </settings>
+        </field>
+        <field name="generation_time" formElement="input" sortOrder="20">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Generation Time (seconds)</label>
+                <dataScope>generation_time</dataScope>
+                <disabled>true</disabled>
+                <notice translate="true">Time taken for the last generation in seconds. Read-only.</notice>
+            </settings>
+        </field>
+        <field name="url_count" formElement="input" sortOrder="30">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Total URL Count</label>
+                <dataScope>url_count</dataScope>
+                <disabled>true</disabled>
+                <notice translate="true">Total number of URLs in the generated sitemap. Read-only.</notice>
+            </settings>
+        </field>
+        <field name="file_count" formElement="input" sortOrder="40">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">File Count</label>
+                <dataScope>file_count</dataScope>
+                <disabled>true</disabled>
+                <notice translate="true">Number of sitemap files generated. Read-only.</notice>
+            </settings>
+        </field>
+    </fieldset>
+</form>

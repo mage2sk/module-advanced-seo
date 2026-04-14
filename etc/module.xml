@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+    <module name="Panth_AdvancedSEO" setup_version="1.0.0">
+        <sequence>
+            <module name="Magento_Catalog"/>
+            <module name="Magento_Cms"/>
+            <module name="Magento_UrlRewrite"/>
+            <module name="Magento_CatalogUrlRewrite"/>
+            <module name="Magento_Sitemap"/>
+            <!-- Optional: Panth_ProductGallery is soft-linked via di.xml
+                 arguments so the custom gallery (used by both Hyva and
+                 Luma) can render template-based alt/title text. -->
+            <module name="Panth_ProductGallery"/>
+        </sequence>
+    </module>
+</config>

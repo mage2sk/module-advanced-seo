@@ -1,0 +1,45 @@
+<?php
+/**
+ * Related internal links — plain PHP, Hyva + Luma compatible. No JS.
+ *
+ * Expected block data:
+ *   - entity_type (string): 'product' | 'category'
+ *   - entity_id (int)
+ *   - limit (int, optional, default 5)
+ *   - heading (string, optional)
+ *
+ * @var \Magento\Framework\View\Element\Template $block
+ * @var \Magento\Framework\Escaper $escaper
+ */
+/** @var \Panth\AdvancedSEO\ViewModel\RelatedLinks|null $viewModel */
+$viewModel = $block->getData('related_links_view_model');
+if (!$viewModel instanceof \Panth\AdvancedSEO\ViewModel\RelatedLinks) {
+    return;
+}
+
+$entityType = (string) $block->getData('entity_type');
+$entityId   = (int) $block->getData('entity_id');
+$limit      = (int) ($block->getData('limit') ?: 5);
+$heading    = (string) ($block->getData('heading') ?: __('Related'));
+
+if ($entityType === '' || $entityId <= 0) {
+    return;
+}
+
+$suggestions = $viewModel->getSuggestions($entityType, $entityId, $limit);
+if (empty($suggestions)) {
+    return;
+}
+?>
+<aside class="panth-seo-related">
+    <h3><?= $escaper->escapeHtml((string) $heading) ?></h3>
+    <ul>
+        <?php foreach ($suggestions as $item): ?>
+            <li>
+                <a href="<?= $escaper->escapeUrl((string) $item['url']) ?>">
+                    <?= $escaper->escapeHtml((string) $item['label']) ?>
+                </a>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+</aside>

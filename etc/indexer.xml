@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Indexer/etc/indexer.xsd">
+    <indexer id="panth_seo_resolved_meta"
+             view_id="panth_seo_resolved_meta"
+             class="Panth\AdvancedSEO\Model\Indexer\ResolvedMeta">
+        <title translate="true">Panth SEO Resolved Meta</title>
+        <description translate="true">Precomputes resolved meta title, description, canonical, robots, OG and JSON-LD for catalog and CMS entities.</description>
+        <dependencies>
+            <indexer id="catalog_product_attribute"/>
+            <indexer id="catalog_category_product"/>
+        </dependencies>
+    </indexer>
+    <indexer id="panth_seo_hreflang"
+             view_id="panth_seo_hreflang"
+             class="Panth\AdvancedSEO\Model\Indexer\Hreflang">
+        <title translate="true">Panth SEO Hreflang</title>
+        <description translate="true">Builds the hreflang alternates payload per entity.</description>
+        <dependencies>
+            <indexer id="panth_seo_resolved_meta"/>
+        </dependencies>
+    </indexer>
+</config>

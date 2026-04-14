@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_seo_score_listing.panth_seo_score_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <spinner>panth_seo_score_listing_columns</spinner>
+        <deps>
+            <dep>panth_seo_score_listing.panth_seo_score_listing_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="panth_seo_score_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">score_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider" name="panth_seo_score_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>score_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <filters name="listing_filters"/>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+    <columns name="panth_seo_score_listing_columns">
+        <column name="score_id"><settings><label translate="true">ID</label></settings></column>
+        <column name="entity_type"><settings><label translate="true">Type</label></settings></column>
+        <column name="entity_id"><settings><label translate="true">Entity</label></settings></column>
+        <column name="score"><settings><label translate="true">Score</label><sorting>asc</sorting></settings></column>
+        <column name="grade"><settings><label translate="true">Grade</label></settings></column>
+        <column name="computed_at"><settings><label translate="true">Computed At</label></settings></column>
+    </columns>
+</listing>

@@ -1,0 +1,7 @@
+pattern,target,match_type,status_code,store_id
+/old-page.html,/new-page.html,exact,301,0
+/legacy-category,/gear/bags.html,exact,301,0
+/promo-2024,/,exact,302,0
+/blog/(.*),/content/$1,regex,301,0
+/discontinued-product-123,/gear.html,exact,301,0
+/sale/clearance,/collections/sale.html,exact,301,0

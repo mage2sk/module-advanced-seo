@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_seo_feed_field_listing.panth_seo_feed_field_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <spinner>panth_seo_feed_field_listing_columns</spinner>
+        <deps>
+            <dep>panth_seo_feed_field_listing.panth_seo_feed_field_listing_data_source</dep>
+        </deps>
+        <buttons>
+            <button name="back" class="Panth\AdvancedSEO\Block\Adminhtml\Feed\BackToProfilesButton"/>
+            <button name="add_field" class="Panth\AdvancedSEO\Block\Adminhtml\Feed\AddFieldButton"/>
+            <button name="add_defaults" class="Panth\AdvancedSEO\Block\Adminhtml\Feed\AddGoogleDefaultsButton"/>
+        </buttons>
+    </settings>
+    <dataSource name="panth_seo_feed_field_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">field_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <dataProvider class="Panth\AdvancedSEO\Ui\Component\Listing\DataProvider\FeedFieldDataProvider" name="panth_seo_feed_field_listing_data_source">
+            <settings>
+                <requestFieldName>field_id</requestFieldName>
+                <primaryFieldName>field_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filters name="listing_filters"/>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+    <columns name="panth_seo_feed_field_listing_columns">
+        <settings>
+            <editorConfig>
+                <param name="clientConfig" xsi:type="array">
+                    <item name="saveUrl" xsi:type="url" path="panth_seo/feed/saveField"/>
+                    <item name="validateBeforeSave" xsi:type="boolean">false</item>
+                </param>
+                <param name="indexField" xsi:type="string">field_id</param>
+                <param name="enabled" xsi:type="boolean">true</param>
+                <param name="selectProvider" xsi:type="string">panth_seo_feed_field_listing.panth_seo_feed_field_listing.panth_seo_feed_field_listing_columns.ids</param>
+            </editorConfig>
+            <childDefaults>
+                <param name="fieldAction" xsi:type="array">
+                    <item name="provider" xsi:type="string">panth_seo_feed_field_listing.panth_seo_feed_field_listing.panth_seo_feed_field_listing_columns_editor</item>
+                    <item name="target" xsi:type="string">startEdit</item>
+                    <item name="params" xsi:type="array">
+                        <item name="0" xsi:type="string">${ $.$data.rowIndex }</item>
+                        <item name="1" xsi:type="boolean">true</item>
+                    </item>
+                </param>
+            </childDefaults>
+        </settings>
+        <selectionsColumn name="ids">
+            <settings>
+                <indexField>field_id</indexField>
+            </settings>
+        </selectionsColumn>
+        <column name="field_id">
+            <settings>
+                <label translate="true">ID</label>
+                <sorting>asc</sorting>
+                <filter>textRange</filter>
+            </settings>
+        </column>
+        <column name="feed_field">
+            <settings>
+                <label translate="true">Feed Field</label>
+                <filter>text</filter>
+                <editor>
+                    <editorType>text</editorType>
+                </editor>
+            </settings>
+        </column>
+        <column name="source_type" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <label translate="true">Source Type</label>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <options class="Panth\AdvancedSEO\Model\Config\Source\FeedFieldSourceType"/>
+                <editor>
+                    <editorType>select</editorType>
+                </editor>
+            </settings>
+        </column>
+        <column name="source_value">
+            <settings>
+                <label translate="true">Source Value</label>
+                <filter>text</filter>
+                <editor>
+                    <editorType>text</editorType>
+                </editor>
+            </settings>
+        </column>
+        <column name="default_value">
+            <settings>
+                <label translate="true">Default Value</label>
+                <filter>text</filter>
+                <editor>
+                    <editorType>text</editorType>
+                </editor>
+            </settings>
+        </column>
+        <column name="sort_order">
+            <settings>
+                <label translate="true">Sort Order</label>
+                <filter>textRange</filter>
+                <editor>
+                    <editorType>text</editorType>
+                </editor>
+            </settings>
+        </column>
+        <column name="is_required" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <label translate="true">Required</label>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <options class="Magento\Config\Model\Config\Source\Yesno"/>
+            </settings>
+        </column>
+        <actionsColumn name="actions" class="Panth\AdvancedSEO\Ui\Component\Listing\Column\FeedFieldActions">
+            <settings>
+                <indexField>field_id</indexField>
+            </settings>
+        </actionsColumn>
+    </columns>
+</listing>

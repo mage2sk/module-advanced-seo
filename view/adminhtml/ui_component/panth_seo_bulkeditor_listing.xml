@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_seo_bulkeditor_listing.panth_seo_bulkeditor_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <spinner>panth_seo_bulkeditor_listing_columns</spinner>
+        <deps>
+            <dep>panth_seo_bulkeditor_listing.panth_seo_bulkeditor_listing_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="panth_seo_bulkeditor_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">entity_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <dataProvider class="Panth\AdvancedSEO\Ui\Component\Listing\DataProvider\BulkEditorDataProvider" name="panth_seo_bulkeditor_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>entity_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filters name="listing_filters"/>
+        <massaction name="listing_massaction">
+            <action name="generate_ai_meta">
+                <settings>
+                    <confirm>
+                        <message translate="true">Are you sure you want to generate AI meta for the selected entities?</message>
+                        <title translate="true">Generate AI Meta</title>
+                    </confirm>
+                    <url path="panth_seo/bulkeditor/massGenerate"/>
+                    <type>generate_ai_meta</type>
+                    <label translate="true">Generate AI Meta</label>
+                </settings>
+            </action>
+        </massaction>
+        <paging name="listing_paging">
+            <settings>
+                <options>
+                    <option name="20" xsi:type="array">
+                        <item name="value" xsi:type="number">20</item>
+                        <item name="label" xsi:type="string">20</item>
+                    </option>
+                    <option name="50" xsi:type="array">
+                        <item name="value" xsi:type="number">50</item>
+                        <item name="label" xsi:type="string">50</item>
+                    </option>
+                    <option name="100" xsi:type="array">
+                        <item name="value" xsi:type="number">100</item>
+                        <item name="label" xsi:type="string">100</item>
+                    </option>
+                </options>
+            </settings>
+        </paging>
+    </listingToolbar>
+    <columns name="panth_seo_bulkeditor_listing_columns">
+        <settings>
+            <editorConfig>
+                <param name="clientConfig" xsi:type="array">
+                    <item name="saveUrl" xsi:type="url" path="panth_seo/bulkeditor/inlineEdit"/>
+                    <item name="validateBeforeSave" xsi:type="boolean">false</item>
+                </param>
+                <param name="indexField" xsi:type="string">entity_id</param>
+                <param name="enabled" xsi:type="boolean">true</param>
+                <param name="selectProvider" xsi:type="string">panth_seo_bulkeditor_listing.panth_seo_bulkeditor_listing.panth_seo_bulkeditor_listing_columns.ids</param>
+            </editorConfig>
+            <childDefaults>
+                <param name="fieldAction" xsi:type="array">
+                    <item name="provider" xsi:type="string">panth_seo_bulkeditor_listing.panth_seo_bulkeditor_listing.panth_seo_bulkeditor_listing_columns_editor</item>
+                    <item name="target" xsi:type="string">startEdit</item>
+                    <item name="params" xsi:type="array">
+                        <item name="0" xsi:type="string">${ $.$data.rowIndex }</item>
+                        <item name="1" xsi:type="boolean">true</item>
+                    </item>
+                </param>
+            </childDefaults>
+        </settings>
+        <selectionsColumn name="ids">
+            <settings>
+                <indexField>entity_id</indexField>
+            </settings>
+        </selectionsColumn>
+        <column name="entity_id">
+            <settings>
+                <label translate="true">ID</label>
+                <filter>textRange</filter>
+                <sorting>asc</sorting>
+            </settings>
+        </column>
+        <!-- Product columns -->
+        <column name="sku">
+            <settings>
+                <label translate="true">SKU / URL Key / Identifier</label>
+                <filter>text</filter>
+            </settings>
+        </column>
+        <column name="name">
+            <settings>
+                <label translate="true">Name / Title</label>
+                <filter>text</filter>
+            </settings>
+        </column>
+        <!-- For categories: url_key, for CMS: identifier, title -->
+        <column name="url_key">
+            <settings>
+                <label translate="true">URL Key</label>
+                <filter>text</filter>
+                <visible>false</visible>
+            </settings>
+        </column>
+        <column name="identifier">
+            <settings>
+                <label translate="true">Identifier</label>
+                <filter>text</filter>
+                <visible>false</visible>
+            </settings>
+        </column>
+        <column name="title">
+            <settings>
+                <label translate="true">Page Title</label>
+                <filter>text</filter>
+                <visible>false</visible>
+            </settings>
+        </column>
+        <!-- Editable meta columns -->
+        <column name="meta_title">
+            <settings>
+                <label translate="true">Meta Title</label>
+                <filter>text</filter>
+                <editor>
+                    <editorType>text</editorType>
+                </editor>
+            </settings>
+        </column>
+        <column name="meta_description">
+            <settings>
+                <label translate="true">Meta Description</label>
+                <filter>text</filter>
+                <editor>
+                    <editorType>text</editorType>
+                </editor>
+            </settings>
+        </column>
+    </columns>
+</listing>

@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
+    <group id="default">
+        <job name="panth_seo_sitemap_rebuild"
+             instance="Panth\AdvancedSEO\Cron\SitemapRebuild"
+             method="execute">
+            <schedule>0 2 * * *</schedule>
+        </job>
+        <job name="panth_seo_score_recompute"
+             instance="Panth\AdvancedSEO\Cron\ScoreRecompute"
+             method="execute">
+            <schedule>0 * * * *</schedule>
+        </job>
+        <job name="panth_seo_duplicate_scan"
+             instance="Panth\AdvancedSEO\Cron\DuplicateScan"
+             method="execute">
+            <schedule>0 3 * * 0</schedule>
+        </job>
+        <job name="panth_seo_404_cluster"
+             instance="Panth\AdvancedSEO\Cron\NotFoundCluster"
+             method="execute">
+            <schedule>0 4 * * *</schedule>
+        </job>
+        <job name="panth_seo_bulk_template_apply"
+             instance="Panth\AdvancedSEO\Cron\BulkTemplateApply"
+             method="execute">
+            <schedule>0 */2 * * *</schedule>
+        </job>
+        <job name="panth_seo_crawl_audit"
+             instance="Panth\AdvancedSEO\Cron\CrawlAudit"
+             method="execute">
+            <schedule>0 3 * * *</schedule>
+        </job>
+        <job name="panth_seo_redirect_cleanup"
+             instance="Panth\AdvancedSEO\Cron\RedirectCleanup"
+             method="execute">
+            <schedule>0 4 * * *</schedule>
+        </job>
+        <job name="panth_seo_google_feed"
+             instance="Panth\AdvancedSEO\Cron\GenerateGoogleFeed"
+             method="execute">
+            <schedule>0 1 * * *</schedule>
+        </job>
+    </group>
+</config>

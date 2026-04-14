@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_seo_custom_canonical_listing.panth_seo_custom_canonical_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <spinner>panth_seo_custom_canonical_listing_columns</spinner>
+        <deps>
+            <dep>panth_seo_custom_canonical_listing.panth_seo_custom_canonical_listing_data_source</dep>
+        </deps>
+        <buttons>
+            <button name="add">
+                <url path="*/*/new"/>
+                <class>primary</class>
+                <label translate="true">Add New Custom Canonical</label>
+            </button>
+        </buttons>
+    </settings>
+    <dataSource name="panth_seo_custom_canonical_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">canonical_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider" name="panth_seo_custom_canonical_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>canonical_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filters name="listing_filters"/>
+        <massaction name="listing_massaction">
+            <action name="delete">
+                <settings>
+                    <confirm>
+                        <message translate="true">Are you sure?</message>
+                        <title translate="true">Delete items</title>
+                    </confirm>
+                    <url path="panth_seo/customcanonical/massDelete"/>
+                    <type>delete</type>
+                    <label translate="true">Delete</label>
+                </settings>
+            </action>
+        </massaction>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+    <columns name="panth_seo_custom_canonical_listing_columns">
+        <selectionsColumn name="ids">
+            <settings>
+                <indexField>canonical_id</indexField>
+            </settings>
+        </selectionsColumn>
+        <column name="canonical_id">
+            <settings>
+                <label translate="true">ID</label>
+                <sorting>asc</sorting>
+            </settings>
+        </column>
+        <column name="source_entity_type">
+            <settings>
+                <label translate="true">Source Entity Type</label>
+                <filter>text</filter>
+            </settings>
+        </column>
+        <column name="source_entity_id">
+            <settings>
+                <label translate="true">Source Entity ID</label>
+                <filter>textRange</filter>
+            </settings>
+        </column>
+        <column name="target_url">
+            <settings>
+                <label translate="true">Target URL</label>
+                <filter>text</filter>
+            </settings>
+        </column>
+        <column name="store_id">
+            <settings>
+                <label translate="true">Store</label>
+                <filter>text</filter>
+            </settings>
+        </column>
+        <column name="is_active" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <label translate="true">Active</label>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <options>
+                    <option name="1" xsi:type="array">
+                        <item name="value" xsi:type="number">1</item>
+                        <item name="label" xsi:type="string" translate="true">Yes</item>
+                    </option>
+                    <option name="0" xsi:type="array">
+                        <item name="value" xsi:type="number">0</item>
+                        <item name="label" xsi:type="string" translate="true">No</item>
+                    </option>
+                </options>
+            </settings>
+        </column>
+        <actionsColumn name="actions" class="Panth\AdvancedSEO\Ui\Component\Listing\Column\CustomCanonicalActions">
+            <settings>
+                <indexField>canonical_id</indexField>
+            </settings>
+        </actionsColumn>
+    </columns>
+</listing>

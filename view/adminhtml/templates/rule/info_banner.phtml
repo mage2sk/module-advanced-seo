@@ -1,0 +1,18 @@
+<?php /** @var \Magento\Backend\Block\Template $block */ ?>
+<div style="background:#E8F5E9;border:1px solid #4CAF50;border-radius:4px;padding:15px 20px;margin-bottom:20px;font-size:13px;line-height:1.7;">
+    <strong style="font-size:14px;color:#2E7D32;">How SEO Rules Work</strong>
+    <p style="margin:8px 0 0;">
+        SEO Rules are evaluated <strong>in real-time</strong> on every frontend page load &mdash; no "Apply" action is needed.
+        When a visitor or search engine bot loads a product, category, or CMS page, the rule engine automatically:
+    </p>
+    <ol style="margin:8px 0 0;padding-left:20px;">
+        <li>Loads all <strong>active rules</strong> matching the entity type and store view</li>
+        <li>Evaluates each rule's <strong>conditions</strong> against the current page (e.g., product visibility, category ID, product type)</li>
+        <li>Applies the <strong>first matching rule's actions</strong> &mdash; overriding meta title, description, robots directive, or canonical URL</li>
+        <li>If <strong>"Stop Processing"</strong> is set to Yes, no further rules are checked after a match</li>
+    </ol>
+    <p style="margin:8px 0 0;color:#555;">
+        <strong>Priority:</strong> Lower number = higher priority. Rules are processed from lowest to highest priority number.
+        Results are <strong>cached for 1 hour</strong> for performance. Flush cache to see changes immediately.
+    </p>
+</div>

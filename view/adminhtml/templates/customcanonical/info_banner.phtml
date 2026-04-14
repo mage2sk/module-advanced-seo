@@ -1,0 +1,22 @@
+<?php /** @var \Magento\Backend\Block\Template $block */ ?>
+<div style="background:#FFF3E0;border:1px solid #FF9800;border-radius:4px;padding:15px 20px;margin-bottom:20px;font-size:13px;line-height:1.7;">
+    <strong style="font-size:14px;color:#E65100;">What are Custom Canonicals?</strong>
+    <p style="margin:8px 0 0;">
+        Custom Canonicals let you <strong>override the canonical URL</strong> for any specific product, category, or CMS page.
+        This tells Google which URL is the "official" version when the same content is accessible via multiple URLs.
+    </p>
+
+    <strong style="display:block;margin-top:12px;">When to use:</strong>
+    <ul style="margin:4px 0 0;padding-left:20px;">
+        <li><strong>Duplicate/variant products</strong> &mdash; Point child variants (e.g., "Hoodie - XS - Black") to the parent configurable product URL</li>
+        <li><strong>Multiple URL paths</strong> &mdash; If a product is reachable via <code>/hoodie.html</code> and <code>/gear/bags/hoodie.html</code>, pick one as the canonical</li>
+        <li><strong>Cross-domain</strong> &mdash; Point a product's canonical to another domain (e.g., your main store)</li>
+        <li><strong>Category consolidation</strong> &mdash; Multiple categories showing same products, canonicalize to the main one</li>
+    </ul>
+
+    <strong style="display:block;margin-top:12px;">How it works:</strong>
+    <p style="margin:4px 0 0;">
+        When set, the custom canonical URL overrides Magento's auto-generated canonical in the <code>&lt;link rel="canonical"&gt;</code> tag.
+        This has the <strong>highest priority</strong> in the canonical resolution chain: Custom Canonical &rarr; Rule &rarr; Auto-generated.
+    </p>
+</div>

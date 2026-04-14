@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_seo_rule_form.panth_seo_rule_form_data_source</item>
+        </item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="delete" class="Panth\AdvancedSEO\Block\Adminhtml\GenericDeleteButton"/>
+            <button name="save_and_continue" class="Panth\AdvancedSEO\Block\Adminhtml\GenericSaveAndContinueButton"/>
+            <button name="save" class="Panth\AdvancedSEO\Block\Adminhtml\GenericSaveButton"/>
+            <button name="back" class="Panth\AdvancedSEO\Block\Adminhtml\GenericBackButton"/>
+        </buttons>
+        <namespace>panth_seo_rule_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>panth_seo_rule_form.panth_seo_rule_form_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="panth_seo_rule_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="panth_seo/rule/save"/>
+        </settings>
+        <dataProvider class="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\RuleFormDataProvider" name="panth_seo_rule_form_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>rule_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <fieldset name="general">
+        <settings>
+            <label translate="true">General</label>
+        </settings>
+        <field name="rule_id" formElement="input">
+            <settings>
+                <visible>false</visible>
+                <dataType>text</dataType>
+            </settings>
+        </field>
+        <field name="name" formElement="input" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Rule Name</label>
+                <dataScope>name</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="is_active" formElement="select" sortOrder="20">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Active</label>
+                <dataScope>is_active</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\Config\Model\Config\Source\Yesno"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="entity_type" formElement="select" sortOrder="30">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Apply To</label>
+                <dataScope>entity_type</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="product" xsi:type="array">
+                                <item name="value" xsi:type="string">product</item>
+                                <item name="label" xsi:type="string" translate="true">Products</item>
+                            </option>
+                            <option name="category" xsi:type="array">
+                                <item name="value" xsi:type="string">category</item>
+                                <item name="label" xsi:type="string" translate="true">Categories</item>
+                            </option>
+                            <option name="cms_page" xsi:type="array">
+                                <item name="value" xsi:type="string">cms_page</item>
+                                <item name="label" xsi:type="string" translate="true">CMS Pages</item>
+                            </option>
+                        </options>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="priority" formElement="input" sortOrder="40">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Priority</label>
+                <dataScope>priority</dataScope>
+                <notice translate="true">Lower number = higher priority. Rules are processed in order.</notice>
+                <validation>
+                    <rule name="validate-digits" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="store_id" formElement="select" sortOrder="50">
+            <settings>
+                <dataType>int</dataType>
+                <label translate="true">Store View</label>
+                <dataScope>store_id</dataScope>
+                <notice translate="true">Select "All Store Views" to apply globally, or choose a specific store.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\Cms\Ui\Component\Listing\Column\Cms\Options"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="stop_on_match" formElement="select" sortOrder="60">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Stop Processing</label>
+                <dataScope>stop_on_match</dataScope>
+                <notice translate="true">If Yes, no further rules will be evaluated when this rule matches.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\Config\Model\Config\Source\Yesno"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
+    <fieldset name="conditions">
+        <settings>
+            <label translate="true">Conditions (When to Apply)</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="condition_attribute" formElement="select" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Match Attribute</label>
+                <notice translate="true">Select which product/category attribute to match. Leave empty to apply to all entities.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="none" xsi:type="array">
+                                <item name="value" xsi:type="string"></item>
+                                <item name="label" xsi:type="string" translate="true">-- Apply to All --</item>
+                            </option>
+                            <option name="attribute_set" xsi:type="array">
+                                <item name="value" xsi:type="string">attribute_set_id</item>
+                                <item name="label" xsi:type="string" translate="true">Attribute Set ID</item>
+                            </option>
+                            <option name="category" xsi:type="array">
+                                <item name="value" xsi:type="string">category_ids</item>
+                                <item name="label" xsi:type="string" translate="true">Category IDs (comma-separated)</item>
+                            </option>
+                            <option name="type" xsi:type="array">
+                                <item name="value" xsi:type="string">type_id</item>
+                                <item name="label" xsi:type="string" translate="true">Product Type</item>
+                            </option>
+                            <option name="visibility" xsi:type="array">
+                                <item name="value" xsi:type="string">visibility</item>
+                                <item name="label" xsi:type="string" translate="true">Visibility</item>
+                            </option>
+                            <option name="store" xsi:type="array">
+                                <item name="value" xsi:type="string">store_id</item>
+                                <item name="label" xsi:type="string" translate="true">Store View ID</item>
+                            </option>
+                        </options>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="condition_value" formElement="input" sortOrder="20">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Match Value</label>
+                <dataScope>condition_value</dataScope>
+                <notice translate="true">Enter the value to match (e.g., attribute set ID, category IDs comma-separated, product type like "simple", "configurable").</notice>
+            </settings>
+        </field>
+        <field name="conditions_serialized" formElement="input" sortOrder="30">
+            <settings>
+                <visible>false</visible>
+                <dataType>text</dataType>
+                <dataScope>conditions_serialized</dataScope>
+            </settings>
+        </field>
+    </fieldset>
+    <fieldset name="actions">
+        <settings>
+            <label translate="true">SEO Actions (What to Apply)</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="action_noindex" formElement="select" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Set Robots</label>
+                <notice translate="true">Override the robots meta tag for matching entities.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="none" xsi:type="array">
+                                <item name="value" xsi:type="string"></item>
+                                <item name="label" xsi:type="string" translate="true">-- No Change --</item>
+                            </option>
+                            <option name="noindex" xsi:type="array">
+                                <item name="value" xsi:type="string">noindex,follow</item>
+                                <item name="label" xsi:type="string" translate="true">NOINDEX, FOLLOW</item>
+                            </option>
+                            <option name="nofollow" xsi:type="array">
+                                <item name="value" xsi:type="string">index,nofollow</item>
+                                <item name="label" xsi:type="string" translate="true">INDEX, NOFOLLOW</item>
+                            </option>
+                            <option name="none2" xsi:type="array">
+                                <item name="value" xsi:type="string">noindex,nofollow</item>
+                                <item name="label" xsi:type="string" translate="true">NOINDEX, NOFOLLOW</item>
+                            </option>
+                        </options>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="action_title_template" formElement="input" sortOrder="20">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Meta Title Template</label>
+                <notice translate="true">Override meta title for matching entities. Use tokens: {{name}}, {{sku}}, {{price}}, {{category}}, {{store}}, {{brand}}. Leave empty for no change.</notice>
+            </settings>
+        </field>
+        <field name="action_description_template" formElement="textarea" sortOrder="30">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Meta Description Template</label>
+                <notice translate="true">Override meta description for matching entities. Same tokens available. Leave empty for no change.</notice>
+            </settings>
+        </field>
+        <field name="action_canonical" formElement="input" sortOrder="40">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Canonical URL Override</label>
+                <notice translate="true">Force a specific canonical URL for matching entities. Leave empty for no change.</notice>
+            </settings>
+        </field>
+        <field name="actions_serialized" formElement="input" sortOrder="50">
+            <settings>
+                <visible>false</visible>
+                <dataType>text</dataType>
+                <dataScope>actions_serialized</dataScope>
+            </settings>
+        </field>
+    </fieldset>
+
+    <!-- ========== How Rules Work ========== -->
+    <htmlContent name="rule_instructions" sortOrder="60">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="label" xsi:type="string" translate="true">How This Rule Works</item>
+                <item name="collapsible" xsi:type="boolean">true</item>
+                <item name="opened" xsi:type="boolean">false</item>
+            </item>
+        </argument>
+        <block class="Panth\AdvancedSEO\Block\Adminhtml\Template\Edit\VariablesReference" name="panth_seo_rule_instructions" template="Panth_AdvancedSEO::rule/form_instructions.phtml"/>
+    </htmlContent>
+</form>

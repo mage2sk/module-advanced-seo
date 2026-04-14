@@ -1,0 +1,165 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <!-- Group header under Panth Infotech -->
+        <add id="Panth_AdvancedSEO::root"
+             title="Advanced SEO"
+             module="Panth_AdvancedSEO"
+             parent="Panth_Core::panth_extensions"
+             sortOrder="15"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::seo_dashboard"
+             title="SEO Dashboard"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="10"
+             action="panth_seo/dashboard/index"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::templates"
+             title="Meta Templates"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="20"
+             action="panth_seo/template/index"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::rules"
+             title="SEO Rules"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="25"
+             action="panth_seo/rule/index"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::bulkeditor"
+             title="Bulk Meta Editor"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="30"
+             action="panth_seo/bulkeditor/index"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::redirects"
+             title="Redirects &amp; 404s"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="35"
+             action="panth_seo/redirect/index"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::custom_canonical"
+             title="Custom Canonicals"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="40"
+             action="panth_seo/customcanonical/index"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::crosslinks"
+             title="Cross-Links"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="45"
+             action="panth_seo/crosslink/index"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::filter_rewrites"
+             title="Filter URL Rewrites"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="50"
+             action="panth_seo/filterrewrite/index"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::filter_meta"
+             title="Filter Page Meta"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="52"
+             action="panth_seo/filtermeta/index"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::hreflang"
+             title="Hreflang"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="55"
+             action="panth_seo/hreflang/index"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::sitemap"
+             title="Sitemaps"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="60"
+             action="panth_seo/sitemap/index"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::feeds"
+             title="Product Feeds"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="62"
+             action="panth_seo/feed/index"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::missing_meta"
+             title="Missing Meta Report"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="70"
+             action="panth_seo/report/missingMeta"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::audit"
+             title="SEO Audit"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="75"
+             action="panth_seo/audit/index"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::crawl_results"
+             title="Crawl Results"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="77"
+             action="panth_seo/audit/crawlResults"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::ai_jobs"
+             title="AI Generation Jobs"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="80"
+             action="panth_seo/aisettings/jobs"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::ai_prompts"
+             title="AI Prompts"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="82"
+             action="panth_seo/aiprompt/index"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::ai_knowledge"
+             title="AI Knowledge Base"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="84"
+             action="panth_seo/aiknowledge/index"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::config"
+             title="Configuration"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="100"
+             action="adminhtml/system_config/edit/section/panth_seo"
+             resource="Panth_AdvancedSEO::manage"/>
+    </menu>
+</config>

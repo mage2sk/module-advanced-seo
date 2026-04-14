@@ -1,0 +1,22 @@
+<?php
+/** @var \Magento\Framework\View\Element\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+/** @var \Panth\AdvancedSEO\ViewModel\OpenGraph $viewModel */
+
+$viewModel = $block->getData('view_model');
+if (!$viewModel || !$viewModel->isEnabled()) {
+    return;
+}
+
+$tags = $viewModel->getTags();
+if ($tags === []) {
+    return;
+}
+foreach ($tags as $property => $content) {
+    $content = trim((string) $content);
+    if ($content === '') {
+        continue;
+    }
+    echo '<meta property="' . $escaper->escapeHtml($property) . '" content="' . $escaper->escapeHtmlAttr($content) . '" />' . "\n";
+}
+?>

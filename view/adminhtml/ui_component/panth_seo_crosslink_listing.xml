@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_seo_crosslink_listing.panth_seo_crosslink_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <spinner>panth_seo_crosslink_listing_columns</spinner>
+        <deps>
+            <dep>panth_seo_crosslink_listing.panth_seo_crosslink_listing_data_source</dep>
+        </deps>
+        <buttons>
+            <button name="add">
+                <url path="*/*/edit"/>
+                <class>primary</class>
+                <label translate="true">Add New Crosslink</label>
+            </button>
+        </buttons>
+    </settings>
+    <dataSource name="panth_seo_crosslink_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">crosslink_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider" name="panth_seo_crosslink_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>crosslink_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <listingToolbar name="listing_top">
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filters name="listing_filters"/>
+        <paging name="listing_paging"/>
+        <massaction name="listing_massaction" component="Magento_Ui/js/grid/tree-massactions">
+            <action name="delete">
+                <settings>
+                    <url path="panth_seo/crosslink/massDelete"/>
+                    <type>delete</type>
+                    <label translate="true">Delete</label>
+                    <confirm>
+                        <title translate="true">Delete Crosslinks</title>
+                        <message translate="true">Are you sure you want to delete the selected crosslinks?</message>
+                    </confirm>
+                </settings>
+            </action>
+            <action name="enable">
+                <settings>
+                    <url path="panth_seo/crosslink/massStatus/status/1"/>
+                    <type>enable</type>
+                    <label translate="true">Enable</label>
+                </settings>
+            </action>
+            <action name="disable">
+                <settings>
+                    <url path="panth_seo/crosslink/massStatus/status/0"/>
+                    <type>disable</type>
+                    <label translate="true">Disable</label>
+                </settings>
+            </action>
+        </massaction>
+    </listingToolbar>
+    <columns name="panth_seo_crosslink_listing_columns">
+        <selectionsColumn name="ids">
+            <settings>
+                <indexField>crosslink_id</indexField>
+            </settings>
+        </selectionsColumn>
+        <column name="crosslink_id">
+            <settings>
+                <label translate="true">ID</label>
+                <sorting>asc</sorting>
+                <filter>textRange</filter>
+            </settings>
+        </column>
+        <column name="keyword">
+            <settings>
+                <label translate="true">Keyword</label>
+                <filter>text</filter>
+            </settings>
+        </column>
+        <column name="reference_type" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <label translate="true">Ref Type</label>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <options class="Panth\AdvancedSEO\Model\Config\Source\CrosslinkReferenceType"/>
+            </settings>
+        </column>
+        <column name="url">
+            <settings>
+                <label translate="true">URL</label>
+                <filter>text</filter>
+            </settings>
+        </column>
+        <column name="url_title">
+            <settings>
+                <label translate="true">URL Title</label>
+                <filter>text</filter>
+            </settings>
+        </column>
+        <column name="max_replacements">
+            <settings>
+                <label translate="true">Max Replacements</label>
+                <filter>textRange</filter>
+            </settings>
+        </column>
+        <column name="nofollow" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <label translate="true">Nofollow</label>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <options class="Magento\Config\Model\Config\Source\Yesno"/>
+            </settings>
+        </column>
+        <column name="priority">
+            <settings>
+                <label translate="true">Priority</label>
+                <filter>textRange</filter>
+            </settings>
+        </column>
+        <column name="is_active" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <label translate="true">Active</label>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <options class="Magento\Config\Model\Config\Source\Yesno"/>
+            </settings>
+        </column>
+        <column name="in_product" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <label translate="true">Product</label>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <options class="Magento\Config\Model\Config\Source\Yesno"/>
+            </settings>
+        </column>
+        <column name="in_category" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <label translate="true">Category</label>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <options class="Magento\Config\Model\Config\Source\Yesno"/>
+            </settings>
+        </column>
+        <column name="in_cms" component="Magento_Ui/js/grid/columns/select">
+            <settings>
+                <label translate="true">CMS</label>
+                <filter>select</filter>
+                <dataType>select</dataType>
+                <options class="Magento\Config\Model\Config\Source\Yesno"/>
+            </settings>
+        </column>
+        <column name="store_id" class="Magento\Store\Ui\Component\Listing\Column\Store">
+            <settings>
+                <label translate="true">Store View</label>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+                <sortable>false</sortable>
+            </settings>
+        </column>
+        <column name="active_from" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date">
+            <settings>
+                <label translate="true">Active From</label>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <visible>true</visible>
+            </settings>
+        </column>
+        <column name="active_to" class="Magento\Ui\Component\Listing\Columns\Date" component="Magento_Ui/js/grid/columns/date">
+            <settings>
+                <label translate="true">Active To</label>
+                <filter>dateRange</filter>
+                <dataType>date</dataType>
+                <visible>true</visible>
+            </settings>
+        </column>
+        <actionsColumn name="actions" class="Panth\AdvancedSEO\Ui\Component\Listing\Column\CrosslinkActions">
+            <settings>
+                <indexField>crosslink_id</indexField>
+            </settings>
+        </actionsColumn>
+    </columns>
+</listing>

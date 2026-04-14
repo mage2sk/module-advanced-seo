@@ -1,0 +1,655 @@
+{
+    "panth_seo_template": {
+        "column": {
+            "template_id": true,
+            "store_id": true,
+            "entity_type": true,
+            "scope": true,
+            "name": true,
+            "meta_title": true,
+            "meta_description": true,
+            "meta_keywords": true,
+            "og_title": true,
+            "og_description": true,
+            "og_image": true,
+            "twitter_card": true,
+            "robots": true,
+            "priority": true,
+            "is_active": true,
+            "conditions_serialized": true,
+            "url_key_template": true,
+            "created_at": true,
+            "updated_at": true,
+            "is_cron_enabled": true,
+            "last_applied_at": true,
+            "apply_count": true,
+            "seo_name": true
+        },
+        "index": {
+            "PANTH_SEO_TEMPLATE_IDX_STORE_ENTITY": true,
+            "PANTH_SEO_TEMPLATE_STORE_ID_ENTITY_TYPE_SCOPE_IS_ACTIVE": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_TEMPLATE_STORE_ID_STORE_STORE_ID": true
+        }
+    },
+    "panth_seo_override": {
+        "column": {
+            "override_id": true,
+            "store_id": true,
+            "entity_type": true,
+            "entity_id": true,
+            "meta_title": true,
+            "meta_description": true,
+            "meta_keywords": true,
+            "canonical_url": true,
+            "robots": true,
+            "ai_generated": true,
+            "ai_approved": true,
+            "created_at": true,
+            "updated_at": true,
+            "hreflang_identifier": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_OVERRIDE_UNQ_STORE_ENTITY": true,
+            "PANTH_SEO_OVERRIDE_STORE_ID_STORE_STORE_ID": true,
+            "PANTH_SEO_OVERRIDE_STORE_ID_ENTITY_TYPE_ENTITY_ID": true
+        }
+    },
+    "panth_seo_resolved": {
+        "column": {
+            "resolved_id": true,
+            "store_id": true,
+            "entity_type": true,
+            "entity_id": true,
+            "meta_title": true,
+            "meta_description": true,
+            "meta_keywords": true,
+            "canonical_url": true,
+            "robots": true,
+            "og_payload": true,
+            "jsonld_payload": true,
+            "hreflang_payload": true,
+            "source": true,
+            "updated_at": true
+        },
+        "index": {
+            "PANTH_SEO_RESOLVED_IDX_TYPE_ID": true,
+            "PANTH_SEO_RESOLVED_ENTITY_TYPE_ENTITY_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_RESOLVED_UNQ_STORE_ENTITY": true,
+            "PANTH_SEO_RESOLVED_STORE_ID_ENTITY_TYPE_ENTITY_ID": true
+        }
+    },
+    "panth_seo_redirect": {
+        "column": {
+            "redirect_id": true,
+            "store_id": true,
+            "match_type": true,
+            "pattern": true,
+            "target": true,
+            "status_code": true,
+            "priority": true,
+            "is_active": true,
+            "hit_count": true,
+            "last_hit_at": true,
+            "start_at": true,
+            "finish_at": true,
+            "created_at": true,
+            "updated_at": true,
+            "is_auto_generated": true
+        },
+        "index": {
+            "PANTH_SEO_REDIRECT_IDX_STORE_ACTIVE": true,
+            "PANTH_SEO_REDIRECT_IDX_PATTERN": true,
+            "PANTH_SEO_REDIRECT_STORE_ID_IS_ACTIVE_PRIORITY": true,
+            "PANTH_SEO_REDIRECT_PATTERN": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_REDIRECT_STORE_ID_STORE_STORE_ID": true
+        }
+    },
+    "panth_seo_404_log": {
+        "column": {
+            "log_id": true,
+            "store_id": true,
+            "request_path": true,
+            "path_hash": true,
+            "referer": true,
+            "hit_count": true,
+            "cluster_key": true,
+            "first_seen_at": true,
+            "last_seen_at": true
+        },
+        "index": {
+            "PANTH_SEO_404_LOG_IDX_CLUSTER": true,
+            "PANTH_SEO_404_LOG_CLUSTER_KEY": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_404_LOG_UNQ_STORE_HASH": true,
+            "PANTH_SEO_404_LOG_STORE_ID_PATH_HASH": true
+        }
+    },
+    "panth_seo_404_cluster": {
+        "column": {
+            "cluster_id": true,
+            "store_id": true,
+            "pattern": true,
+            "hits": true,
+            "sample_url": true,
+            "created_at": true
+        },
+        "index": {
+            "PANTH_SEO_404_CLUSTER_IDX_STORE_HITS": true,
+            "PANTH_SEO_404_CLUSTER_STORE_ID_HITS": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_404_CLUSTER_STORE_ID_STORE_STORE_ID": true
+        }
+    },
+    "panth_seo_hreflang_group": {
+        "column": {
+            "group_id": true,
+            "code": true,
+            "entity_type": true,
+            "notes": true,
+            "is_active": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_HREFLANG_GROUP_UNQ_CODE": true,
+            "PANTH_SEO_HREFLANG_GROUP_CODE": true
+        }
+    },
+    "panth_seo_hreflang_member": {
+        "column": {
+            "member_id": true,
+            "group_id": true,
+            "store_id": true,
+            "entity_type": true,
+            "entity_id": true,
+            "locale": true,
+            "url": true,
+            "is_default": true
+        },
+        "index": {
+            "PANTH_SEO_HREFLANG_MEMBER_IDX_ENTITY": true,
+            "PANTH_SEO_HREFLANG_MEMBER_ENTITY_TYPE_ENTITY_ID_STORE_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_HREFLANG_MEMBER_GROUP_ID": true,
+            "PANTH_SEO_HREFLANG_MEMBER_STORE_ID": true,
+            "FK_8F8BE92625275A3FF846B48150CC8F20": true,
+            "PANTH_SEO_HREFLANG_MEMBER_STORE_ID_STORE_STORE_ID": true
+        }
+    },
+    "panth_seo_rule": {
+        "column": {
+            "rule_id": true,
+            "name": true,
+            "entity_type": true,
+            "store_id": true,
+            "priority": true,
+            "is_active": true,
+            "stop_on_match": true,
+            "conditions_serialized": true,
+            "actions_serialized": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "PANTH_SEO_RULE_IDX_STORE_ACTIVE": true,
+            "PANTH_SEO_RULE_STORE_ID_IS_ACTIVE_PRIORITY": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_RULE_STORE_ID_STORE_STORE_ID": true
+        }
+    },
+    "panth_seo_score": {
+        "column": {
+            "score_id": true,
+            "store_id": true,
+            "entity_type": true,
+            "entity_id": true,
+            "score": true,
+            "grade": true,
+            "breakdown": true,
+            "issues": true,
+            "computed_at": true
+        },
+        "index": {
+            "PANTH_SEO_SCORE_IDX_GRADE": true,
+            "PANTH_SEO_SCORE_GRADE": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_SCORE_UNQ_STORE_ENTITY": true,
+            "PANTH_SEO_SCORE_STORE_ID_ENTITY_TYPE_ENTITY_ID": true
+        }
+    },
+    "panth_seo_meta_embedding": {
+        "column": {
+            "embedding_id": true,
+            "store_id": true,
+            "entity_type": true,
+            "entity_id": true,
+            "field": true,
+            "hash": true,
+            "vector": true,
+            "dimensions": true,
+            "created_at": true
+        },
+        "index": {
+            "PANTH_SEO_EMBED_IDX_HASH": true,
+            "PANTH_SEO_META_EMBEDDING_HASH": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_EMBED_UNQ_STORE_ENTITY_FIELD": true,
+            "PANTH_SEO_META_EMBEDDING_STORE_ID_ENTITY_TYPE_ENTITY_ID_FIELD": true
+        }
+    },
+    "panth_seo_generation_job": {
+        "column": {
+            "job_id": true,
+            "uuid": true,
+            "store_id": true,
+            "entity_type": true,
+            "total": true,
+            "processed": true,
+            "failed": true,
+            "status": true,
+            "provider": true,
+            "tokens_used": true,
+            "options": true,
+            "error_message": true,
+            "created_by": true,
+            "created_at": true,
+            "updated_at": true,
+            "prompt_id": true
+        },
+        "index": {
+            "PANTH_SEO_GENERATION_JOB_IDX_STATUS": true,
+            "PANTH_SEO_GENERATION_JOB_STATUS": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_GENERATION_JOB_UNQ_UUID": true,
+            "PANTH_SEO_GENERATION_JOB_UUID": true
+        }
+    },
+    "panth_seo_robots_policy": {
+        "column": {
+            "policy_id": true,
+            "store_id": true,
+            "user_agent": true,
+            "directive": true,
+            "path": true,
+            "priority": true,
+            "is_active": true,
+            "updated_at": true
+        },
+        "index": {
+            "PANTH_SEO_ROBOTS_POLICY_IDX_STORE_UA": true,
+            "PANTH_SEO_ROBOTS_POLICY_STORE_ID_USER_AGENT": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_ROBOTS_POLICY_STORE_ID": true,
+            "PANTH_SEO_ROBOTS_POLICY_STORE_ID_STORE_STORE_ID": true
+        }
+    },
+    "panth_seo_ai_usage": {
+        "column": {
+            "usage_id": true,
+            "provider": true,
+            "model": true,
+            "prompt_tokens": true,
+            "completion_tokens": true,
+            "total_tokens": true,
+            "cost_usd": true,
+            "job_id": true,
+            "period": true,
+            "created_at": true
+        },
+        "index": {
+            "PANTH_SEO_AI_USAGE_IDX_PERIOD": true,
+            "PANTH_SEO_AI_USAGE_IDX_JOB": true,
+            "PANTH_SEO_AI_USAGE_PERIOD": true,
+            "PANTH_SEO_AI_USAGE_JOB_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "panth_seo_ai_cache": {
+        "column": {
+            "cache_id": true,
+            "cache_key": true,
+            "provider": true,
+            "response": true,
+            "tokens": true,
+            "expires_at": true,
+            "created_at": true
+        },
+        "index": {
+            "PANTH_SEO_AI_CACHE_IDX_EXPIRES": true,
+            "PANTH_SEO_AI_CACHE_EXPIRES_AT": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_AI_CACHE_UNQ_KEY": true,
+            "PANTH_SEO_AI_CACHE_CACHE_KEY": true
+        }
+    },
+    "panth_seo_duplicate": {
+        "column": {
+            "duplicate_id": true,
+            "store_id": true,
+            "field": true,
+            "hash": true,
+            "count": true,
+            "sample_entities": true,
+            "detected_at": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_DUPLICATE_UNQ_STORE_FIELD_HASH": true,
+            "PANTH_SEO_DUPLICATE_STORE_ID_FIELD_HASH": true
+        }
+    },
+    "panth_seo_filter_rewrite": {
+        "column": {
+            "rewrite_id": true,
+            "attribute_code": true,
+            "option_id": true,
+            "option_label": true,
+            "rewrite_slug": true,
+            "store_id": true,
+            "is_active": true
+        },
+        "index": {
+            "PANTH_SEO_FILTER_REWRITE_IDX_STORE": true,
+            "PANTH_SEO_FILTER_REWRITE_STORE_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_FILTER_REWRITE_UNQ": true,
+            "PANTH_SEO_FILTER_REWRITE_ATTRIBUTE_CODE_OPTION_ID_STORE_ID": true
+        }
+    },
+    "panth_seo_custom_canonical": {
+        "column": {
+            "canonical_id": true,
+            "source_entity_type": true,
+            "source_entity_id": true,
+            "target_url": true,
+            "target_entity_type": true,
+            "target_entity_id": true,
+            "store_id": true,
+            "is_active": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_CUSTOM_CANONICAL_UNQ": true,
+            "UNQ_DADFD36F5F7EAACBDC18CDACCEDFC0B0": true
+        }
+    },
+    "panth_seo_category_filter_meta": {
+        "column": {
+            "id": true,
+            "category_id": true,
+            "attribute_code": true,
+            "option_id": true,
+            "store_id": true,
+            "meta_title": true,
+            "meta_description": true,
+            "meta_keywords": true,
+            "breadcrumbs_priority": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_CAT_FILTER_META_UNQ": true,
+            "PANTH_SEO_CTGR_FILTER_META_CTGR_ID_ATTR_CODE_OPT_ID_STORE_ID": true
+        }
+    },
+    "panth_seo_crosslink": {
+        "column": {
+            "crosslink_id": true,
+            "keyword": true,
+            "url": true,
+            "url_title": true,
+            "max_replacements": true,
+            "nofollow": true,
+            "priority": true,
+            "is_active": true,
+            "in_product": true,
+            "in_category": true,
+            "in_cms": true,
+            "store_id": true,
+            "created_at": true,
+            "active_from": true,
+            "active_to": true,
+            "reference_type": true,
+            "reference_value": true
+        },
+        "index": {
+            "PANTH_SEO_CROSSLINK_IDX_ACTIVE_STORE": true,
+            "PANTH_SEO_CROSSLINK_IS_ACTIVE_STORE_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "panth_seo_crawl_result": {
+        "column": {
+            "id": true,
+            "store_id": true,
+            "url": true,
+            "status_code": true,
+            "meta_title": true,
+            "meta_description": true,
+            "canonical": true,
+            "robots": true,
+            "issues_json": true,
+            "crawled_at": true,
+            "job_id": true
+        },
+        "index": {
+            "PANTH_SEO_CRAWL_RESULT_IDX_STORE": true,
+            "PANTH_SEO_CRAWL_RESULT_IDX_JOB": true,
+            "PANTH_SEO_CRAWL_RESULT_IDX_STATUS": true,
+            "PANTH_SEO_CRAWL_RESULT_STORE_ID": true,
+            "PANTH_SEO_CRAWL_RESULT_JOB_ID": true,
+            "PANTH_SEO_CRAWL_RESULT_STATUS_CODE": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_CRAWL_RESULT_STORE_ID_STORE_STORE_ID": true
+        }
+    },
+    "panth_seo_related": {
+        "column": {
+            "related_id": true,
+            "source_type": true,
+            "source_id": true,
+            "target_type": true,
+            "target_id": true,
+            "score": true,
+            "store_id": true,
+            "updated_at": true
+        },
+        "index": {
+            "PANTH_SEO_RELATED_IDX_SOURCE": true,
+            "PANTH_SEO_RELATED_IDX_TARGET": true,
+            "PANTH_SEO_RELATED_SOURCE_TYPE_SOURCE_ID_STORE_ID": true,
+            "PANTH_SEO_RELATED_TARGET_TYPE_TARGET_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "panth_seo_ai_knowledge": {
+        "column": {
+            "knowledge_id": true,
+            "category": true,
+            "subcategory": true,
+            "title": true,
+            "content": true,
+            "tags": true,
+            "is_active": true,
+            "sort_order": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "PANTH_SEO_AI_KNOWLEDGE_IDX_CATEGORY_ACTIVE": true,
+            "PANTH_SEO_AI_KNOWLEDGE_IDX_SUBCATEGORY": true,
+            "PANTH_SEO_AI_KNOWLEDGE_IDX_SORT": true,
+            "PANTH_SEO_AI_KNOWLEDGE_CATEGORY_IS_ACTIVE": true,
+            "PANTH_SEO_AI_KNOWLEDGE_SUBCATEGORY": true,
+            "PANTH_SEO_AI_KNOWLEDGE_SORT_ORDER": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "panth_seo_feed_profile": {
+        "column": {
+            "feed_id": true,
+            "name": true,
+            "feed_type": true,
+            "store_id": true,
+            "filename": true,
+            "output_format": true,
+            "is_active": true,
+            "field_mapping": true,
+            "conditions_serialized": true,
+            "include_out_of_stock": true,
+            "include_disabled": true,
+            "include_not_visible": true,
+            "category_filter": true,
+            "attribute_set_filter": true,
+            "delivery_country": true,
+            "currency": true,
+            "cron_enabled": true,
+            "cron_schedule": true,
+            "last_generated_at": true,
+            "generation_time": true,
+            "product_count": true,
+            "file_size": true,
+            "file_url": true,
+            "delivery_enabled": true,
+            "delivery_type": true,
+            "delivery_host": true,
+            "delivery_user": true,
+            "delivery_password": true,
+            "delivery_path": true,
+            "delivery_passive_mode": true,
+            "utm_source": true,
+            "utm_medium": true,
+            "utm_campaign": true,
+            "compress": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "PANTH_SEO_FEED_PROFILE_STORE_ID": true,
+            "PANTH_SEO_FEED_PROFILE_IS_ACTIVE": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "panth_seo_feed_field": {
+        "column": {
+            "field_id": true,
+            "feed_id": true,
+            "feed_field": true,
+            "source_type": true,
+            "source_value": true,
+            "default_value": true,
+            "sort_order": true,
+            "is_required": true
+        },
+        "index": {
+            "PANTH_SEO_FEED_FIELD_FEED_ID": true,
+            "PANTH_SEO_FEED_FIELD_SORT_ORDER": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_FEED_FIELD_FEED_ID_PANTH_SEO_FEED_PROFILE_FEED_ID": true
+        }
+    },
+    "panth_seo_sitemap_profile": {
+        "column": {
+            "profile_id": true,
+            "name": true,
+            "store_id": true,
+            "entity_types": true,
+            "include_images": true,
+            "include_video": true,
+            "include_hreflang": true,
+            "max_urls_per_file": true,
+            "changefreq_product": true,
+            "changefreq_category": true,
+            "changefreq_cms": true,
+            "priority_product": true,
+            "priority_category": true,
+            "priority_cms": true,
+            "priority_homepage": true,
+            "exclude_out_of_stock": true,
+            "exclude_noindex": true,
+            "custom_links": true,
+            "output_path": true,
+            "last_generated_at": true,
+            "generation_time": true,
+            "url_count": true,
+            "file_count": true,
+            "is_active": true,
+            "cron_enabled": true,
+            "cron_schedule": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "PANTH_SEO_SITEMAP_PROFILE_IS_ACTIVE": true,
+            "PANTH_SEO_SITEMAP_PROFILE_STORE_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "PANTH_SEO_SITEMAP_PROFILE_STORE_ID_STORE_STORE_ID": true
+        }
+    },
+    "panth_seo_ai_prompt": {
+        "column": {
+            "prompt_id": true,
+            "name": true,
+            "entity_type": true,
+            "prompt_template": true,
+            "is_default": true,
+            "is_active": true,
+            "sort_order": true,
+            "created_at": true,
+            "updated_at": true
+        },
+        "index": {
+            "PANTH_SEO_AI_PROMPT_ENTITY_TYPE_IS_ACTIVE": true,
+            "PANTH_SEO_AI_PROMPT_IS_DEFAULT": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}

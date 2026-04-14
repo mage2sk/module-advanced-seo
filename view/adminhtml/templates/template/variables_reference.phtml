@@ -1,0 +1,98 @@
+<?php /** @var \Panth\AdvancedSEO\Block\Adminhtml\Template\Edit\VariablesReference $block */ ?>
+<div style="padding:15px;background:#f8f8f8;border:1px solid #ddd;border-radius:4px;font-size:13px;line-height:1.8;">
+    <h3 style="margin:0 0 10px;font-size:15px;font-weight:bold;">Entity Tokens (Product / Category / CMS)</h3>
+    <table style="width:100%;border-collapse:collapse;">
+        <thead>
+            <tr style="background:#e8e8e8;">
+                <th style="text-align:left;padding:6px;border:1px solid #ddd;">Token</th>
+                <th style="text-align:left;padding:6px;border:1px solid #ddd;">Description</th>
+                <th style="text-align:left;padding:6px;border:1px solid #ddd;">Example Output</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{name}}</td><td style="padding:6px;border:1px solid #ddd;">Entity name (product, category, or CMS page title)</td><td style="padding:6px;border:1px solid #ddd;">Joust Duffle Bag</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{seo_name}}</td><td style="padding:6px;border:1px solid #ddd;">SEO Name (custom SEO-friendly name if set on entity)</td><td style="padding:6px;border:1px solid #ddd;">Premium Joust Duffle Bag</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{sku}}</td><td style="padding:6px;border:1px solid #ddd;">Product SKU</td><td style="padding:6px;border:1px solid #ddd;">24-MB01</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{price}}</td><td style="padding:6px;border:1px solid #ddd;">Product price (formatted)</td><td style="padding:6px;border:1px solid #ddd;">$34.00</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{description}}</td><td style="padding:6px;border:1px solid #ddd;">Full product description (HTML stripped)</td><td style="padding:6px;border:1px solid #ddd;">The perfect size for a carry-on...</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{short_description}}</td><td style="padding:6px;border:1px solid #ddd;">Short description (HTML stripped)</td><td style="padding:6px;border:1px solid #ddd;">Lightweight and durable...</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{url_key}}</td><td style="padding:6px;border:1px solid #ddd;">URL key of the entity</td><td style="padding:6px;border:1px solid #ddd;">joust-duffle-bag</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{image}}</td><td style="padding:6px;border:1px solid #ddd;">Product main image URL</td><td style="padding:6px;border:1px solid #ddd;">https://store.com/media/catalog/product/mb01.jpg</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{brand}}</td><td style="padding:6px;border:1px solid #ddd;">Brand / manufacturer name (from configured brand attribute)</td><td style="padding:6px;border:1px solid #ddd;">Nike</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{attribute:color}}</td><td style="padding:6px;border:1px solid #ddd;">Any product attribute by code (resolves option labels for select/multiselect)</td><td style="padding:6px;border:1px solid #ddd;">Blue</td></tr>
+        </tbody>
+    </table>
+
+    <h3 style="margin:15px 0 10px;font-size:15px;font-weight:bold;">Category &amp; Store Tokens</h3>
+    <table style="width:100%;border-collapse:collapse;">
+        <thead>
+            <tr style="background:#e8e8e8;">
+                <th style="text-align:left;padding:6px;border:1px solid #ddd;">Token</th>
+                <th style="text-align:left;padding:6px;border:1px solid #ddd;">Description</th>
+                <th style="text-align:left;padding:6px;border:1px solid #ddd;">Example Output</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{category}}</td><td style="padding:6px;border:1px solid #ddd;">Primary category name (for products: first assigned category with level >= 2)</td><td style="padding:6px;border:1px solid #ddd;">Bags</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{category.name}}</td><td style="padding:6px;border:1px solid #ddd;">Same as {{category}} using dot notation</td><td style="padding:6px;border:1px solid #ddd;">Bags</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{category_seo_name}}</td><td style="padding:6px;border:1px solid #ddd;">Category SEO name (if set)</td><td style="padding:6px;border:1px solid #ddd;">Premium Bags Collection</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{store}}</td><td style="padding:6px;border:1px solid #ddd;">Store name (default argument)</td><td style="padding:6px;border:1px solid #ddd;">Main Website Store</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{store.name}}</td><td style="padding:6px;border:1px solid #ddd;">Store name (dot notation)</td><td style="padding:6px;border:1px solid #ddd;">Main Website Store</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{store.url}}</td><td style="padding:6px;border:1px solid #ddd;">Store base URL</td><td style="padding:6px;border:1px solid #ddd;">https://store.com/</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{store.code}}</td><td style="padding:6px;border:1px solid #ddd;">Store code</td><td style="padding:6px;border:1px solid #ddd;">default</td></tr>
+        </tbody>
+    </table>
+
+    <h3 style="margin:15px 0 10px;font-size:15px;font-weight:bold;">Other Tokens</h3>
+    <table style="width:100%;border-collapse:collapse;">
+        <thead>
+            <tr style="background:#e8e8e8;">
+                <th style="text-align:left;padding:6px;border:1px solid #ddd;">Token</th>
+                <th style="text-align:left;padding:6px;border:1px solid #ddd;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{page}}</td><td style="padding:6px;border:1px solid #ddd;">CMS page title</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{landing}}</td><td style="padding:6px;border:1px solid #ddd;">Landing page title</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{search_query}}</td><td style="padding:6px;border:1px solid #ddd;">Current search query term</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{filter}}</td><td style="padding:6px;border:1px solid #ddd;">Active layered navigation filter labels</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{random}}</td><td style="padding:6px;border:1px solid #ddd;">Random synonym/variation (for uniqueness)</td></tr>
+        </tbody>
+    </table>
+
+    <h3 style="margin:15px 0 10px;font-size:15px;font-weight:bold;">Filters (Modifiers) — use with pipe: {{token|filter}}</h3>
+    <table style="width:100%;border-collapse:collapse;">
+        <thead>
+            <tr style="background:#e8e8e8;">
+                <th style="text-align:left;padding:6px;border:1px solid #ddd;">Filter</th>
+                <th style="text-align:left;padding:6px;border:1px solid #ddd;">Usage</th>
+                <th style="text-align:left;padding:6px;border:1px solid #ddd;">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">truncate:N</td><td style="padding:6px;border:1px solid #ddd;">{{description|truncate:155}}</td><td style="padding:6px;border:1px solid #ddd;">Truncate to N characters with ellipsis</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">upper</td><td style="padding:6px;border:1px solid #ddd;">{{name|upper}}</td><td style="padding:6px;border:1px solid #ddd;">Convert to UPPERCASE</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">lower</td><td style="padding:6px;border:1px solid #ddd;">{{name|lower}}</td><td style="padding:6px;border:1px solid #ddd;">Convert to lowercase</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">title</td><td style="padding:6px;border:1px solid #ddd;">{{name|title}}</td><td style="padding:6px;border:1px solid #ddd;">Convert To Title Case</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">strip</td><td style="padding:6px;border:1px solid #ddd;">{{description|strip}}</td><td style="padding:6px;border:1px solid #ddd;">Strip HTML tags and normalize whitespace</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">default:'text'</td><td style="padding:6px;border:1px solid #ddd;">{{brand|default:'Our Brand'}}</td><td style="padding:6px;border:1px solid #ddd;">Use fallback value if token is empty</td></tr>
+        </tbody>
+    </table>
+
+    <h3 style="margin:15px 0 10px;font-size:15px;font-weight:bold;">Pattern Examples</h3>
+    <table style="width:100%;border-collapse:collapse;">
+        <thead>
+            <tr style="background:#e8e8e8;">
+                <th style="text-align:left;padding:6px;border:1px solid #ddd;">Pattern</th>
+                <th style="text-align:left;padding:6px;border:1px solid #ddd;">Example Output</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{name}} - {{brand|default:'Shop'}} | {{store.name}}</td><td style="padding:6px;border:1px solid #ddd;">Joust Duffle Bag - Nike | My Store</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">Buy {{name}} online. {{short_description|strip|truncate:155}}</td><td style="padding:6px;border:1px solid #ddd;">Buy Joust Duffle Bag online. Lightweight and durable...</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{name}}, {{brand}}, {{category.name}}</td><td style="padding:6px;border:1px solid #ddd;">Joust Duffle Bag, Nike, Bags</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{name}} - {{attribute:color}} | {{price}}</td><td style="padding:6px;border:1px solid #ddd;">Joust Duffle Bag - Blue | $34.00</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-family:monospace;">{{name|upper}} ({{sku}})</td><td style="padding:6px;border:1px solid #ddd;">JOUST DUFFLE BAG (24-MB01)</td></tr>
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,48 @@
+<?php /** @var \Magento\Backend\Block\Template $block */ ?>
+<div style="padding:15px;background:#f8f8f8;border:1px solid #ddd;border-radius:4px;font-size:13px;line-height:1.8;">
+    <h3 style="margin:0 0 10px;font-size:15px;font-weight:bold;">Common Use Cases</h3>
+    <table style="width:100%;border-collapse:collapse;">
+        <thead>
+            <tr style="background:#e8e8e8;">
+                <th style="text-align:left;padding:6px;border:1px solid #ddd;">Scenario</th>
+                <th style="text-align:left;padding:6px;border:1px solid #ddd;">Source</th>
+                <th style="text-align:left;padding:6px;border:1px solid #ddd;">Canonical URL</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="padding:6px;border:1px solid #ddd;"><strong>Child variant to parent</strong><br/>Point simple product to its configurable parent</td>
+                <td style="padding:6px;border:1px solid #ddd;">Product ID: 47<br/>(Hoodie - XS - Black)</td>
+                <td style="padding:6px;border:1px solid #ddd;">https://store.com/chaz-hoodie.html<br/>(parent configurable URL)</td>
+            </tr>
+            <tr>
+                <td style="padding:6px;border:1px solid #ddd;"><strong>Duplicate category URLs</strong><br/>Multiple categories showing same products</td>
+                <td style="padding:6px;border:1px solid #ddd;">Category ID: 15<br/>(Sale &gt; Bags)</td>
+                <td style="padding:6px;border:1px solid #ddd;">https://store.com/gear/bags.html<br/>(main Bags category)</td>
+            </tr>
+            <tr>
+                <td style="padding:6px;border:1px solid #ddd;"><strong>Cross-domain canonical</strong><br/>Content duplicated across domains</td>
+                <td style="padding:6px;border:1px solid #ddd;">CMS Page ID: 5<br/>(About Us)</td>
+                <td style="padding:6px;border:1px solid #ddd;">https://main-store.com/about-us</td>
+            </tr>
+            <tr>
+                <td style="padding:6px;border:1px solid #ddd;"><strong>Filtered page to main</strong><br/>Prevent filtered URLs from being indexed separately</td>
+                <td style="padding:6px;border:1px solid #ddd;">Category ID: 4<br/>(Bags with filters)</td>
+                <td style="padding:6px;border:1px solid #ddd;">https://store.com/gear/bags.html<br/>(clean, unfiltered URL)</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3 style="margin:15px 0 8px;font-size:14px;font-weight:bold;">How to find Entity IDs</h3>
+    <ul style="margin:0;padding-left:20px;">
+        <li><strong>Product ID:</strong> Go to Catalog &gt; Products, click Edit on a product &mdash; the ID is in the URL: <code>/id/<strong>47</strong>/</code></li>
+        <li><strong>Category ID:</strong> Go to Catalog &gt; Categories, click a category &mdash; shown as <code>Category (ID: <strong>4</strong>)</code> in the heading</li>
+        <li><strong>CMS Page ID:</strong> Go to Content &gt; Pages, click Edit &mdash; the ID is in the URL: <code>/page_id/<strong>5</strong>/</code></li>
+    </ul>
+
+    <h3 style="margin:15px 0 8px;font-size:14px;font-weight:bold;">Priority</h3>
+    <p style="margin:0;">
+        Custom Canonicals have the <strong>highest priority</strong> in the canonical resolution chain:<br/>
+        <strong>Custom Canonical</strong> &rarr; SEO Rule &rarr; Template &rarr; Magento auto-generated canonical
+    </p>
+</div>

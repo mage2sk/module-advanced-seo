@@ -1,0 +1,337 @@
+<?php
+/** @var \Panth\AdvancedSEO\Block\Adminhtml\Dashboard $block */
+
+$catalog  = $block->getCatalogOverview();
+$stats    = $block->getModuleStats();
+$recent   = $block->getRecent404s(10);
+$actions  = $block->getQuickActions();
+$aiStats  = $block->getAiGenerationStats();
+$smFeed   = $block->getSitemapFeedStats();
+
+// Use the higher of missing title/desc as the "missing meta" count
+$prodMissing = max((int) $catalog['products_missing_title'], (int) $catalog['products_missing_desc']);
+$prodPct = $block->pct($prodMissing, (int) $catalog['total_products']);
+$catMissing = max((int) $catalog['categories_missing_title'], (int) $catalog['categories_missing_desc']);
+$catPct = $block->pct($catMissing, (int) $catalog['total_categories']);
+?>
+
+<style>
+/* === Panth SEO Dashboard === */
+.panth-dashboard { max-width: 1400px; margin: 0 auto; padding: 20px 0; font-family: 'Open Sans', Arial, Helvetica, sans-serif; }
+.panth-dashboard h2 { font-size: 18px; font-weight: 600; color: #303030; margin: 0 0 16px 0; padding: 0; border-bottom: 2px solid #e0e0e0; padding-bottom: 8px; }
+.panth-dashboard h3 { font-size: 14px; font-weight: 600; color: #41362f; margin: 0 0 12px 0; }
+
+/* Section spacing */
+.panth-section { margin-bottom: 32px; }
+
+/* Card grid */
+.panth-grid { display: flex; flex-wrap: wrap; gap: 16px; }
+.panth-card {
+    flex: 1 1 200px;
+    max-width: 260px;
+    min-width: 180px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 20px;
+    position: relative;
+    transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.panth-card:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-color: #c0c0c0; }
+.panth-card a.panth-card-link {
+    position: absolute; inset: 0; z-index: 1; border-radius: 6px;
+}
+.panth-card a.panth-card-link:focus { outline: 2px solid #007bdb; outline-offset: 2px; }
+.panth-card-value { font-size: 28px; font-weight: 700; line-height: 1.2; margin-bottom: 4px; color: #303030; }
+.panth-card-label { font-size: 13px; color: #666; line-height: 1.4; }
+.panth-card-sub { font-size: 12px; color: #999; margin-top: 4px; }
+
+/* Health-colour left border accents */
+.panth-card--green  { border-left: 4px solid #2e7d32; }
+.panth-card--yellow { border-left: 4px solid #f9a825; }
+.panth-card--red    { border-left: 4px solid #c62828; }
+.panth-card--green  .panth-card-value { color: #2e7d32; }
+.panth-card--yellow .panth-card-value { color: #f9a825; }
+.panth-card--red    .panth-card-value { color: #c62828; }
+
+/* Neutral cards (module stats) */
+.panth-card--neutral { border-left: 4px solid #007bdb; }
+.panth-card--neutral .panth-card-value { color: #007bdb; }
+
+/* AI cards */
+.panth-card--ai { border-left: 4px solid #7b1fa2; }
+.panth-card--ai .panth-card-value { color: #7b1fa2; }
+.panth-card--ai-done  { border-left-color: #2e7d32; }
+.panth-card--ai-done .panth-card-value { color: #2e7d32; }
+.panth-card--ai-fail  { border-left-color: #c62828; }
+.panth-card--ai-fail .panth-card-value { color: #c62828; }
+
+/* Table */
+.panth-table-wrap { overflow-x: auto; }
+.panth-table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+    background: #fff; border: 1px solid #e0e0e0; border-radius: 4px;
+}
+.panth-table thead th {
+    background: #f5f5f5; font-weight: 600; color: #303030;
+    padding: 10px 14px; text-align: left; border-bottom: 2px solid #e0e0e0;
+    white-space: nowrap;
+}
+.panth-table tbody td {
+    padding: 10px 14px; border-bottom: 1px solid #f0f0f0; color: #41362f;
+    vertical-align: top;
+}
+.panth-table tbody tr:last-child td { border-bottom: none; }
+.panth-table tbody tr:hover { background: #fafafa; }
+.panth-table .panth-path { max-width: 600px; word-break: break-all; }
+.panth-table .panth-hits { font-weight: 600; text-align: right; white-space: nowrap; }
+.panth-table .panth-date { white-space: nowrap; color: #888; }
+
+.panth-view-all {
+    display: inline-block; margin-top: 10px; font-size: 13px;
+    color: #007bdb; text-decoration: none; font-weight: 600;
+}
+.panth-view-all:hover { text-decoration: underline; }
+
+/* Quick actions */
+.panth-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.panth-action-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; background: #fff; border: 1px solid #c0c0c0;
+    border-radius: 5px; font-size: 13px; font-weight: 600; color: #303030;
+    text-decoration: none; transition: all 0.15s ease; cursor: pointer;
+}
+.panth-action-btn:hover { background: #007bdb; color: #fff; border-color: #007bdb; }
+.panth-action-btn:focus { outline: 2px solid #007bdb; outline-offset: 2px; }
+
+/* Empty state */
+.panth-empty { padding: 20px; color: #999; font-size: 13px; font-style: italic; }
+
+/* Header row */
+.panth-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.panth-header h1 { font-size: 24px; font-weight: 700; color: #303030; margin: 0; }
+.panth-header-sub { font-size: 13px; color: #999; }
+</style>
+
+<div class="panth-dashboard">
+
+    <!-- ===== Header ===== -->
+    <div class="panth-header">
+        <h1><?= $block->escapeHtml(__('SEO Dashboard')) ?></h1>
+        <span class="panth-header-sub">
+            <?= $block->escapeHtml(__('Panth AdvancedSEO')) ?>
+        </span>
+    </div>
+
+    <!-- ===== 1. SEO Health Summary ===== -->
+    <div class="panth-section">
+        <h2><?= $block->escapeHtml(__('SEO Health Summary')) ?></h2>
+        <div class="panth-grid">
+
+            <!-- Total Products -->
+            <div class="panth-card panth-card--neutral">
+                <div class="panth-card-value"><?= (int) $catalog['total_products'] ?></div>
+                <div class="panth-card-label"><?= $block->escapeHtml(__('Total Products')) ?></div>
+            </div>
+
+            <!-- Products Missing Meta -->
+            <div class="panth-card <?= $block->escapeHtmlAttr($block->healthColor($prodPct)) ?>">
+                <a class="panth-card-link"
+                   href="<?= $block->escapeUrl($block->getUrl('panth_seo/report/missingMeta', ['type' => 'product'])) ?>"
+                   title="<?= $block->escapeHtmlAttr(__('View products missing meta')) ?>"></a>
+                <div class="panth-card-value"><?= (int) $prodMissing ?></div>
+                <div class="panth-card-label"><?= $block->escapeHtml(__('Products Missing Meta')) ?></div>
+                <div class="panth-card-sub"><?= $block->escapeHtml($prodPct . '% of total') ?></div>
+            </div>
+
+            <!-- Total Categories -->
+            <div class="panth-card panth-card--neutral">
+                <div class="panth-card-value"><?= (int) $catalog['total_categories'] ?></div>
+                <div class="panth-card-label"><?= $block->escapeHtml(__('Total Categories')) ?></div>
+            </div>
+
+            <!-- Categories Missing Meta -->
+            <div class="panth-card <?= $block->escapeHtmlAttr($block->healthColor($catPct)) ?>">
+                <a class="panth-card-link"
+                   href="<?= $block->escapeUrl($block->getUrl('panth_seo/report/missingMeta', ['type' => 'category'])) ?>"
+                   title="<?= $block->escapeHtmlAttr(__('View categories missing meta')) ?>"></a>
+                <div class="panth-card-value"><?= (int) $catMissing ?></div>
+                <div class="panth-card-label"><?= $block->escapeHtml(__('Categories Missing Meta')) ?></div>
+                <div class="panth-card-sub"><?= $block->escapeHtml($catPct . '% of total') ?></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== 2. Module Stats ===== -->
+    <div class="panth-section">
+        <h2><?= $block->escapeHtml(__('Module Statistics')) ?></h2>
+        <div class="panth-grid">
+            <div class="panth-card panth-card--neutral">
+                <a class="panth-card-link"
+                   href="<?= $block->escapeUrl($block->getUrl('panth_seo/template/index')) ?>"
+                   title="<?= $block->escapeHtmlAttr(__('Manage Templates')) ?>"></a>
+                <div class="panth-card-value"><?= (int) $stats['templates'] ?></div>
+                <div class="panth-card-label"><?= $block->escapeHtml(__('Active Templates')) ?></div>
+            </div>
+            <div class="panth-card panth-card--neutral">
+                <a class="panth-card-link"
+                   href="<?= $block->escapeUrl($block->getUrl('panth_seo/rule/index')) ?>"
+                   title="<?= $block->escapeHtmlAttr(__('Manage Rules')) ?>"></a>
+                <div class="panth-card-value"><?= (int) $stats['rules'] ?></div>
+                <div class="panth-card-label"><?= $block->escapeHtml(__('Active Rules')) ?></div>
+            </div>
+            <div class="panth-card panth-card--neutral">
+                <a class="panth-card-link"
+                   href="<?= $block->escapeUrl($block->getUrl('panth_seo/redirect/index')) ?>"
+                   title="<?= $block->escapeHtmlAttr(__('Manage Redirects')) ?>"></a>
+                <div class="panth-card-value"><?= (int) $stats['redirects'] ?></div>
+                <div class="panth-card-label"><?= $block->escapeHtml(__('Active Redirects')) ?></div>
+            </div>
+            <div class="panth-card panth-card--neutral">
+                <a class="panth-card-link"
+                   href="<?= $block->escapeUrl($block->getUrl('panth_seo/crosslink/index')) ?>"
+                   title="<?= $block->escapeHtmlAttr(__('Manage Crosslinks')) ?>"></a>
+                <div class="panth-card-value"><?= (int) $stats['crosslinks'] ?></div>
+                <div class="panth-card-label"><?= $block->escapeHtml(__('Active Crosslinks')) ?></div>
+            </div>
+            <div class="panth-card panth-card--neutral">
+                <a class="panth-card-link"
+                   href="<?= $block->escapeUrl($block->getUrl('panth_seo/hreflang/index')) ?>"
+                   title="<?= $block->escapeHtmlAttr(__('Manage Hreflang')) ?>"></a>
+                <div class="panth-card-value"><?= (int) $stats['hreflang_groups'] ?></div>
+                <div class="panth-card-label"><?= $block->escapeHtml(__('Hreflang Groups')) ?></div>
+            </div>
+            <div class="panth-card panth-card--neutral">
+                <a class="panth-card-link"
+                   href="<?= $block->escapeUrl($block->getUrl('panth_seo/filterrewrite/index')) ?>"
+                   title="<?= $block->escapeHtmlAttr(__('Manage Filter Rewrites')) ?>"></a>
+                <div class="panth-card-value"><?= (int) $stats['filter_rewrites'] ?></div>
+                <div class="panth-card-label"><?= $block->escapeHtml(__('Filter URL Rewrites')) ?></div>
+            </div>
+            <div class="panth-card panth-card--neutral">
+                <a class="panth-card-link"
+                   href="<?= $block->escapeUrl($block->getUrl('panth_seo/customcanonical/index')) ?>"
+                   title="<?= $block->escapeHtmlAttr(__('Manage Custom Canonicals')) ?>"></a>
+                <div class="panth-card-value"><?= (int) $stats['custom_canonicals'] ?></div>
+                <div class="panth-card-label"><?= $block->escapeHtml(__('Custom Canonicals')) ?></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 3. AI Generation Status ===== -->
+    <?php if ($aiStats['total'] > 0): ?>
+    <div class="panth-section">
+        <h2><?= $block->escapeHtml(__('AI Generation Status')) ?></h2>
+        <div class="panth-grid">
+            <div class="panth-card panth-card--ai">
+                <a class="panth-card-link"
+                   href="<?= $block->escapeUrl($block->getUrl('panth_seo/aisettings/index')) ?>"
+                   title="<?= $block->escapeHtmlAttr(__('AI Settings')) ?>"></a>
+                <div class="panth-card-value"><?= (int) $aiStats['pending'] + (int) $aiStats['running'] ?></div>
+                <div class="panth-card-label"><?= $block->escapeHtml(__('Pending / Running Jobs')) ?></div>
+            </div>
+            <div class="panth-card panth-card--ai panth-card--ai-done">
+                <a class="panth-card-link"
+                   href="<?= $block->escapeUrl($block->getUrl('panth_seo/aisettings/index')) ?>"
+                   title="<?= $block->escapeHtmlAttr(__('AI Settings')) ?>"></a>
+                <div class="panth-card-value"><?= (int) $aiStats['done'] ?></div>
+                <div class="panth-card-label"><?= $block->escapeHtml(__('Completed Jobs')) ?></div>
+            </div>
+            <div class="panth-card panth-card--ai panth-card--ai-fail">
+                <a class="panth-card-link"
+                   href="<?= $block->escapeUrl($block->getUrl('panth_seo/aisettings/index')) ?>"
+                   title="<?= $block->escapeHtmlAttr(__('AI Settings')) ?>"></a>
+                <div class="panth-card-value"><?= (int) $aiStats['error'] ?></div>
+                <div class="panth-card-label"><?= $block->escapeHtml(__('Failed Jobs')) ?></div>
+            </div>
+            <div class="panth-card panth-card--ai">
+                <div class="panth-card-value"><?= (int) $aiStats['total'] ?></div>
+                <div class="panth-card-label"><?= $block->escapeHtml(__('Total Jobs')) ?></div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
+    <!-- ===== 4. Recent 404s ===== -->
+    <div class="panth-section">
+        <h2>
+            <?= $block->escapeHtml(__('Recent 404 Errors')) ?>
+            <?php if ((int) $stats['recent_404s'] > 0): ?>
+                <span style="font-size: 13px; font-weight: 400; color: #999; margin-left: 8px;">
+                    (<?= (int) $stats['recent_404s'] ?> <?= $block->escapeHtml(__('in the last 7 days')) ?>)
+                </span>
+            <?php endif; ?>
+        </h2>
+
+        <?php if (count($recent) > 0): ?>
+            <div class="panth-table-wrap">
+                <table class="panth-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;">#</th>
+                            <th><?= $block->escapeHtml(__('Request Path')) ?></th>
+                            <th style="text-align: right;"><?= $block->escapeHtml(__('Hits')) ?></th>
+                            <th><?= $block->escapeHtml(__('Last Seen')) ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($recent as $i => $row): ?>
+                            <tr>
+                                <td style="color: #999;"><?= $i + 1 ?></td>
+                                <td class="panth-path"><?= $block->escapeHtml((string) ($row['request_path'] ?? '')) ?></td>
+                                <td class="panth-hits"><?= (int) ($row['hit_count'] ?? 0) ?></td>
+                                <td class="panth-date"><?= $block->escapeHtml((string) ($row['last_seen_at'] ?? '')) ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <a class="panth-view-all"
+               href="<?= $block->escapeUrl($block->getUrl('panth_seo/redirect/index', ['tab' => '404_log'])) ?>">
+                <?= $block->escapeHtml(__('View All 404 Logs')) ?> &rarr;
+            </a>
+        <?php else: ?>
+            <div class="panth-empty"><?= $block->escapeHtml(__('No 404 errors recorded yet. Great!')) ?></div>
+        <?php endif; ?>
+    </div>
+
+    <!-- ===== 5. Sitemap & Feed Status ===== -->
+    <div class="panth-section">
+        <h2><?= $block->escapeHtml(__('Sitemap & Feed Status')) ?></h2>
+        <div class="panth-grid">
+            <div class="panth-card panth-card--green">
+                <div class="panth-card-value"><?= (int) $smFeed['sitemap_profiles'] ?></div>
+                <div class="panth-card-label"><?= $block->escapeHtml(__('Active Sitemap Profiles')) ?></div>
+                <div class="panth-card-sub"><?= $block->escapeHtml(__('%1 total URLs', (int) $smFeed['sitemap_total_urls'])) ?></div>
+                <?php if ($smFeed['sitemap_last_generated']): ?>
+                <div class="panth-card-sub"><?= $block->escapeHtml(__('Last: %1', $smFeed['sitemap_last_generated'])) ?></div>
+                <?php endif; ?>
+                <a class="panth-card-link" href="<?= $block->escapeUrl($block->getUrl('panth_seo/sitemap/index')) ?>"></a>
+            </div>
+            <div class="panth-card panth-card--green">
+                <div class="panth-card-value"><?= (int) $smFeed['feed_profiles'] ?></div>
+                <div class="panth-card-label"><?= $block->escapeHtml(__('Active Feed Profiles')) ?></div>
+                <div class="panth-card-sub"><?= $block->escapeHtml(__('%1 total products', (int) $smFeed['feed_total_products'])) ?></div>
+                <?php if ($smFeed['feed_last_generated']): ?>
+                <div class="panth-card-sub"><?= $block->escapeHtml(__('Last: %1', $smFeed['feed_last_generated'])) ?></div>
+                <?php endif; ?>
+                <a class="panth-card-link" href="<?= $block->escapeUrl($block->getUrl('panth_seo/feed/index')) ?>"></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 6. Quick Actions ===== -->
+    <div class="panth-section">
+        <h2><?= $block->escapeHtml(__('Quick Actions')) ?></h2>
+        <div class="panth-actions">
+            <?php foreach ($actions as $action): ?>
+                <a class="panth-action-btn"
+                   href="<?= $block->escapeUrl((string) ($action['url'] ?? '#')) ?>">
+                    <?= $block->escapeHtml((string) ($action['label'] ?? '')) ?>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
+</div>

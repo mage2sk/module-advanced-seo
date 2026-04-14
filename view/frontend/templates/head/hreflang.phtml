@@ -1,0 +1,18 @@
+<?php
+/** @var \Panth\AdvancedSEO\Block\Head\Hreflang $block */
+/** @var \Magento\Framework\Escaper $escaper */
+
+$alternates = $block->getAlternates();
+if ($alternates === []) {
+    return;
+}
+foreach ($alternates as $alt) {
+    $locale = (string) ($alt['locale'] ?? '');
+    $url = (string) ($alt['url'] ?? '');
+    if ($locale === '' || $url === '') {
+        continue;
+    }
+    ?>
+<link rel="alternate" hreflang="<?= $escaper->escapeHtmlAttr($locale) ?>" href="<?= $escaper->escapeUrl($url) ?>" />
+    <?php
+}

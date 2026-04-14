@@ -1,0 +1,22 @@
+<?php /** @var \Magento\Backend\Block\Template $block */ ?>
+<div style="background:#E3F2FD;border:1px solid #1976D2;border-radius:4px;padding:15px 20px;margin-bottom:20px;font-size:13px;line-height:1.7;">
+    <strong style="font-size:14px;color:#1565C0;">Product Feed System</strong>
+    <p style="margin:8px 0 0;">
+        Create and manage product feeds for Google Shopping, Facebook Product Catalog, and other marketing channels.
+        Each feed profile defines which products to include, how fields are mapped, and the output format (XML or CSV).
+    </p>
+    <ol style="margin:8px 0 0;padding-left:20px;">
+        <li>Create a feed profile with the desired output format, store view, and product filters</li>
+        <li>Field mappings are pre-configured for Google Shopping; customize them via the database table <code>panth_seo_feed_field</code></li>
+        <li>Click <strong>"Generate Now"</strong> in the actions column to generate the feed immediately</li>
+        <li>Or enable <strong>Cron Generation</strong> in the profile settings to generate automatically on schedule</li>
+        <li>Feed files are saved to <code>pub/media/panth_seo/feeds/</code> and accessible via the file URL</li>
+    </ol>
+    <p style="margin:8px 0 0;color:#555;">
+        <strong>Source Types:</strong>
+        <code>attribute</code> = product attribute value,
+        <code>static</code> = fixed text,
+        <code>template</code> = computed value (product_url, product_price, stock_status, etc.),
+        <code>parent_attribute</code> = attribute from parent configurable product.
+    </p>
+</div>

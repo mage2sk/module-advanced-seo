@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_seo_feed_form.panth_seo_feed_form_data_source</item>
+        </item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="delete" class="Panth\AdvancedSEO\Block\Adminhtml\GenericDeleteButton"/>
+            <button name="manage_fields" class="Panth\AdvancedSEO\Block\Adminhtml\Feed\ManageFieldsButton"/>
+            <button name="test_connection" class="Panth\AdvancedSEO\Block\Adminhtml\Feed\TestConnectionButton"/>
+            <button name="generate" class="Panth\AdvancedSEO\Block\Adminhtml\Feed\GenerateButton"/>
+            <button name="save_and_continue" class="Panth\AdvancedSEO\Block\Adminhtml\GenericSaveAndContinueButton"/>
+            <button name="save" class="Panth\AdvancedSEO\Block\Adminhtml\GenericSaveButton"/>
+            <button name="back" class="Panth\AdvancedSEO\Block\Adminhtml\GenericBackButton"/>
+        </buttons>
+        <namespace>panth_seo_feed_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>panth_seo_feed_form.panth_seo_feed_form_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="panth_seo_feed_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="panth_seo/feed/save"/>
+        </settings>
+        <dataProvider class="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\FeedFormDataProvider" name="panth_seo_feed_form_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>feed_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <!-- General Settings -->
+    <fieldset name="general" sortOrder="10">
+        <settings>
+            <label translate="true">General</label>
+        </settings>
+        <field name="feed_id" formElement="input">
+            <settings>
+                <visible>false</visible>
+                <dataType>text</dataType>
+            </settings>
+        </field>
+        <field name="name" sortOrder="10" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Profile Name</label>
+                <dataScope>name</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <notice translate="true">A descriptive name for this feed profile, e.g. "Google Shopping Feed" or "Facebook Product Catalog".</notice>
+            </settings>
+        </field>
+        <field name="feed_type" sortOrder="20" formElement="select">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Feed Type</label>
+                <dataScope>feed_type</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\AdvancedSEO\Model\Config\Source\FeedType"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="store_id" sortOrder="30" formElement="select">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Store View</label>
+                <dataScope>store_id</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\Cms\Ui\Component\Listing\Column\Cms\Options"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="filename" sortOrder="40" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Filename</label>
+                <dataScope>filename</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <notice translate="true">Output filename, e.g. "google_feed.xml" or "facebook_feed.csv". The file will be saved in pub/media/panth_seo/feeds/.</notice>
+            </settings>
+        </field>
+        <field name="is_active" sortOrder="50" formElement="select">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Active</label>
+                <dataScope>is_active</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\Config\Model\Config\Source\Yesno"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- Product Filters -->
+    <fieldset name="product_filters" sortOrder="20">
+        <settings>
+            <label translate="true">Product Filters</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="include_out_of_stock" sortOrder="10" formElement="select">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Include Out of Stock Products</label>
+                <dataScope>include_out_of_stock</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\Config\Model\Config\Source\Yesno"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="include_disabled" sortOrder="20" formElement="select">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Include Disabled Products</label>
+                <dataScope>include_disabled</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\Config\Model\Config\Source\Yesno"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="include_not_visible" sortOrder="30" formElement="select">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Include Not Visible Individually</label>
+                <dataScope>include_not_visible</dataScope>
+                <notice translate="true">Include products with visibility set to "Not Visible Individually" (e.g. simple products of configurables).</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\Config\Model\Config\Source\Yesno"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="category_filter" sortOrder="40" formElement="multiselect">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Category IDs Filter</label>
+                <dataScope>category_filter</dataScope>
+                <notice translate="true">Select categories to include. Leave empty to include all categories.</notice>
+            </settings>
+            <formElements>
+                <multiselect>
+                    <settings>
+                        <options class="Panth\AdvancedSEO\Model\Config\Source\CategoryTreeOptions"/>
+                    </settings>
+                </multiselect>
+            </formElements>
+        </field>
+        <field name="attribute_set_filter" sortOrder="50" formElement="multiselect">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Attribute Set IDs Filter</label>
+                <dataScope>attribute_set_filter</dataScope>
+                <notice translate="true">Select attribute sets to include. Leave empty to include all attribute sets.</notice>
+            </settings>
+            <formElements>
+                <multiselect>
+                    <settings>
+                        <options class="Panth\AdvancedSEO\Model\Config\Source\AttributeSetOptions"/>
+                    </settings>
+                </multiselect>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- Feed Settings -->
+    <fieldset name="feed_settings" sortOrder="30">
+        <settings>
+            <label translate="true">Feed Settings</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="output_format" sortOrder="10" formElement="select">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Output Format</label>
+                <dataScope>output_format</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\AdvancedSEO\Model\Config\Source\FeedOutputFormat"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="delivery_country" sortOrder="20" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Delivery Country</label>
+                <dataScope>delivery_country</dataScope>
+                <notice translate="true">ISO 3166-1 alpha-2 country code, e.g. "US", "GB", "IN".</notice>
+            </settings>
+        </field>
+        <field name="currency" sortOrder="30" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Currency</label>
+                <dataScope>currency</dataScope>
+                <notice translate="true">ISO 4217 currency code, e.g. "USD", "EUR", "INR".</notice>
+            </settings>
+        </field>
+    </fieldset>
+
+    <!-- Scheduling -->
+    <fieldset name="scheduling" sortOrder="40">
+        <settings>
+            <label translate="true">Scheduling</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="cron_enabled" sortOrder="10" formElement="select">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Enable Cron Generation</label>
+                <dataScope>cron_enabled</dataScope>
+                <notice translate="true">When enabled, this feed will be automatically regenerated on the specified schedule.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\Config\Model\Config\Source\Yesno"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="cron_schedule" sortOrder="20" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Cron Schedule</label>
+                <dataScope>cron_schedule</dataScope>
+                <notice translate="true">Cron expression, e.g. "0 1 * * *" (daily at 1 AM), "0 */6 * * *" (every 6 hours).</notice>
+            </settings>
+        </field>
+    </fieldset>
+
+    <!-- Generation Status (read-only) -->
+    <fieldset name="status" sortOrder="50">
+        <settings>
+            <label translate="true">Generation Status</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="generated_at" sortOrder="10" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Last Generated At</label>
+                <dataScope>generated_at</dataScope>
+                <disabled>true</disabled>
+            </settings>
+        </field>
+        <field name="generation_time" sortOrder="20" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Generation Time (seconds)</label>
+                <dataScope>generation_time</dataScope>
+                <disabled>true</disabled>
+            </settings>
+        </field>
+        <field name="product_count" sortOrder="30" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Product Count</label>
+                <dataScope>product_count</dataScope>
+                <disabled>true</disabled>
+            </settings>
+        </field>
+        <field name="file_size" sortOrder="40" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">File Size (bytes)</label>
+                <dataScope>file_size</dataScope>
+                <disabled>true</disabled>
+            </settings>
+        </field>
+        <field name="feed_file_url" sortOrder="50" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Feed File URL</label>
+                <dataScope>feed_file_url</dataScope>
+                <disabled>true</disabled>
+                <notice translate="true">Direct URL to the generated feed file. Use this URL in Google Merchant Center or other platforms.</notice>
+            </settings>
+        </field>
+    </fieldset>
+
+    <!-- FTP / SFTP Delivery -->
+    <fieldset name="delivery" sortOrder="60">
+        <settings>
+            <label translate="true">FTP / SFTP Delivery</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="delivery_enabled" sortOrder="10" formElement="select">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Enable Delivery</label>
+                <dataScope>delivery_enabled</dataScope>
+                <notice translate="true">When enabled, the generated feed file will be automatically uploaded to the configured FTP/SFTP server after generation.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\Config\Model\Config\Source\Yesno"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="delivery_type" sortOrder="20" formElement="select">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Protocol</label>
+                <dataScope>delivery_type</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\AdvancedSEO\Model\Config\Source\DeliveryType"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="delivery_host" sortOrder="30" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Host</label>
+                <dataScope>delivery_host</dataScope>
+                <notice translate="true">Hostname or hostname:port (e.g. ftp.example.com or ftp.example.com:2121)</notice>
+            </settings>
+        </field>
+        <field name="delivery_user" sortOrder="40" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Username</label>
+                <dataScope>delivery_user</dataScope>
+            </settings>
+        </field>
+        <field name="delivery_password" sortOrder="50" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Password</label>
+                <dataScope>delivery_password</dataScope>
+                <notice translate="true">FTP/SFTP password. Will be encrypted before saving.</notice>
+            </settings>
+        </field>
+        <field name="delivery_path" sortOrder="60" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Remote Path</label>
+                <dataScope>delivery_path</dataScope>
+                <notice translate="true">Remote directory path e.g. /feeds/</notice>
+            </settings>
+        </field>
+        <field name="delivery_passive_mode" sortOrder="70" formElement="select">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Passive Mode</label>
+                <dataScope>delivery_passive_mode</dataScope>
+                <notice translate="true">Only applies to FTP protocol. Most servers require passive mode.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\Config\Model\Config\Source\Yesno"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- Google Analytics UTM -->
+    <fieldset name="utm" sortOrder="70">
+        <settings>
+            <label translate="true">Google Analytics UTM</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="utm_source" sortOrder="10" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">UTM Source</label>
+                <dataScope>utm_source</dataScope>
+                <notice translate="true">e.g. google, facebook, newsletter</notice>
+            </settings>
+        </field>
+        <field name="utm_medium" sortOrder="20" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">UTM Medium</label>
+                <dataScope>utm_medium</dataScope>
+                <notice translate="true">e.g. cpc, social, email</notice>
+            </settings>
+        </field>
+        <field name="utm_campaign" sortOrder="30" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">UTM Campaign</label>
+                <dataScope>utm_campaign</dataScope>
+                <notice translate="true">e.g. spring_sale, product_feed</notice>
+            </settings>
+        </field>
+    </fieldset>
+
+    <!-- Compression -->
+    <fieldset name="compression" sortOrder="80">
+        <settings>
+            <label translate="true">Compression</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="compress" sortOrder="10" formElement="select">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Compress Output</label>
+                <dataScope>compress</dataScope>
+                <notice translate="true">Compress the generated feed file. The compressed file will replace the original.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\AdvancedSEO\Model\Config\Source\CompressType"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
+</form>

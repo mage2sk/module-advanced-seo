@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_seo_missing_meta_listing.panth_seo_missing_meta_listing_data_source</item>
+        </item>
+    </argument>
+    <settings>
+        <spinner>panth_seo_missing_meta_listing_columns</spinner>
+        <deps>
+            <dep>panth_seo_missing_meta_listing.panth_seo_missing_meta_listing_data_source</dep>
+        </deps>
+    </settings>
+
+    <dataSource name="panth_seo_missing_meta_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <storageConfig>
+                <param name="indexField" xsi:type="string">entity_id</param>
+            </storageConfig>
+            <updateUrl path="mui/index/render">
+                <param name="type">*</param>
+            </updateUrl>
+        </settings>
+        <dataProvider class="Panth\AdvancedSEO\Ui\Component\Listing\DataProvider\MissingMetaDataProvider"
+                      name="panth_seo_missing_meta_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>entity_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <listingToolbar name="listing_top">
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filters name="listing_filters"/>
+        <exportButton name="export_button"/>
+        <paging name="listing_paging">
+            <settings>
+                <options>
+                    <option name="20" xsi:type="array">
+                        <item name="value" xsi:type="number">20</item>
+                        <item name="label" xsi:type="string">20</item>
+                    </option>
+                    <option name="50" xsi:type="array">
+                        <item name="value" xsi:type="number">50</item>
+                        <item name="label" xsi:type="string">50</item>
+                    </option>
+                    <option name="100" xsi:type="array">
+                        <item name="value" xsi:type="number">100</item>
+                        <item name="label" xsi:type="string">100</item>
+                    </option>
+                    <option name="200" xsi:type="array">
+                        <item name="value" xsi:type="number">200</item>
+                        <item name="label" xsi:type="string">200</item>
+                    </option>
+                </options>
+            </settings>
+        </paging>
+    </listingToolbar>
+
+    <columns name="panth_seo_missing_meta_listing_columns">
+        <column name="entity_id">
+            <settings>
+                <label translate="true">ID</label>
+                <filter>textRange</filter>
+                <sorting>asc</sorting>
+            </settings>
+        </column>
+        <column name="sku">
+            <settings>
+                <label translate="true">SKU</label>
+                <filter>text</filter>
+            </settings>
+        </column>
+        <column name="name">
+            <settings>
+                <label translate="true">Name</label>
+                <filter>text</filter>
+            </settings>
+        </column>
+        <column name="meta_title" class="Panth\AdvancedSEO\Ui\Component\Listing\Column\MissingMetaHighlight">
+            <settings>
+                <label translate="true">Meta Title</label>
+                <filter>text</filter>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+            </settings>
+        </column>
+        <column name="meta_description" class="Panth\AdvancedSEO\Ui\Component\Listing\Column\MissingMetaHighlight">
+            <settings>
+                <label translate="true">Meta Description</label>
+                <filter>text</filter>
+                <bodyTmpl>ui/grid/cells/html</bodyTmpl>
+            </settings>
+        </column>
+        <column name="type_id">
+            <settings>
+                <label translate="true">Type / Level</label>
+                <filter>text</filter>
+            </settings>
+        </column>
+        <column name="attribute_set_id">
+            <settings>
+                <label translate="true">Attribute Set / Category Path</label>
+                <filter>text</filter>
+            </settings>
+        </column>
+        <actionsColumn name="actions" class="Panth\AdvancedSEO\Ui\Component\Listing\Column\MissingMetaActions">
+            <settings>
+                <indexField>entity_id</indexField>
+                <label translate="true">Action</label>
+            </settings>
+        </actionsColumn>
+    </columns>
+</listing>

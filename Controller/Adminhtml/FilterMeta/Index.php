@@ -1,0 +1,26 @@
+<?php
+declare(strict_types=1);
+
+namespace Panth\AdvancedSEO\Controller\Adminhtml\FilterMeta;
+
+use Magento\Backend\App\Action\Context;
+use Magento\Framework\View\Result\PageFactory;
+use Panth\AdvancedSEO\Controller\Adminhtml\AbstractAction;
+
+class Index extends AbstractAction
+{
+    public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::filter_meta';
+
+    public function __construct(Context $context, private readonly PageFactory $pageFactory)
+    {
+        parent::__construct($context);
+    }
+
+    public function execute()
+    {
+        $page = $this->pageFactory->create();
+        $page->setActiveMenu('Panth_AdvancedSEO::filter_meta');
+        $page->getConfig()->getTitle()->prepend(__('Category Filter Meta'));
+        return $page;
+    }
+}
