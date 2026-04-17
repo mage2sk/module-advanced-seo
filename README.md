@@ -9,6 +9,7 @@
 
 # Panth Advanced SEO — Enterprise SEO Suite for Magento 2 | AI Meta, JSON-LD, Hreflang, Sitemaps, IndexNow
 
+[![Visitors](https://visitor-badge.laobi.icu/badge?page_id=mage2sk.module-advanced-seo&left_color=gray&right_color=0d9488&left_text=Visitors)](https://github.com/mage2sk/module-advanced-seo)
 [![Magento 2.4.4 - 2.4.8](https://img.shields.io/badge/Magento-2.4.4%20--%202.4.8-orange?logo=magento&logoColor=white)](https://magento.com)
 [![PHP 8.1 - 8.4](https://img.shields.io/badge/PHP-8.1%20--%208.4-blue?logo=php&logoColor=white)](https://php.net)
 [![License Proprietary](https://img.shields.io/badge/License-Proprietary-blue)]()
