@@ -300,6 +300,12 @@ class SaleEventProvider extends AbstractProvider
             $collection->addAttributeToSelect(['special_price', 'special_from_date', 'special_to_date']);
             $collection->addFieldToFilter('special_price', ['gt' => 0]);
             $collection->setPageSize(50);
+            // Force DISTINCT + explicit load under try/catch — the default
+            // join on cataloginventory_stock_item / category_product can
+            // produce duplicate entity_id rows, which trips the collection's
+            // "Item with the same ID already exists" guard and 500s the page.
+            $collection->getSelect()->distinct(true);
+            $products = $collection->getItems();
         } catch (\Throwable) {
             return null;
         }
@@ -309,7 +315,7 @@ class SaleEventProvider extends AbstractProvider
         $latest    = null;
         $hasActive = false;
 
-        foreach ($collection as $product) {
+        foreach ($products as $product) {
             if (!$this->hasActiveSpecialPrice($product)) {
                 continue;
             }

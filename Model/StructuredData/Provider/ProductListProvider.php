@@ -85,17 +85,22 @@ class ProductListProvider extends AbstractProvider
         try {
             $layer      = $this->layerResolver->get();
             $collection = $layer->getProductCollection();
+            $collection->setPageSize(self::MAX_ITEMS);
+            $collection->setCurPage(1);
+            // Force DISTINCT + explicit load under try/catch — the layer
+            // collection can contain duplicate entity_id rows (stock / index
+            // joins on multi-source catalogs), which trips the collection's
+            // "Item with the same ID already exists" guard and 500s the page.
+            $collection->getSelect()->distinct(true);
+            $products = $collection->getItems();
         } catch (\Throwable) {
             return [];
         }
 
-        $collection->setPageSize(self::MAX_ITEMS);
-        $collection->setCurPage(1);
-
         $items    = [];
         $position = 1;
 
-        foreach ($collection as $product) {
+        foreach ($products as $product) {
             $name = (string) $product->getName();
             $url  = (string) $product->getProductUrl();
 

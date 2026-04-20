@@ -4,6 +4,21 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.0.6]
+
+### Fixed
+- **Category pages 500'd when a structured-data provider touched the product
+  collection first.** `SaleEventProvider::deriveSaleDateRange()` and
+  `ProductListProvider::buildListItems()` both iterated the shared category /
+  layer product collection without forcing `DISTINCT` and without a
+  try/catch around the load. On multi-source / shared-catalog setups, the
+  default stock + category-product joins produce duplicate `entity_id` rows,
+  which trip the collection's "Item with the same ID already exists" guard
+  and 500 the whole page before `ListProduct` ever renders. Both providers
+  now force `distinct(true)` on the select and load via `getItems()` inside
+  a `try/catch`, silently skipping their structured-data contribution when
+  the collection cannot be materialised, so the page always renders.
+
 ## [1.0.5]
 
 ### Performance
