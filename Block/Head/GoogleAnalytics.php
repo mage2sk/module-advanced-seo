@@ -172,9 +172,20 @@ class GoogleAnalytics extends Template
             return '';
         }
 
+        // The CatalogSearch / Layer collection can throw "Item with the same
+        // ID already exists" when stock or other joins produce duplicate
+        // entity_id rows. Force the load here under a try/catch so the GA4
+        // event is silently skipped instead of 500'ing the whole category
+        // page render.
+        try {
+            $loadedProducts = $collection->getItems();
+        } catch (\Throwable) {
+            return '';
+        }
+
         $items = [];
         $index = 0;
-        foreach ($collection as $product) {
+        foreach ($loadedProducts as $product) {
             if ($index >= 50) {
                 break; // Limit to avoid oversized data layer
             }

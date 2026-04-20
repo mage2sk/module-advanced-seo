@@ -4,6 +4,18 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.0.4]
+
+### Fixed
+- **GA4 `view_item_list` no longer 500s the category page.** When the layer
+  product collection contained duplicate `entity_id` rows (stock joins on
+  multi-source / shared catalog setups), iterating it raised
+  `Item with the same ID already exists` from inside the GA4 block,
+  bringing the entire category render down with a 500. The block now
+  forces the load via `getItems()` inside a try/catch and silently skips
+  the GA4 event when the underlying collection cannot be materialised,
+  so the page always renders.
+
 ## [1.0.3]
 
 ### Fixed — Product feed generation

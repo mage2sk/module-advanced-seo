@@ -2,7 +2,7 @@
     "name": "mage2kishan/module-advanced-seo",
     "description": "Panth Advanced SEO — enterprise-grade SEO suite for Magento 2: meta templates, rules engine, AI content generation, structured data (JSON-LD), hreflang, canonical URLs, redirects & 404 management, XML/HTML sitemaps, robots & LLM bot policy, SEO scoring & audit, social meta (OpenGraph/Twitter), image SEO, cross-linking, filter URL control, IndexNow, llms.txt, product feeds, and analytics. Hyva and Luma compatible.",
     "type": "magento2-module",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "license": "proprietary",
     "keywords": [
         "magento2",
