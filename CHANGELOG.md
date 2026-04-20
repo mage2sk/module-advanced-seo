@@ -4,6 +4,35 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.0.3]
+
+### Fixed — Product feed generation
+- **Stock filter no longer crashes feed generation.** The `joinField()` on
+  `cataloginventory_stock_item` in `ProfileBasedFeedBuilder` could produce
+  multiple rows per product (multi-source / shared catalog setups), tripping
+  the collection's "Item with the same ID already exists" guard and aborting
+  the feed run. Switched to a raw `getSelect()->joinLeft()` that preserves
+  primary-key uniqueness.
+- **`<g:shipping>` is now valid nested XML.** `XmlFeedWriter` previously
+  emitted shipping as flat text (`<g:shipping>IN:::0 INR</g:shipping>`),
+  which Google rejects. The writer now splits the `COUNTRY:::PRICE` payload
+  on `:::` and emits proper `<g:country>` / `<g:price>` children.
+- **`sale_price_effective_date` now matches Google's spec.** Format changed
+  from `Y-m-d\TH:i:sO` to `Y-m-d\TH:iO` (no seconds), and partial ranges
+  (`from/`, `/to`) are no longer emitted — Google rejects both. The element
+  is now written only when both dates exist.
+- **`<g:identifier_exists>` is always emitted.** Previously only the `false`
+  case was written; now `true` is written whenever a brand, GTIN, or MPN is
+  present. Removes Merchant Center "missing identifier" warnings for items
+  that actually have brand/MPN.
+- **Brand falls back to `panth_seo/structured_data/default_brand`.** When a
+  product has no value for the configured brand attribute (commonly
+  `manufacturer`), the feed now uses the store-level default brand instead
+  of leaving the field blank.
+- **`<g:google_product_category>` is always emitted.** Falls back to
+  `Apparel & Accessories > Jewelry` when no attribute is configured or the
+  product attribute is empty, so the field is never silently omitted.
+
 ## [1.0.2]
 
 ### Fixed

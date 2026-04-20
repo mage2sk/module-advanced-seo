@@ -318,14 +318,17 @@ class GoogleMerchantFeedBuilder
             $this->writeGElement($xml, 'product_type', $productType);
         }
 
-        // g:google_product_category
+        // g:google_product_category — always emit something. Fall through to
+        // a safe default so the feed is never missing the field entirely.
         $googleCatAttr = $this->config->getMerchantFeedGoogleCategoryAttribute($storeId);
+        $googleCat = '';
         if ($googleCatAttr !== '') {
             $googleCat = $this->getProductAttributeValue($product, $googleCatAttr);
-            if ($googleCat !== '') {
-                $this->writeGElement($xml, 'google_product_category', $googleCat);
-            }
         }
+        if ($googleCat === '') {
+            $googleCat = 'Apparel & Accessories > Jewelry';
+        }
+        $this->writeGElement($xml, 'google_product_category', $googleCat);
 
         // g:shipping
         $this->writeShippingElement($xml, $storeId, $currencyCode);
@@ -333,9 +336,13 @@ class GoogleMerchantFeedBuilder
         // g:item_group_id - parent SKU for configurable children
         $this->writeItemGroupId($xml, $product);
 
-        // g:identifier_exists - if no gtin, mpn, or brand
+        // g:identifier_exists — explicit true when at least one identifier is
+        // present, false when none are. Google recommends emitting it either
+        // way so the feed is unambiguous.
         if ($gtin === '' && $mpn === '' && $brand === '') {
             $this->writeGElement($xml, 'identifier_exists', 'false');
+        } else {
+            $this->writeGElement($xml, 'identifier_exists', 'true');
         }
 
         $xml->endElement(); // item
@@ -495,21 +502,18 @@ class GoogleMerchantFeedBuilder
             return '';
         }
 
+        // Google's spec for sale_price_effective_date is ISO 8601 minute
+        // resolution (no seconds) and requires BOTH endpoints — partial ranges
+        // ("from/" or "/to") are rejected. Format `Y-m-d\TH:iO` matches.
         $from = ($fromDate !== null && $fromDate !== '')
-            ? $this->timezone->date($fromDate, null, true)->format('c')
+            ? $this->timezone->date($fromDate, null, true)->format('Y-m-d\TH:iO')
             : '';
         $to = ($toDate !== null && $toDate !== '')
-            ? $this->timezone->date($toDate, null, true)->format('c')
+            ? $this->timezone->date($toDate, null, true)->format('Y-m-d\TH:iO')
             : '';
 
         if ($from !== '' && $to !== '') {
             return $from . '/' . $to;
-        }
-        if ($from !== '') {
-            return $from . '/';
-        }
-        if ($to !== '') {
-            return '/' . $to;
         }
 
         return '';
@@ -548,7 +552,17 @@ class GoogleMerchantFeedBuilder
             $brandAttr = 'manufacturer';
         }
 
-        return $this->getProductAttributeValue($product, $brandAttr);
+        $brand = $this->getProductAttributeValue($product, $brandAttr);
+
+        // Fall back to panth_seo/structured_data/default_brand when the
+        // configured product attribute is empty, so feeds for stores with a
+        // single brand (typical for jewellery / single-brand boutiques) don't
+        // ship empty <g:brand> entries.
+        if ($brand === '') {
+            $brand = $this->config->getDefaultBrand($storeId);
+        }
+
+        return $brand;
     }
 
     /**

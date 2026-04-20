@@ -62,6 +62,26 @@ class XmlFeedWriter
                 continue;
             }
 
+            // g:shipping is the one Google field that requires nested children
+            // (<g:country>, <g:price>) instead of flat text. The resolver
+            // packs both pieces into one string with ":::" as a delimiter
+            // (e.g. "IN:::0.00 INR") because the field-mapping table can only
+            // store a single scalar per row.
+            if ($fieldName === 'g:shipping') {
+                $parts = explode(':::', $value, 2);
+                if (count($parts) === 2) {
+                    $this->xml->startElementNs('g', 'shipping', null);
+                    $this->xml->startElementNs('g', 'country', null);
+                    $this->xml->text(trim($parts[0]));
+                    $this->xml->endElement();
+                    $this->xml->startElementNs('g', 'price', null);
+                    $this->xml->text(trim($parts[1]));
+                    $this->xml->endElement();
+                    $this->xml->endElement();
+                    continue;
+                }
+            }
+
             // Determine if this is a g: namespaced field
             if (str_starts_with($fieldName, 'g:')) {
                 $localName = substr($fieldName, 2);

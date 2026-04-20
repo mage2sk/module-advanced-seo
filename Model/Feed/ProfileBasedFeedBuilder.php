@@ -353,17 +353,16 @@ class ProfileBasedFeedBuilder
             }
         }
 
-        // Stock filter
+        // Stock filter — joinField duplicates rows when a product has multiple
+        // stock entries (multi-source / shared catalog), which then trips
+        // collection's "Item with the same ID already exists" guard. Using a raw
+        // joinLeft on getSelect() keeps the collection's primary-key uniqueness.
         if (empty($profile['include_out_of_stock'])) {
-            $collection->joinField(
-                'is_in_stock',
-                'cataloginventory_stock_item',
-                'is_in_stock',
-                'product_id=entity_id',
-                '{{table}}.stock_id=1',
-                'left'
-            );
-            $collection->addFieldToFilter('is_in_stock', ['eq' => 1]);
+            $collection->getSelect()->joinLeft(
+                ['_stock_filter' => $collection->getTable('cataloginventory_stock_item')],
+                'e.entity_id = _stock_filter.product_id AND _stock_filter.stock_id = 1',
+                []
+            )->where('_stock_filter.is_in_stock = ?', 1);
         }
 
         $collection->setPageSize(self::BATCH_SIZE);
