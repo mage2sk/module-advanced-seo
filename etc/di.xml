@@ -121,9 +121,8 @@
         <plugin name="panth_seo_strip_title_prefix_suffix" type="Panth\AdvancedSEO\Plugin\PageConfig\StripTitlePrefixSuffixPlugin" sortOrder="10"/>
     </type>
 
-    <!-- Remove native OG block and native JSON-LD markup from Magento -->
+    <!-- Remove native JSON-LD markup from Magento -->
     <type name="Magento\Framework\View\Element\AbstractBlock">
-        <plugin name="panth_seo_remove_og_block" type="Panth\AdvancedSEO\Plugin\Social\RemoveNativeOgPlugin" sortOrder="10"/>
         <plugin name="panth_seo_remove_native_markup" type="Panth\AdvancedSEO\Plugin\StructuredData\RemoveNativeMarkupPlugin" sortOrder="15"/>
     </type>
 

@@ -16,12 +16,7 @@ use Psr\Log\LoggerInterface;
  *
  * Removes native Magento / Hyva Open Graph blocks from the layout so that
  * duplicate OG meta tags are never rendered when our module's own OG output
- * is active.
- *
- * This is the primary removal mechanism.  The companion plugin
- * {@see \Panth\AdvancedSEO\Plugin\Social\RemoveNativeOgPlugin} acts as a
- * safety net for blocks that slip through because their names do not match the
- * well-known patterns listed here.
+ * is active. This runs once per layout generation (FPC-cached afterwards).
  */
 class RemoveNativeOgObserver implements ObserverInterface
 {
