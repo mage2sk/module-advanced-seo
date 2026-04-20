@@ -4,6 +4,27 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.0.2]
+
+### Fixed
+- OG block detection no longer false-matches `catalog.*` blocks. The `'og.'`
+  pattern in `RemoveNativeOgObserver` and `RemoveNativeOgPlugin` was matched
+  with `str_contains`, so any layout block whose name contains the substring
+  `"og."` (every `catalog.*` block — `catalog.leftnav`,
+  `catalog.navigation.state`, `catalog.list.item.addto`,
+  `catalog.list.item.wishlist`, `catalog.compare.sidebar`, etc.) was silently
+  removed from the layout and blanked in `toHtml()` on every frontend
+  category render. The pattern is now matched as a prefix (`str_starts_with`)
+  while `'opengraph'` continues to match as a substring. Restores layered
+  navigation, add-to-cart toolbar, wishlist, and compare blocks on category
+  pages. Search-result pages are unaffected (the substring is `"ogs"`, not
+  `"og."`, so they were never matched).
+
+## [1.0.1]
+
+### Changed
+- Documentation tidy-up; no functional changes.
+
 ## [1.0.0] — Initial release
 
 ### Added — Meta templates & resolution

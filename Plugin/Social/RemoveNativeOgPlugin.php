@@ -30,7 +30,9 @@ class RemoveNativeOgPlugin
     private const XML_OG_ENABLED = 'panth_seo/social/og_enabled';
 
     /**
-     * Substrings that identify a native OG block by its layout name.
+     * Name fragments that identify a native OG block. `'opengraph'` is matched
+     * as a substring; `'og.'` is matched as a prefix so it does not false-match
+     * blocks such as `catalog.*` which happen to contain `"og."`.
      *
      * @var string[]
      */
@@ -87,7 +89,10 @@ class RemoveNativeOgPlugin
     private function isNativeOgBlock(string $blockName): bool
     {
         foreach (self::OG_BLOCK_IDENTIFIERS as $identifier) {
-            if (str_contains($blockName, $identifier)) {
+            $isMatch = $identifier === 'og.'
+                ? str_starts_with($blockName, 'og.')
+                : str_contains($blockName, $identifier);
+            if ($isMatch) {
                 return true;
             }
         }

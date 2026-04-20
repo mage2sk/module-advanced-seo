@@ -42,7 +42,9 @@ class RemoveNativeOgObserver implements ObserverInterface
     ];
 
     /**
-     * Substrings that identify dynamically-named OG blocks.
+     * Name fragments that identify dynamically-named OG blocks. `'opengraph'`
+     * is matched as a substring; `'og.'` is matched as a prefix so it does not
+     * false-match blocks such as `catalog.*` which happen to contain `"og."`.
      *
      * @var string[]
      */
@@ -108,7 +110,10 @@ class RemoveNativeOgObserver implements ObserverInterface
             $lowerName = strtolower((string) $name);
 
             foreach (self::OG_NAME_PATTERNS as $pattern) {
-                if (str_contains($lowerName, $pattern)) {
+                $isMatch = $pattern === 'og.'
+                    ? str_starts_with($lowerName, 'og.')
+                    : str_contains($lowerName, $pattern);
+                if ($isMatch) {
                     $layout->unsetElement((string) $name);
                     $this->logger->debug(
                         sprintf('[PanthSEO] Removed native OG block "%s" (pattern match) from layout.', $name)
