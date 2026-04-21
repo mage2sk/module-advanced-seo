@@ -175,11 +175,12 @@ filterable attributes and strips filter parameters from the canonical.
 
 ### robots.txt
 
-The module replaces Magento's static `robots.txt` with a dynamic,
-database-driven version served by `Panth\AdvancedSEO\Controller\Robots\Index`.
+Dynamic, database-driven `robots.txt` is provided by the
+`mage2kishan/module-robots-seo` module (install separately). It replaces
+Magento's static `robots.txt` and adds:
 
-- Add or remove `Disallow` / `Allow` directives per store view
-- Reference your XML sitemap URL automatically
+- Per-store-view `Disallow` / `Allow` directives
+- Automatic XML sitemap URL reference
 
 ### Per-LLM-bot policy
 
@@ -270,9 +271,9 @@ Type:   301
 
 ### Loop detection
 
-The `Panth\AdvancedSEO\Model\Redirect\Loop` class detects redirect
-chains and loops before saving. If a loop is detected, the redirect
-is rejected with an error message.
+Redirect chains and loops are detected before saving by the
+`mage2kishan/module-redirects` module. If a loop is detected, the
+redirect is rejected with an error message.
 
 ### Bulk import
 
@@ -620,8 +621,9 @@ are grouped so you can create a single regex redirect.
 
 ### Auto-suggest
 
-The `SuggestionEngine` analyzes 404 URLs and suggests the most
-likely redirect target based on URL similarity and existing content.
+The `mage2kishan/module-redirects` module analyzes 404 URLs and
+suggests the most likely redirect target based on URL similarity
+and existing content.
 
 ### 404 grid
 
