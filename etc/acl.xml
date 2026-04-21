@@ -12,7 +12,6 @@
                     <resource id="Panth_AdvancedSEO::custom_canonical" title="Custom Canonicals" sortOrder="36"/>
                     <resource id="Panth_AdvancedSEO::filter_meta" title="Category Filter Meta" sortOrder="37"/>
                     <resource id="Panth_AdvancedSEO::hreflang" title="Hreflang Groups" sortOrder="50"/>
-                    <resource id="Panth_AdvancedSEO::sitemap" title="Sitemaps" sortOrder="60"/>
                     <resource id="Panth_AdvancedSEO::reports" title="SEO Reports" sortOrder="74"/>
                     <resource id="Panth_AdvancedSEO::missing_meta" title="Missing Meta Report" sortOrder="75"/>
                     <resource id="Panth_AdvancedSEO::crawl_audit" title="Crawl Audit" sortOrder="76"/>

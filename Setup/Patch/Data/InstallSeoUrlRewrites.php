@@ -8,9 +8,9 @@ use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
 /**
- * Registers url_rewrite rows mapping the public paths /llms.txt,
- * /llms-full.txt and /panth-sitemap.xml to the internal Panth_AdvancedSEO
- * frontend controllers so they can be served without a custom router.
+ * Registers url_rewrite rows mapping the public paths /llms.txt and
+ * /llms-full.txt to the internal Panth_AdvancedSEO frontend controllers so
+ * they can be served without a custom router.
  *
  * Uses raw url_rewrite inserts (rather than UrlRewrite Service) to keep the
  * patch dependency-free and store-scoped.
@@ -21,9 +21,8 @@ class InstallSeoUrlRewrites implements DataPatchInterface
      * @var array<string,string> request_path => target_path
      */
     private const REWRITES = [
-        'llms.txt'           => 'seo/llms/index',
-        'llms-full.txt'      => 'seo/llms/full',
-        'panth-sitemap.xml'  => 'seo/sitemap/index',
+        'llms.txt'      => 'seo/llms/index',
+        'llms-full.txt' => 'seo/llms/full',
     ];
 
     public function __construct(

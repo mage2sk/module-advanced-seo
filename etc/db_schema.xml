@@ -435,50 +435,5 @@
         </index>
     </table>
 
-    <!-- ============================================================ -->
-    <!-- panth_seo_sitemap_profile                                      -->
-    <!-- ============================================================ -->
-    <table name="panth_seo_sitemap_profile" resource="default" engine="innodb" comment="Panth SEO Sitemap Profiles">
-        <column xsi:type="int" name="profile_id" unsigned="true" nullable="false" identity="true" comment="Profile ID"/>
-        <column xsi:type="varchar" name="name" length="255" nullable="false" comment="Profile name"/>
-        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0" comment="Store ID"/>
-        <column xsi:type="varchar" name="entity_types" length="512" nullable="false" default="product,category,cms" comment="Comma-separated entity types"/>
-        <column xsi:type="boolean" name="include_images" nullable="false" default="true" comment="Include product images"/>
-        <column xsi:type="boolean" name="include_video" nullable="false" default="false" comment="Include video tags"/>
-        <column xsi:type="boolean" name="include_hreflang" nullable="false" default="false" comment="Include hreflang tags"/>
-        <column xsi:type="int" name="max_urls_per_file" unsigned="true" nullable="false" default="50000" comment="Max URLs per sitemap file"/>
-        <column xsi:type="varchar" name="changefreq_product" length="32" nullable="false" default="weekly" comment="Product change frequency"/>
-        <column xsi:type="varchar" name="changefreq_category" length="32" nullable="false" default="weekly" comment="Category change frequency"/>
-        <column xsi:type="varchar" name="changefreq_cms" length="32" nullable="false" default="monthly" comment="CMS page change frequency"/>
-        <column xsi:type="decimal" name="priority_product" scale="1" precision="2" nullable="false" default="0.8" comment="Product priority"/>
-        <column xsi:type="decimal" name="priority_category" scale="1" precision="2" nullable="false" default="0.6" comment="Category priority"/>
-        <column xsi:type="decimal" name="priority_cms" scale="1" precision="2" nullable="false" default="0.5" comment="CMS page priority"/>
-        <column xsi:type="decimal" name="priority_homepage" scale="1" precision="2" nullable="false" default="1.0" comment="Homepage priority"/>
-        <column xsi:type="boolean" name="exclude_out_of_stock" nullable="false" default="false" comment="Exclude out of stock products"/>
-        <column xsi:type="boolean" name="exclude_noindex" nullable="false" default="true" comment="Exclude NOINDEX pages"/>
-        <column xsi:type="text" name="custom_links" nullable="true" comment="JSON array of custom URLs"/>
-        <column xsi:type="varchar" name="output_path" length="512" nullable="false" default="sitemap/panth/{store_code}/" comment="Output path relative to pub"/>
-        <column xsi:type="timestamp" name="last_generated_at" on_update="false" nullable="true" comment="Last generation timestamp"/>
-        <column xsi:type="int" name="generation_time" unsigned="true" nullable="true" comment="Last generation time in seconds"/>
-        <column xsi:type="int" name="url_count" unsigned="true" nullable="false" default="0" comment="Total URL count"/>
-        <column xsi:type="int" name="file_count" unsigned="true" nullable="false" default="0" comment="Generated file count"/>
-        <column xsi:type="boolean" name="is_active" nullable="false" default="true" comment="Active"/>
-        <column xsi:type="boolean" name="cron_enabled" nullable="false" default="false" comment="Enable cron auto-generation"/>
-        <column xsi:type="varchar" name="cron_schedule" length="64" nullable="false" default="0 2 * * *" comment="Cron schedule expression"/>
-        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created at"/>
-        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Updated at"/>
-        <constraint xsi:type="primary" referenceId="PRIMARY">
-            <column name="profile_id"/>
-        </constraint>
-        <constraint xsi:type="foreign" referenceId="PANTH_SEO_SITEMAP_PROFILE_STORE_ID_STORE_STORE_ID"
-                    table="panth_seo_sitemap_profile" column="store_id"
-                    referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
-        <index referenceId="PANTH_SEO_SITEMAP_PROFILE_IDX_ACTIVE" indexType="btree">
-            <column name="is_active"/>
-        </index>
-        <index referenceId="PANTH_SEO_SITEMAP_PROFILE_IDX_STORE" indexType="btree">
-            <column name="store_id"/>
-        </index>
-    </table>
 
 </schema>

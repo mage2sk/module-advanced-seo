@@ -34,7 +34,6 @@
         </arguments>
     </type>
     <preference for="Panth\AdvancedSEO\Api\HreflangResolverInterface" type="Panth\AdvancedSEO\Model\Hreflang\Resolver"/>
-    <preference for="Panth\AdvancedSEO\Api\SitemapBuilderInterface" type="Panth\AdvancedSEO\Model\Sitemap\Builder"/>
     <preference for="Panth\AdvancedSEO\Api\StructuredDataProviderInterface" type="Panth\AdvancedSEO\Model\StructuredData\Composite"/>
     <preference for="Panth\AdvancedSEO\Model\ImageSeo\VisionAdapterInterface" type="Panth\AdvancedSEO\Model\ImageSeo\NullVisionAdapter"/>
 
@@ -102,21 +101,6 @@
                 <item name="blog_adapter_1" xsi:type="string">Magefan\Blog\Model\Post</item>
                 <item name="blog_adapter_2" xsi:type="string">Mirasvit\Blog\Model\Post</item>
                 <item name="blog_adapter_3" xsi:type="string">Mageplaza\Blog\Model\Post</item>
-            </argument>
-        </arguments>
-    </type>
-
-    <!-- Sitemap contributors (DI list). Disable Product/Category contributors if enabling Image/Hreflang variants to avoid duplicate <url> entries. -->
-    <type name="Panth\AdvancedSEO\Model\Sitemap\Builder">
-        <arguments>
-            <argument name="contributors" xsi:type="array">
-                <item name="product" xsi:type="object">Panth\AdvancedSEO\Model\Sitemap\Contributor\ProductContributor</item>
-                <item name="category" xsi:type="object">Panth\AdvancedSEO\Model\Sitemap\Contributor\CategoryContributor</item>
-                <item name="cms_page" xsi:type="object">Panth\AdvancedSEO\Model\Sitemap\Contributor\CmsPageContributor</item>
-                <item name="landing_page" xsi:type="object">Panth\AdvancedSEO\Model\Sitemap\Contributor\LandingPageContributor</item>
-                <item name="blog" xsi:type="object">Panth\AdvancedSEO\Model\Sitemap\Contributor\BlogContributor</item>
-                <item name="video" xsi:type="object">Panth\AdvancedSEO\Model\Sitemap\Contributor\VideoContributor</item>
-                <item name="additional_links" xsi:type="object">Panth\AdvancedSEO\Model\Sitemap\Contributor\AdditionalLinksContributor</item>
             </argument>
         </arguments>
     </type>
@@ -317,7 +301,6 @@
         <arguments>
             <argument name="commands" xsi:type="array">
                 <item name="panth_seo_audit" xsi:type="object">Panth\AdvancedSEO\Console\Command\AuditCommand</item>
-                <item name="panth_seo_sitemap" xsi:type="object">Panth\AdvancedSEO\Console\Command\SitemapGenerateCommand</item>
                 <item name="panth_seo_pagerank" xsi:type="object">Panth\AdvancedSEO\Console\Command\PageRankCommand</item>
                 <item name="panth_seo_crawl" xsi:type="object">Panth\AdvancedSEO\Console\Command\CrawlCommand</item>
                 <item name="panth_seo_regenerate_urls" xsi:type="object">Panth\AdvancedSEO\Console\Command\RegenerateUrlRewritesCommand</item>
@@ -399,13 +382,6 @@
             <argument name="resourceModel" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\CrawlResult</argument>
         </arguments>
     </type>
-    <type name="Panth\AdvancedSEO\Model\ResourceModel\SitemapProfile\Grid\Collection">
-        <arguments>
-            <argument name="mainTable" xsi:type="string">panth_seo_sitemap_profile</argument>
-            <argument name="resourceModel" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\SitemapProfile</argument>
-        </arguments>
-    </type>
-
     <!-- Feed Profile Grid Collection: table + resource model binding -->
     <type name="Panth\AdvancedSEO\Model\ResourceModel\FeedProfile\Grid\Collection">
         <arguments>
@@ -442,7 +418,6 @@
                 <item name="panth_seo_filter_meta_listing_data_source" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\CategoryFilterMeta\Grid\Collection</item>
                 <item name="panth_seo_crawl_audit_listing_data_source" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\CrawlResult\Grid\Collection</item>
                 <item name="panth_seo_crawl_result_listing_data_source" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\CrawlResult\Grid\Collection</item>
-                <item name="panth_seo_sitemap_listing_data_source" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\SitemapProfile\Grid\Collection</item>
                 <item name="panth_seo_feed_field_listing_data_source" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\FeedField\Grid\Collection</item>
                 <item name="panth_seo_feed_listing_data_source" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\FeedProfile\Grid\Collection</item>
             </argument>

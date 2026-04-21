@@ -374,45 +374,5 @@
             "PRIMARY": true,
             "PANTH_SEO_FEED_FIELD_FEED_ID_PANTH_SEO_FEED_PROFILE_FEED_ID": true
         }
-    },
-    "panth_seo_sitemap_profile": {
-        "column": {
-            "profile_id": true,
-            "name": true,
-            "store_id": true,
-            "entity_types": true,
-            "include_images": true,
-            "include_video": true,
-            "include_hreflang": true,
-            "max_urls_per_file": true,
-            "changefreq_product": true,
-            "changefreq_category": true,
-            "changefreq_cms": true,
-            "priority_product": true,
-            "priority_category": true,
-            "priority_cms": true,
-            "priority_homepage": true,
-            "exclude_out_of_stock": true,
-            "exclude_noindex": true,
-            "custom_links": true,
-            "output_path": true,
-            "last_generated_at": true,
-            "generation_time": true,
-            "url_count": true,
-            "file_count": true,
-            "is_active": true,
-            "cron_enabled": true,
-            "cron_schedule": true,
-            "created_at": true,
-            "updated_at": true
-        },
-        "index": {
-            "PANTH_SEO_SITEMAP_PROFILE_IS_ACTIVE": true,
-            "PANTH_SEO_SITEMAP_PROFILE_STORE_ID": true
-        },
-        "constraint": {
-            "PRIMARY": true,
-            "PANTH_SEO_SITEMAP_PROFILE_STORE_ID_STORE_STORE_ID": true
-        }
     }
 }

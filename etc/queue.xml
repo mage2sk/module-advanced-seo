@@ -4,7 +4,4 @@
     <broker topic="panth_seo.score_entity" exchange="panth_seo.exchange" type="db">
         <queue name="panth_seo.score_entity.q" consumer="panth_seo.score_entity.consumer" consumerInstance="Panth\AdvancedSEO\Model\Queue\ScoreConsumer" handler="Panth\AdvancedSEO\Model\Queue\ScoreConsumer::process"/>
     </broker>
-    <broker topic="panth_seo.sitemap_shard" exchange="panth_seo.exchange" type="db">
-        <queue name="panth_seo.sitemap_shard.q" consumer="panth_seo.sitemap_shard.consumer" consumerInstance="Panth\AdvancedSEO\Model\Queue\SitemapShardConsumer" handler="Panth\AdvancedSEO\Model\Queue\SitemapShardConsumer::process"/>
-    </broker>
 </config>

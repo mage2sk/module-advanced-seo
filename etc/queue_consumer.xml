@@ -7,10 +7,4 @@
               maxMessages="1000"
               consumerInstance="Panth\AdvancedSEO\Model\Queue\ScoreConsumer"
               handler="Panth\AdvancedSEO\Model\Queue\ScoreConsumer::process"/>
-    <consumer name="panth_seo.sitemap_shard.consumer"
-              queue="panth_seo.sitemap_shard.q"
-              connection="db"
-              maxMessages="100"
-              consumerInstance="Panth\AdvancedSEO\Model\Queue\SitemapShardConsumer"
-              handler="Panth\AdvancedSEO\Model\Queue\SitemapShardConsumer::process"/>
 </config>

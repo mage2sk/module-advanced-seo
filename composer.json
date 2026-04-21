@@ -1,8 +1,8 @@
 {
     "name": "mage2kishan/module-advanced-seo",
-    "description": "Panth Advanced SEO — enterprise-grade SEO suite for Magento 2: SEO dashboard, meta templates, SEO rules engine, bulk meta editor, custom canonicals, filter URL rewrites, filter page meta, hreflang, XML sitemaps, product feeds, missing meta report, SEO audit & crawl results, structured data (JSON-LD), breadcrumbs, OpenGraph/Twitter social meta, llms.txt + llms-full.txt. Hyva and Luma compatible.",
+    "description": "Panth Advanced SEO — enterprise-grade SEO suite for Magento 2: SEO dashboard, meta templates, SEO rules engine, bulk meta editor, custom canonicals, filter URL rewrites, filter page meta, hreflang, product feeds, missing meta report, SEO audit & crawl results, structured data (JSON-LD), breadcrumbs, OpenGraph/Twitter social meta, llms.txt + llms-full.txt. Hyva and Luma compatible.",
     "type": "magento2-module",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "license": "proprietary",
     "keywords": [
         "magento2",
@@ -13,7 +13,6 @@
         "json-ld",
         "hreflang",
         "canonical",
-        "sitemap",
         "opengraph",
         "hyva",
         "panth"
@@ -51,7 +50,8 @@
         "mage2kishan/module-redirects": "301/302/303/307/308/410/451 redirects + 404 log + CSV import/export + loop detector.",
         "mage2kishan/module-robots-seo": "Dedicated /robots.txt, X-Robots-Tag HTTP header, and LLM-bot policy (GPTBot, ClaudeBot, PerplexityBot, etc.) for Magento 2.",
         "mage2kishan/module-pagebuilder-ai": "AI meta generation via OpenAI / Claude with prompts, knowledge base, async jobs, and Generate-with-AI buttons on admin forms.",
-        "mage2kishan/module-html-sitemap": "Frontend HTML sitemap page (/sitemap) with categories, products, CMS pages, stores, and custom links."
+        "mage2kishan/module-html-sitemap": "Frontend HTML sitemap page (/sitemap) with categories, products, CMS pages, stores, and custom links.",
+        "mage2kishan/module-xml-sitemap": "Sharded XML sitemap generator (/panth-sitemap.xml) with profile CRUD, hreflang, image + video tags, auto-split, gzip, search-engine ping, async shard queue + cron."
     },
     "autoload": {
         "files": [

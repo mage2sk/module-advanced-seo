@@ -4,6 +4,53 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] — 2026-04-21
+
+### BREAKING — XML Sitemap extracted
+
+The XML Sitemap feature has been extracted into a dedicated Packagist
+module:
+
+- **XML Sitemap** → `mage2kishan/module-xml-sitemap`
+  Sharded XML sitemap generator with per-store profile CRUD, 7 entity-
+  type contributors (product, category, CMS page, landing page, blog,
+  video, additional links), hreflang + image + video tags, auto-split
+  at configurable threshold, gzip compression, XSL stylesheet, search-
+  engine ping, delta tracking, async shard queue, cron, CLI.
+  Table names preserved (`panth_seo_sitemap_profile`,
+  `panth_seo_sitemap_shard`) — zero data migration required.
+
+### Removed
+
+- `Controller/Adminhtml/Sitemap/*`, `Controller/Sitemap/Index`
+- `Model/Sitemap/*`, `Model/SitemapProfile`, `Model/ResourceModel/SitemapProfile*`
+- `Model/Queue/SitemapShardConsumer`
+- `Model/Config/Source/SitemapChangefreq`
+- `Block/Adminhtml/Sitemap*`, `Ui/Component/Form/DataProvider/SitemapProfileFormDataProvider`, `Ui/Component/Listing/Column/SitemapActions`
+- `Plugin/Sitemap/{CategoryFormSitemapPlugin,ProductFormSitemapPlugin}`
+- `Cron/SitemapRebuild`, `Console/Command/SitemapGenerateCommand`
+- `Setup/Patch/Data/{AddDefaultSitemapProfile,AddSitemapExclusionAttributes}`
+- `Setup/Patch/Schema/AddSitemapProfileTable`
+- `Api/{SitemapBuilderInterface,SitemapContributorInterface}`
+- System-config group "Sitemaps" under Panth Infotech → SEO
+- Admin menu item "Sitemaps"
+- DB tables declaration (tables owned by sibling module now)
+- Cron job `panth_seo_sitemap_rebuild`
+- AMQP topic `panth_seo.sitemap_shard`
+- CLI command `panth:seo:sitemap:generate` (now provided by the sibling module)
+
+### Migration notes
+
+- Install `mage2kishan/module-xml-sitemap` to restore functionality:
+  ```
+  composer require mage2kishan/module-xml-sitemap
+  bin/magento module:enable Panth_XmlSitemap
+  bin/magento setup:upgrade
+  bin/magento setup:di:compile
+  ```
+- DB tables preserved; all existing sitemap profiles keep working.
+- `/panth-sitemap.xml` URL remains unchanged (url_rewrite updated by the new module's patch).
+
 ## [1.1.0] — 2026-04-21
 
 ### BREAKING — feature split

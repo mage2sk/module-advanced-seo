@@ -34,12 +34,6 @@ class Config
     public const XML_SD_FAQ          = 'panth_seo/structured_data/faq';
     public const XML_SD_ARTICLE      = 'panth_seo/structured_data/article';
 
-    public const XML_SITEMAP_ENABLED          = 'panth_seo/sitemap/enabled';
-    public const XML_SITEMAP_SHARD_SIZE       = 'panth_seo/sitemap/shard_size';
-    public const XML_SITEMAP_GZIP             = 'panth_seo/sitemap/gzip';
-    public const XML_SITEMAP_INCLUDE_IMAGES   = 'panth_seo/sitemap/include_images';
-    public const XML_SITEMAP_INCLUDE_HREFLANG = 'panth_seo/sitemap/include_hreflang';
-
     public const XML_HREFLANG_ENABLED  = 'panth_seo/hreflang/enabled';
     public const XML_HREFLANG_XDEFAULT = 'panth_seo/hreflang/emit_x_default';
 
@@ -74,12 +68,6 @@ class Config
     public const XML_FILTER_META_INJECT_TITLE       = 'panth_seo/filter_meta/inject_filter_in_title';
     public const XML_FILTER_META_INJECT_DESCRIPTION = 'panth_seo/filter_meta/inject_filter_in_description';
 
-    // Sitemap (new)
-    public const XML_SITEMAP_EXCLUDE_OOS     = 'panth_seo/sitemap/exclude_out_of_stock';
-    public const XML_SITEMAP_EXCLUDE_NOINDEX = 'panth_seo/sitemap/exclude_noindex';
-    public const XML_SITEMAP_ADDITIONAL      = 'panth_seo/sitemap/additional_links';
-    public const XML_SITEMAP_XSL_ENABLED     = 'panth_seo/sitemap/xsl_enabled';
-
     // Meta (new)
     public const XML_META_STRIP_TITLE_PREFIX_SUFFIX = 'panth_seo/meta/strip_title_prefix_suffix';
     public const XML_META_SEO_NAME_ENABLED          = 'panth_seo/meta/seo_name_enabled';
@@ -99,12 +87,6 @@ class Config
     public const XML_HREFLANG_SCOPE              = 'panth_seo/hreflang/hreflang_scope';
     public const XML_HREFLANG_CMS_RELATION       = 'panth_seo/hreflang/cms_relation_method';
 
-    // Sitemap (new pings + additional link settings)
-    public const XML_SITEMAP_PING_GOOGLE              = 'panth_seo/sitemap/ping_google';
-    public const XML_SITEMAP_PING_BING                = 'panth_seo/sitemap/ping_bing';
-    public const XML_SITEMAP_ADDITIONAL_LINKS_FREQ    = 'panth_seo/sitemap/additional_links_changefreq';
-    public const XML_SITEMAP_ADDITIONAL_LINKS_PRIORITY = 'panth_seo/sitemap/additional_links_priority';
-
     // Structured Data (new)
     public const XML_SD_PRODUCT_LIST_SCHEMA       = 'panth_seo/structured_data/enable_product_list_schema';
     public const XML_SD_ACCEPTED_PAYMENT          = 'panth_seo/structured_data/accepted_payment_methods';
@@ -116,10 +98,6 @@ class Config
     public const XML_SD_PROS_CONS_ENABLED         = 'panth_seo/structured_data/pros_cons_enabled';
     public const XML_SD_PROS_ATTRIBUTE            = 'panth_seo/structured_data/pros_attribute';
     public const XML_SD_CONS_ATTRIBUTE            = 'panth_seo/structured_data/cons_attribute';
-
-    // Sitemap (homepage & image source)
-    public const XML_SITEMAP_HOMEPAGE_OPTIMIZATION = 'panth_seo/sitemap/homepage_optimization';
-    public const XML_SITEMAP_PRODUCT_IMAGE_SOURCE  = 'panth_seo/sitemap/product_image_source';
 
     // URL Key Automation
     public const XML_URL_AUTO_URL_KEY_ENABLED      = 'panth_seo/url/auto_url_key_enabled';
@@ -153,9 +131,6 @@ class Config
 
     // Canonical (strip params)
     public const XML_CANONICAL_STRIP_PARAMS = 'panth_seo/canonical/strip_params';
-
-    // Sitemap (video)
-    public const XML_SITEMAP_INCLUDE_VIDEO = 'panth_seo/sitemap/include_video';
 
     // LLMs.txt
     public const XML_LLMS_TXT_ENABLED        = 'panth_seo/llms_txt/enabled';
@@ -304,31 +279,6 @@ class Config
         return $this->flag($path, $storeId);
     }
 
-    public function isSitemapEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SITEMAP_ENABLED, $storeId);
-    }
-
-    public function getSitemapShardSize(?int $storeId = null): int
-    {
-        return max(1000, (int) ($this->value(self::XML_SITEMAP_SHARD_SIZE, $storeId) ?? 45000));
-    }
-
-    public function sitemapGzip(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SITEMAP_GZIP, $storeId);
-    }
-
-    public function sitemapIncludeImages(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SITEMAP_INCLUDE_IMAGES, $storeId);
-    }
-
-    public function sitemapIncludeHreflang(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SITEMAP_INCLUDE_HREFLANG, $storeId);
-    }
-
     public function isHreflangEnabled(?int $storeId = null): bool
     {
         return $this->flag(self::XML_HREFLANG_ENABLED, $storeId);
@@ -460,40 +410,6 @@ class Config
         return $this->flag(self::XML_FILTER_META_INJECT_DESCRIPTION, $storeId);
     }
 
-    // --- Sitemap (new) ---
-
-    public function sitemapExcludeOutOfStock(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SITEMAP_EXCLUDE_OOS, $storeId);
-    }
-
-    public function sitemapExcludeNoindex(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SITEMAP_EXCLUDE_NOINDEX, $storeId);
-    }
-
-    public function getSitemapAdditionalLinks(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_SITEMAP_ADDITIONAL, $storeId) ?? '');
-    }
-
-    public function isSitemapXslEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SITEMAP_XSL_ENABLED, $storeId);
-    }
-
-    public function isSitemapHomepageOptimization(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SITEMAP_HOMEPAGE_OPTIMIZATION, $storeId);
-    }
-
-    public function getSitemapProductImageSource(?int $storeId = null): string
-    {
-        $value = (string) ($this->value(self::XML_SITEMAP_PRODUCT_IMAGE_SOURCE, $storeId) ?? 'base_image');
-        $allowed = ['base_image', 'small_image', 'thumbnail'];
-        return in_array($value, $allowed, true) ? $value : 'base_image';
-    }
-
     // --- Meta (new) ---
 
     public function isStripTitlePrefixSuffix(?int $storeId = null): bool
@@ -572,28 +488,6 @@ class Config
     public function getCmsRelationMethod(?int $storeId = null): string
     {
         return (string) ($this->value(self::XML_HREFLANG_CMS_RELATION, $storeId) ?? 'by_url_key');
-    }
-
-    // --- Sitemap: Ping ---
-
-    public function isSitemapPingGoogleEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SITEMAP_PING_GOOGLE, $storeId);
-    }
-
-    public function isSitemapPingBingEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SITEMAP_PING_BING, $storeId);
-    }
-
-    public function getAdditionalLinksChangefreq(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_SITEMAP_ADDITIONAL_LINKS_FREQ, $storeId) ?? 'weekly');
-    }
-
-    public function getAdditionalLinksPriority(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_SITEMAP_ADDITIONAL_LINKS_PRIORITY, $storeId) ?? '0.5');
     }
 
     // --- Structured Data (new) ---
@@ -967,13 +861,6 @@ class Config
     public function getCanonicalStripParams(?int $storeId = null): string
     {
         return (string) ($this->value(self::XML_CANONICAL_STRIP_PARAMS, $storeId) ?? '');
-    }
-
-    // --- Sitemap: Video ---
-
-    public function sitemapIncludeVideo(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SITEMAP_INCLUDE_VIDEO, $storeId);
     }
 
     // --- Advanced: Last-Modified Header ---

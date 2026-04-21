@@ -133,24 +133,6 @@
                 <enable_breadcrumb_priority>0</enable_breadcrumb_priority>
                 <breadcrumb_format>longest</breadcrumb_format>
             </breadcrumbs>
-            <sitemap>
-                <enabled>1</enabled>
-                <shard_size>45000</shard_size>
-                <gzip>1</gzip>
-                <include_images>1</include_images>
-                <include_hreflang>1</include_hreflang>
-                <include_video>0</include_video>
-                <exclude_out_of_stock>1</exclude_out_of_stock>
-                <exclude_noindex>1</exclude_noindex>
-                <additional_links></additional_links>
-                <xsl_enabled>1</xsl_enabled>
-                <ping_google>1</ping_google>
-                <ping_bing>1</ping_bing>
-                <additional_links_changefreq>weekly</additional_links_changefreq>
-                <additional_links_priority>0.5</additional_links_priority>
-                <product_image_source>base_image</product_image_source>
-                <homepage_optimization>1</homepage_optimization>
-            </sitemap>
             <hreflang>
                 <enabled>1</enabled>
                 <emit_x_default>1</emit_x_default>

@@ -74,14 +74,6 @@
              action="panth_seo/hreflang/index"
              resource="Panth_AdvancedSEO::manage"/>
 
-        <add id="Panth_AdvancedSEO::sitemap"
-             title="Sitemaps"
-             module="Panth_AdvancedSEO"
-             parent="Panth_AdvancedSEO::root"
-             sortOrder="60"
-             action="panth_seo/sitemap/index"
-             resource="Panth_AdvancedSEO::manage"/>
-
         <add id="Panth_AdvancedSEO::feeds"
              title="Product Feeds"
              module="Panth_AdvancedSEO"

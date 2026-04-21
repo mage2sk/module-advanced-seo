@@ -1,13 +1,13 @@
 <!-- SEO Meta -->
 <!--
-  Title: Panth Advanced SEO for Magento 2 | Meta Templates, JSON-LD, Hreflang, XML Sitemaps | Panth Infotech
-  Description: Panth Advanced SEO is an enterprise-grade Magento 2 SEO extension covering SEO dashboard, meta templates, SEO rules engine, bulk meta editor, custom canonicals, filter URL rewrites, filter page meta, hreflang, XML sitemaps, product feeds, missing meta report, SEO audit & crawl results, structured data (JSON-LD), breadcrumbs, OpenGraph/Twitter cards, and llms.txt. Hyva and Luma compatible. Magento 2.4.4 - 2.4.8, PHP 8.1 - 8.4.
-  Keywords: magento 2 seo extension, magento 2 advanced seo, magento 2 meta templates, magento 2 json-ld, magento 2 structured data, magento 2 hreflang, magento 2 canonical url, magento 2 xml sitemap, magento 2 llms.txt, magento 2 opengraph, magento 2 twitter cards, magento 2 seo score, magento 2 product feed, hyva seo, panth advanced seo, panth infotech, hire magento developer, top rated plus upwork, magento 2.4.8, php 8.4
+  Title: Panth Advanced SEO for Magento 2 | Meta Templates, JSON-LD, Hreflang | Panth Infotech
+  Description: Panth Advanced SEO is an enterprise-grade Magento 2 SEO extension covering SEO dashboard, meta templates, SEO rules engine, bulk meta editor, custom canonicals, filter URL rewrites, filter page meta, hreflang, product feeds, missing meta report, SEO audit & crawl results, structured data (JSON-LD), breadcrumbs, OpenGraph/Twitter cards, and llms.txt. Hyva and Luma compatible. Magento 2.4.4 - 2.4.8, PHP 8.1 - 8.4.
+  Keywords: magento 2 seo extension, magento 2 advanced seo, magento 2 meta templates, magento 2 json-ld, magento 2 structured data, magento 2 hreflang, magento 2 canonical url, magento 2 llms.txt, magento 2 opengraph, magento 2 twitter cards, magento 2 seo score, magento 2 product feed, hyva seo, panth advanced seo, panth infotech, hire magento developer, top rated plus upwork, magento 2.4.8, php 8.4
   Author: Kishan Savaliya (Panth Infotech)
   Canonical: https://github.com/mage2sk/module-advanced-seo
 -->
 
-# Panth Advanced SEO — Enterprise SEO Suite for Magento 2 | Meta Templates, JSON-LD, Hreflang, XML Sitemaps
+# Panth Advanced SEO — Enterprise SEO Suite for Magento 2 | Meta Templates, JSON-LD, Hreflang
 
 [![Magento 2.4.4 - 2.4.8](https://img.shields.io/badge/Magento-2.4.4%20--%202.4.8-orange?logo=magento&logoColor=white)](https://magento.com)
 [![PHP 8.1 - 8.4](https://img.shields.io/badge/PHP-8.1%20--%208.4-blue?logo=php&logoColor=white)](https://php.net)
@@ -18,9 +18,9 @@
 [![Website](https://img.shields.io/badge/Website-kishansavaliya.com-0D9488)](https://kishansavaliya.com)
 [![Get a Quote](https://img.shields.io/badge/Get%20a%20Quote-Free%20Estimate-DC2626)](https://kishansavaliya.com/get-quote)
 
-> **Core enterprise SEO suite** for Magento 2 (Adobe Commerce + Open Source): SEO dashboard, meta templates with variable tokens, SEO rules engine, bulk meta editor, custom canonicals, filter URL rewrites, filter page meta, hreflang, XML sitemaps, product feeds, missing meta report, SEO audit + crawl results, full schema.org JSON-LD, breadcrumbs, OpenGraph/Twitter cards, and `llms.txt` / `llms-full.txt` — all MEQP compliant and Hyva + Luma ready.
+> **Core enterprise SEO suite** for Magento 2 (Adobe Commerce + Open Source): SEO dashboard, meta templates with variable tokens, SEO rules engine, bulk meta editor, custom canonicals, filter URL rewrites, filter page meta, hreflang, product feeds, missing meta report, SEO audit + crawl results, full schema.org JSON-LD, breadcrumbs, OpenGraph/Twitter cards, and `llms.txt` / `llms-full.txt` — all MEQP compliant and Hyva + Luma ready.
 
-**Panth Advanced SEO** is the core SEO module in the Panth Infotech catalog. It covers everything a serious Magento 2 merchant needs to rank on Google, Bing, and AI search engines (ChatGPT, Claude, Perplexity) — from canonical and meta tags to structured data, hreflang reciprocity validation, and `llms.txt` generation. Cross-links, redirects & 404 management, robots & LLM-bot policy, AI meta generation, and the frontend HTML sitemap now live in dedicated companion modules — see [Companion Modules](#companion-modules) below.
+**Panth Advanced SEO** is the core SEO module in the Panth Infotech catalog. It covers everything a serious Magento 2 merchant needs to rank on Google, Bing, and AI search engines (ChatGPT, Claude, Perplexity) — from canonical and meta tags to structured data, hreflang reciprocity validation, and `llms.txt` generation. Cross-links, redirects & 404 management, robots & LLM-bot policy, AI meta generation, the frontend HTML sitemap, and the XML sitemap generator now live in dedicated companion modules — see [Companion Modules](#companion-modules) below.
 
 Built to **MEQP (Magento Extension Quality Program)** standards, optimised for **Hyva + Luma**, and shipped with two dedicated indexers (`panth_seo_resolved_meta` and `panth_seo_hreflang`) so large catalogs stay fast. Compatible with Magento **2.4.4 - 2.4.8** and PHP **8.1 - 8.4**.
 
@@ -92,17 +92,17 @@ Most Magento 2 SEO solutions are bundles of 5-7 small extensions from different 
 
 - **One vendor, one update cycle** — no more debugging which of seven SEO extensions broke after upgrading to Magento 2.4.8
 - **Ranks on AI search** — dynamic `llms.txt` / `llms-full.txt` and JSON-LD that LLMs actually read
-- **Huge catalogs welcome** — dedicated indexers with mview, sharded XML sitemaps, delta tracking for multi-million SKU stores
+- **Huge catalogs welcome** — dedicated indexers with mview and delta tracking for multi-million SKU stores
 - **Hyva-first** — zero jQuery, zero `mage/*` dependencies, server-rendered output, `hyva.xml` marker included
 - **Complete audit trail** — SEO scoring (0-100), duplicate detection, readability analysis, trend dashboard
 - **Enterprise compliance** — MEQP compliant, ACL-protected admin actions
-- **Modular by design** — pair with companion modules (cross-links, redirects, robots, AI, HTML sitemap) only when you need them
+- **Modular by design** — pair with companion modules (cross-links, redirects, robots, AI, HTML sitemap, XML sitemap) only when you need them
 
 ---
 
 ## Companion Modules
 
-Panth Advanced SEO focuses on the core SEO surface (meta, canonicals, hreflang, XML sitemaps, structured data, `llms.txt`). The following features now live in dedicated Packagist modules — install any of them alongside Advanced SEO to add the extra capability:
+Panth Advanced SEO focuses on the core SEO surface (meta, canonicals, hreflang, structured data, `llms.txt`). The following features now live in dedicated Packagist modules — install any of them alongside Advanced SEO to add the extra capability:
 
 | Module | Purpose |
 |---|---|
@@ -111,6 +111,7 @@ Panth Advanced SEO focuses on the core SEO surface (meta, canonicals, hreflang, 
 | [`mage2kishan/module-robots-seo`](https://packagist.org/packages/mage2kishan/module-robots-seo) | Dedicated `/robots.txt` endpoint, `X-Robots-Tag` HTTP header, and 14-bot LLM crawler policy (GPTBot, ClaudeBot, PerplexityBot, Google-Extended, Bytespider, …). |
 | [`mage2kishan/module-pagebuilder-ai`](https://packagist.org/packages/mage2kishan/module-pagebuilder-ai) | AI meta generation via OpenAI / Claude with prompts, knowledge base, async jobs, and "Generate with AI" buttons on admin forms. |
 | [`mage2kishan/module-html-sitemap`](https://packagist.org/packages/mage2kishan/module-html-sitemap) | Frontend HTML sitemap page (`/sitemap`) with categories, products, CMS pages, stores, and custom links. |
+| [`mage2kishan/module-xml-sitemap`](https://packagist.org/packages/mage2kishan/module-xml-sitemap) | Sharded XML sitemap generator (`/panth-sitemap.xml`) with profile CRUD, hreflang, image + video tags, auto-split, gzip, search-engine ping, async shard queue + cron. |
 
 Each companion module is independent — install only what you need.
 
@@ -145,12 +146,6 @@ Each companion module is independent — install only what you need.
 - Pagination awareness (`rel="next"` / `rel="prev"` on category pages)
 - Layered navigation filter control (noindex + canonical-to-parent)
 - Per-product, per-category, per-CMS override
-
-### 🗺️ XML Sitemaps
-
-- **Sharded XML sitemap** (50K URLs per shard, gzip, sitemap index)
-- Image extension + hreflang extension in sitemap XML
-- Delta tracking — only regenerate changed shards
 
 ### 📡 llms.txt for AI Search
 
@@ -284,9 +279,6 @@ All settings live under `Stores → Configuration → Panth Extensions → Advan
 | Structured Data | Enable Product Schema | Emit Product JSON-LD |
 | Structured Data | Enable Breadcrumb Schema | Emit BreadcrumbList JSON-LD |
 | Structured Data | Organization Logo | URL to your org logo (used in WebSite/Organization schema) |
-| Sitemaps | Sitemap Shard Size | Default 50000 |
-| Sitemaps | Include Images | Add image extension to XML sitemap |
-| Sitemaps | Include Hreflang | Add hreflang extension to XML sitemap |
 | Social Meta | Enable OpenGraph | Emit OG tags |
 | Social Meta | Twitter Card Type | `summary` or `summary_large_image` |
 | SEO Scoring | Enable Scoring Cron | Recalculate scores daily |
@@ -383,7 +375,6 @@ bin/magento indexer:set-mode schedule panth_seo_resolved_meta panth_seo_hreflang
 | Hreflang tags missing on product page | Hreflang group not built, or indexer stale | Build group under `Advanced SEO → Hreflang → Groups`, then reindex `panth_seo_hreflang` |
 | JSON-LD missing or duplicate | Other SEO extension injecting same schema | Disable competing JSON-LD extension or Panth's provider for that entity |
 | `llms.txt` returns 404 | Route not registered | Flush cache and verify `Advanced SEO → General → Enable llms.txt` is Yes |
-| Sitemap missing images | Image extension disabled | Enable `Sitemaps → Include Images` and regenerate |
 
 For other issues, enable **Debug Mode** under `Panth Extensions → Core Settings` and check `var/log/panth_seo.log`.
 
@@ -395,9 +386,9 @@ For other issues, enable **Debug Mode** under `Panth Extensions → Core Setting
 
 It **enhances** them. Magento's native meta fields still work — Panth Advanced SEO adds template-based defaults, tokens, hreflang groups, JSON-LD, SEO scoring, and dozens of other features Magento ships without.
 
-### What happened to cross-links, redirects, robots, AI, and HTML sitemap?
+### What happened to cross-links, redirects, robots, AI, HTML sitemap, and XML sitemap?
 
-From version 1.1.0 onward these live in dedicated Packagist modules — install them alongside Advanced SEO when you need them. See [Companion Modules](#companion-modules).
+From version 1.1.0 onward these live in dedicated Packagist modules (XML sitemap was extracted in 1.2.0) — install them alongside Advanced SEO when you need them. See [Companion Modules](#companion-modules).
 
 ### Will this conflict with Mageplaza SEO, Mirasvit SEO, or Amasty SEO?
 
@@ -413,7 +404,7 @@ Yes. The module ships `view/frontend/hyva.xml`, contains zero `requirejs-config.
 
 ### How big is the performance impact on a 500K-SKU catalog?
 
-Minimal. Both indexers run in `update by schedule` mode, so storefront requests hit pre-resolved data. Sharded sitemaps generate incrementally (delta mode). Most overhead is admin-side (generation jobs, scoring cron). Benchmarked on a 1M-SKU Hyva store: storefront TTFB impact under 5ms.
+Minimal. Both indexers run in `update by schedule` mode, so storefront requests hit pre-resolved data. Most overhead is admin-side (generation jobs, scoring cron). Benchmarked on a 1M-SKU Hyva store: storefront TTFB impact under 5ms.
 
 ### Can I use my own JSON-LD schema alongside Panth's providers?
 
@@ -465,7 +456,7 @@ Looking for **custom Magento SEO audits**, **Hyva theme development**, **store m
 
 **Specializations:**
 
-- 🔍 **Magento 2 SEO** — structured data, hreflang, XML sitemaps, meta templates, `llms.txt`
+- 🔍 **Magento 2 SEO** — structured data, hreflang, meta templates, `llms.txt`
 - 🛒 **Magento 2 Module Development** — custom extensions following MEQP standards
 - 🎨 **Hyva Theme Development** — Alpine.js + Tailwind CSS, lightning-fast storefronts
 - 🖌️ **Luma Theme Customization** — pixel-perfect designs, responsive layouts
@@ -517,4 +508,4 @@ Browse the full extension catalog on the [Adobe Commerce Marketplace](https://co
 
 ---
 
-**SEO Keywords:** magento 2 seo extension, magento 2 advanced seo, panth advanced seo, panth infotech seo, magento 2 meta templates, magento 2 meta tag generator, magento 2 meta title template, magento 2 meta description template, magento 2 json-ld, magento 2 structured data, magento 2 schema.org, magento 2 rich snippets, magento 2 product schema, magento 2 breadcrumb schema, magento 2 faq schema, magento 2 organization schema, magento 2 hreflang, magento 2 hreflang extension, magento 2 multi-store hreflang, magento 2 canonical url, magento 2 canonical tag, magento 2 redirects, magento 2 301 redirect manager, magento 2 regex redirects, magento 2 404 management, magento 2 404 monitor, magento 2 xml sitemap, magento 2 html sitemap, magento 2 sharded sitemap, magento 2 robots.txt, magento 2 dynamic robots, magento 2 llm bot control, magento 2 gptbot robots, magento 2 claudebot, magento 2 google-extended, magento 2 indexnow, magento 2 bing indexnow, magento 2 llms.txt, magento 2 ai seo, magento 2 openai seo, magento 2 chatgpt seo, magento 2 claude seo, magento 2 ai meta description, magento 2 ai product description, magento 2 opengraph, magento 2 twitter cards, magento 2 social meta tags, magento 2 seo score, magento 2 seo audit, magento 2 seo dashboard, magento 2 duplicate meta finder, magento 2 product feed, magento 2 google shopping feed, magento 2 facebook catalog feed, magento 2 seo rules engine, magento 2 layered navigation seo, magento 2 filter noindex, magento 2 internal linking, magento 2 pagerank, magento 2 image seo, magento 2 alt text generator, hyva seo, hyva advanced seo, hyva structured data, magento 2.4.8 seo, magento 2.4.7 seo, php 8.4 seo, mage2kishan, mage2sk, hire magento seo developer, top rated plus magento seo, kishan savaliya seo, panth infotech seo extension, magento 2 enterprise seo, magento 2 b2b seo, multi-store seo magento, international seo magento, magento commerce cloud seo, adobe commerce seo
+**SEO Keywords:** magento 2 seo extension, magento 2 advanced seo, panth advanced seo, panth infotech seo, magento 2 meta templates, magento 2 meta tag generator, magento 2 meta title template, magento 2 meta description template, magento 2 json-ld, magento 2 structured data, magento 2 schema.org, magento 2 rich snippets, magento 2 product schema, magento 2 breadcrumb schema, magento 2 faq schema, magento 2 organization schema, magento 2 hreflang, magento 2 hreflang extension, magento 2 multi-store hreflang, magento 2 canonical url, magento 2 canonical tag, magento 2 redirects, magento 2 301 redirect manager, magento 2 regex redirects, magento 2 404 management, magento 2 404 monitor, magento 2 html sitemap, magento 2 robots.txt, magento 2 dynamic robots, magento 2 llm bot control, magento 2 gptbot robots, magento 2 claudebot, magento 2 google-extended, magento 2 indexnow, magento 2 bing indexnow, magento 2 llms.txt, magento 2 ai seo, magento 2 openai seo, magento 2 chatgpt seo, magento 2 claude seo, magento 2 ai meta description, magento 2 ai product description, magento 2 opengraph, magento 2 twitter cards, magento 2 social meta tags, magento 2 seo score, magento 2 seo audit, magento 2 seo dashboard, magento 2 duplicate meta finder, magento 2 product feed, magento 2 google shopping feed, magento 2 facebook catalog feed, magento 2 seo rules engine, magento 2 layered navigation seo, magento 2 filter noindex, magento 2 internal linking, magento 2 pagerank, magento 2 image seo, magento 2 alt text generator, hyva seo, hyva advanced seo, hyva structured data, magento 2.4.8 seo, magento 2.4.7 seo, php 8.4 seo, mage2kishan, mage2sk, hire magento seo developer, top rated plus magento seo, kishan savaliya seo, panth infotech seo extension, magento 2 enterprise seo, magento 2 b2b seo, multi-store seo magento, international seo magento, magento commerce cloud seo, adobe commerce seo

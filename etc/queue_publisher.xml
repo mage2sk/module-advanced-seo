@@ -4,7 +4,4 @@
     <publisher topic="panth_seo.score_entity">
         <connection name="db" exchange="panth_seo.exchange"/>
     </publisher>
-    <publisher topic="panth_seo.sitemap_shard">
-        <connection name="db" exchange="panth_seo.exchange"/>
-    </publisher>
 </config>
