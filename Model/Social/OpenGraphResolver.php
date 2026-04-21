@@ -61,7 +61,56 @@ class OpenGraphResolver
         $tags['og:url'] = $this->resolveUrl($entityType, $entityId, $storeId);
         $tags['og:site_name'] = $this->resolveSiteName();
 
+        // Facebook Shop / product-catalog ingesters require these on PDP.
+        if ($entityType === MetaResolverInterface::ENTITY_PRODUCT) {
+            foreach ($this->resolveProductPriceTags() as $property => $value) {
+                $tags[$property] = $value;
+            }
+        }
+
         return array_filter($tags, static fn (string $v): bool => $v !== '');
+    }
+
+    /**
+     * Resolve product:price:amount / product:price:currency for the current
+     * PDP. Returns an empty array when no current_product is in registry or
+     * the final price is non-positive (e.g. typeless/virtual edge cases).
+     *
+     * @return array<string, string>
+     */
+    private function resolveProductPriceTags(): array
+    {
+        $product = $this->registry->registry('current_product');
+        if (!$product instanceof Product) {
+            return [];
+        }
+
+        $finalPrice = $product->getFinalPrice();
+        if ($finalPrice === null || $finalPrice === false) {
+            try {
+                $finalPrice = (float) $product->getPriceInfo()->getPrice('final_price')->getValue();
+            } catch (\Throwable) {
+                $finalPrice = 0.0;
+            }
+        }
+        $finalPrice = (float) $finalPrice;
+        if ($finalPrice <= 0.0) {
+            return [];
+        }
+
+        try {
+            $currency = (string) $this->storeManager->getStore()->getCurrentCurrencyCode();
+        } catch (\Throwable) {
+            $currency = '';
+        }
+        if ($currency === '') {
+            return [];
+        }
+
+        return [
+            'product:price:amount'   => number_format($finalPrice, 2, '.', ''),
+            'product:price:currency' => $currency,
+        ];
     }
 
     /**
