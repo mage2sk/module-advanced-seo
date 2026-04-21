@@ -163,19 +163,14 @@ class Dashboard extends Template
         $stats = [
             'templates'         => 0,
             'rules'             => 0,
-            'redirects'         => 0,
-            'crosslinks'        => 0,
             'filter_rewrites'   => 0,
             'custom_canonicals' => 0,
             'hreflang_groups'   => 0,
-            'recent_404s'       => 0,
         ];
 
         $tables = [
             'templates'         => ['panth_seo_template',         null],
             'rules'             => ['panth_seo_rule',             'is_active = 1'],
-            'redirects'         => ['panth_seo_redirect',         'is_active = 1'],
-            'crosslinks'        => ['panth_seo_crosslink',        'is_active = 1'],
             'filter_rewrites'   => ['panth_seo_filter_rewrite',   null],
             'custom_canonicals' => ['panth_seo_custom_canonical',  null],
             'hreflang_groups'   => ['panth_seo_hreflang_group',   null],
@@ -190,84 +185,6 @@ class Dashboard extends Template
                         $sql .= " WHERE {$where}";
                     }
                     $stats[$key] = (int) $conn->fetchOne($sql);
-                }
-            }
-
-            // Recent 404s (last 7 days)
-            $logTable = $this->resource->getTableName('panth_seo_404_log');
-            if ($conn->isTableExists($logTable)) {
-                $stats['recent_404s'] = (int) $conn->fetchOne(
-                    "SELECT COUNT(*) FROM {$logTable} WHERE last_seen_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)"
-                );
-            }
-        } catch (\Throwable $e) {
-            // Fail gracefully
-        }
-
-        return $stats;
-    }
-
-    /**
-     * Top N 404 URLs by hit count.
-     *
-     * @return list<array{request_path: string, hit_count: int, last_seen_at: string}>
-     */
-    public function getRecent404s(int $limit = 10): array
-    {
-        try {
-            $conn  = $this->getConnection();
-            $table = $this->resource->getTableName('panth_seo_404_log');
-            if (!$conn->isTableExists($table)) {
-                return [];
-            }
-
-            $rows = $conn->fetchAll(
-                $conn->select()
-                    ->from($table, ['request_path', 'hit_count', 'last_seen_at'])
-                    ->order('hit_count DESC')
-                    ->limit($limit)
-            );
-
-            return is_array($rows) ? $rows : [];
-        } catch (\Throwable $e) {
-            return [];
-        }
-    }
-
-    /**
-     * AI generation job status summary.
-     *
-     * @return array{pending: int, running: int, done: int, error: int, total: int}
-     */
-    public function getAiGenerationStats(): array
-    {
-        $stats = [
-            'pending' => 0,
-            'running' => 0,
-            'done'    => 0,
-            'error'   => 0,
-            'total'   => 0,
-        ];
-
-        try {
-            $conn  = $this->getConnection();
-            $table = $this->resource->getTableName('panth_seo_generation_job');
-            if (!$conn->isTableExists($table)) {
-                return $stats;
-            }
-
-            $rows = $conn->fetchAll(
-                "SELECT status, COUNT(*) AS cnt FROM {$table} GROUP BY status"
-            );
-
-            if (is_array($rows)) {
-                foreach ($rows as $row) {
-                    $status = (string) ($row['status'] ?? '');
-                    $count  = (int) ($row['cnt'] ?? 0);
-                    if (array_key_exists($status, $stats)) {
-                        $stats[$status] = $count;
-                    }
-                    $stats['total'] += $count;
                 }
             }
         } catch (\Throwable $e) {
@@ -289,16 +206,6 @@ class Dashboard extends Template
                 'label' => 'Manage Templates',
                 'url'   => $this->getUrl('panth_seo/template/index'),
                 'icon'  => 'file-text',
-            ],
-            [
-                'label' => 'Manage Redirects',
-                'url'   => $this->getUrl('panth_seo/redirect/index'),
-                'icon'  => 'forward',
-            ],
-            [
-                'label' => 'Manage Crosslinks',
-                'url'   => $this->getUrl('panth_seo/crosslink/index'),
-                'icon'  => 'link',
             ],
             [
                 'label' => 'Bulk Meta Editor',

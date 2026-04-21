@@ -9,7 +9,6 @@ use Magento\Framework\View\Page\Config as PageConfig;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\AdvancedSEO\Api\MetaResolverInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
-use Panth\AdvancedSEO\Model\Robots\MetaResolver as RobotsMetaResolver;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -25,8 +24,7 @@ class MetadataPlugin
         private readonly Registry $registry,
         private readonly StoreManagerInterface $storeManager,
         private readonly SeoConfig $seoConfig,
-        private readonly LoggerInterface $logger,
-        private readonly ?RobotsMetaResolver $robotsMetaResolver = null
+        private readonly LoggerInterface $logger
     ) {
     }
 
@@ -75,11 +73,7 @@ class MetadataPlugin
                 $this->pageConfig->setKeywords($resolved->getMetaKeywords());
             }
             if ($resolved->getRobots() !== null && $resolved->getRobots() !== '') {
-                $robots = $resolved->getRobots();
-                if ($this->robotsMetaResolver !== null) {
-                    $robots = $this->robotsMetaResolver->appendAdvancedDirectives($robots, $storeId);
-                }
-                $this->pageConfig->setRobots($robots);
+                $this->pageConfig->setRobots($resolved->getRobots());
             }
             // Canonical is handled by Block\Head\Canonical (via ViewModel\Canonical)
             // which is pagination-aware.  Adding it here via addRemotePageAsset

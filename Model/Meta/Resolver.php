@@ -25,7 +25,7 @@ use Psr\Log\LoggerInterface;
  * Central meta resolution pipeline.
  *
  * Precedence (first non-empty wins per field):
- *   1. panth_seo_override (ai results only considered when ai_approved = 1)
+ *   1. panth_seo_override
  *   2. Rule engine output  (title_template / description_template / robots / canonical)
  *   3. panth_seo_template matched by (entity_type, store, scope)
  *   4. Native entity values (meta_title/meta_description/meta_keywords)
@@ -331,7 +331,7 @@ class Resolver implements MetaResolverInterface
      */
     private function pickRobots(?array $override, array $rule, ?array $template, int $storeId): ?string
     {
-        if ($override && !empty($override['robots'])) {
+        if ($override && !empty($override['robots']) && $this->overrideUsable($override)) {
             return (string) $override['robots'];
         }
         if (!empty($rule['noindex'])) {
@@ -340,7 +340,7 @@ class Resolver implements MetaResolverInterface
         if ($template && !empty($template['robots'])) {
             return (string) $template['robots'];
         }
-        return $this->config->getDefaultMetaRobots($storeId);
+        return '';
     }
 
     /**
@@ -382,16 +382,15 @@ class Resolver implements MetaResolverInterface
     }
 
     /**
-     * AI drafts only count as overrides once a human has approved them.
+     * An override row is usable whenever it exists. Callers pre-filter on the
+     * `entity_type`/`entity_id`/`store_id` columns and only reach this point
+     * after the row has already been loaded.
      *
      * @param array<string,mixed> $override
      */
     private function overrideUsable(array $override): bool
     {
-        if ((int) ($override['ai_generated'] ?? 0) === 1) {
-            return (int) ($override['ai_approved'] ?? 0) === 1;
-        }
-        return true;
+        return $override !== [];
     }
 
     /**

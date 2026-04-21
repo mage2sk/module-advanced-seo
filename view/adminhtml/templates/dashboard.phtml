@@ -3,9 +3,7 @@
 
 $catalog  = $block->getCatalogOverview();
 $stats    = $block->getModuleStats();
-$recent   = $block->getRecent404s(10);
 $actions  = $block->getQuickActions();
-$aiStats  = $block->getAiGenerationStats();
 $smFeed   = $block->getSitemapFeedStats();
 
 // Use the higher of missing title/desc as the "missing meta" count
@@ -183,20 +181,6 @@ $catPct = $block->pct($catMissing, (int) $catalog['total_categories']);
             </div>
             <div class="panth-card panth-card--neutral">
                 <a class="panth-card-link"
-                   href="<?= $block->escapeUrl($block->getUrl('panth_seo/redirect/index')) ?>"
-                   title="<?= $block->escapeHtmlAttr(__('Manage Redirects')) ?>"></a>
-                <div class="panth-card-value"><?= (int) $stats['redirects'] ?></div>
-                <div class="panth-card-label"><?= $block->escapeHtml(__('Active Redirects')) ?></div>
-            </div>
-            <div class="panth-card panth-card--neutral">
-                <a class="panth-card-link"
-                   href="<?= $block->escapeUrl($block->getUrl('panth_seo/crosslink/index')) ?>"
-                   title="<?= $block->escapeHtmlAttr(__('Manage Crosslinks')) ?>"></a>
-                <div class="panth-card-value"><?= (int) $stats['crosslinks'] ?></div>
-                <div class="panth-card-label"><?= $block->escapeHtml(__('Active Crosslinks')) ?></div>
-            </div>
-            <div class="panth-card panth-card--neutral">
-                <a class="panth-card-link"
                    href="<?= $block->escapeUrl($block->getUrl('panth_seo/hreflang/index')) ?>"
                    title="<?= $block->escapeHtmlAttr(__('Manage Hreflang')) ?>"></a>
                 <div class="panth-card-value"><?= (int) $stats['hreflang_groups'] ?></div>
@@ -219,84 +203,7 @@ $catPct = $block->pct($catMissing, (int) $catalog['total_categories']);
         </div>
     </div>
 
-    <!-- ===== 3. AI Generation Status ===== -->
-    <?php if ($aiStats['total'] > 0): ?>
-    <div class="panth-section">
-        <h2><?= $block->escapeHtml(__('AI Generation Status')) ?></h2>
-        <div class="panth-grid">
-            <div class="panth-card panth-card--ai">
-                <a class="panth-card-link"
-                   href="<?= $block->escapeUrl($block->getUrl('panth_seo/aisettings/index')) ?>"
-                   title="<?= $block->escapeHtmlAttr(__('AI Settings')) ?>"></a>
-                <div class="panth-card-value"><?= (int) $aiStats['pending'] + (int) $aiStats['running'] ?></div>
-                <div class="panth-card-label"><?= $block->escapeHtml(__('Pending / Running Jobs')) ?></div>
-            </div>
-            <div class="panth-card panth-card--ai panth-card--ai-done">
-                <a class="panth-card-link"
-                   href="<?= $block->escapeUrl($block->getUrl('panth_seo/aisettings/index')) ?>"
-                   title="<?= $block->escapeHtmlAttr(__('AI Settings')) ?>"></a>
-                <div class="panth-card-value"><?= (int) $aiStats['done'] ?></div>
-                <div class="panth-card-label"><?= $block->escapeHtml(__('Completed Jobs')) ?></div>
-            </div>
-            <div class="panth-card panth-card--ai panth-card--ai-fail">
-                <a class="panth-card-link"
-                   href="<?= $block->escapeUrl($block->getUrl('panth_seo/aisettings/index')) ?>"
-                   title="<?= $block->escapeHtmlAttr(__('AI Settings')) ?>"></a>
-                <div class="panth-card-value"><?= (int) $aiStats['error'] ?></div>
-                <div class="panth-card-label"><?= $block->escapeHtml(__('Failed Jobs')) ?></div>
-            </div>
-            <div class="panth-card panth-card--ai">
-                <div class="panth-card-value"><?= (int) $aiStats['total'] ?></div>
-                <div class="panth-card-label"><?= $block->escapeHtml(__('Total Jobs')) ?></div>
-            </div>
-        </div>
-    </div>
-    <?php endif; ?>
-
-    <!-- ===== 4. Recent 404s ===== -->
-    <div class="panth-section">
-        <h2>
-            <?= $block->escapeHtml(__('Recent 404 Errors')) ?>
-            <?php if ((int) $stats['recent_404s'] > 0): ?>
-                <span style="font-size: 13px; font-weight: 400; color: #999; margin-left: 8px;">
-                    (<?= (int) $stats['recent_404s'] ?> <?= $block->escapeHtml(__('in the last 7 days')) ?>)
-                </span>
-            <?php endif; ?>
-        </h2>
-
-        <?php if (count($recent) > 0): ?>
-            <div class="panth-table-wrap">
-                <table class="panth-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 40px;">#</th>
-                            <th><?= $block->escapeHtml(__('Request Path')) ?></th>
-                            <th style="text-align: right;"><?= $block->escapeHtml(__('Hits')) ?></th>
-                            <th><?= $block->escapeHtml(__('Last Seen')) ?></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($recent as $i => $row): ?>
-                            <tr>
-                                <td style="color: #999;"><?= $i + 1 ?></td>
-                                <td class="panth-path"><?= $block->escapeHtml((string) ($row['request_path'] ?? '')) ?></td>
-                                <td class="panth-hits"><?= (int) ($row['hit_count'] ?? 0) ?></td>
-                                <td class="panth-date"><?= $block->escapeHtml((string) ($row['last_seen_at'] ?? '')) ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-            <a class="panth-view-all"
-               href="<?= $block->escapeUrl($block->getUrl('panth_seo/redirect/index', ['tab' => '404_log'])) ?>">
-                <?= $block->escapeHtml(__('View All 404 Logs')) ?> &rarr;
-            </a>
-        <?php else: ?>
-            <div class="panth-empty"><?= $block->escapeHtml(__('No 404 errors recorded yet. Great!')) ?></div>
-        <?php endif; ?>
-    </div>
-
-    <!-- ===== 5. Sitemap & Feed Status ===== -->
+    <!-- ===== 3. Sitemap & Feed Status ===== -->
     <div class="panth-section">
         <h2><?= $block->escapeHtml(__('Sitemap & Feed Status')) ?></h2>
         <div class="panth-grid">
@@ -321,7 +228,7 @@ $catPct = $block->pct($catMissing, (int) $catalog['total_categories']);
         </div>
     </div>
 
-    <!-- ===== 6. Quick Actions ===== -->
+    <!-- ===== 4. Quick Actions ===== -->
     <div class="panth-section">
         <h2><?= $block->escapeHtml(__('Quick Actions')) ?></h2>
         <div class="panth-actions">

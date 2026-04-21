@@ -17,8 +17,6 @@ class Override extends AbstractModel
     public const META_KEYWORDS    = 'meta_keywords';
     public const CANONICAL_URL    = 'canonical_url';
     public const ROBOTS           = 'robots';
-    public const AI_GENERATED     = 'ai_generated';
-    public const AI_APPROVED      = 'ai_approved';
 
     protected $_idFieldName = 'override_id';
 
@@ -76,15 +74,5 @@ class Override extends AbstractModel
     {
         $v = $this->getData(self::ROBOTS);
         return $v === null ? null : (string) $v;
-    }
-
-    public function isAiGenerated(): bool
-    {
-        return (bool) $this->getData(self::AI_GENERATED);
-    }
-
-    public function isAiApproved(): bool
-    {
-        return (bool) $this->getData(self::AI_APPROVED);
     }
 }

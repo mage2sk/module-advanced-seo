@@ -45,8 +45,6 @@
             "meta_keywords": true,
             "canonical_url": true,
             "robots": true,
-            "ai_generated": true,
-            "ai_approved": true,
             "created_at": true,
             "updated_at": true,
             "hreflang_identifier": true
@@ -83,75 +81,6 @@
             "PRIMARY": true,
             "PANTH_SEO_RESOLVED_UNQ_STORE_ENTITY": true,
             "PANTH_SEO_RESOLVED_STORE_ID_ENTITY_TYPE_ENTITY_ID": true
-        }
-    },
-    "panth_seo_redirect": {
-        "column": {
-            "redirect_id": true,
-            "store_id": true,
-            "match_type": true,
-            "pattern": true,
-            "target": true,
-            "status_code": true,
-            "priority": true,
-            "is_active": true,
-            "hit_count": true,
-            "last_hit_at": true,
-            "start_at": true,
-            "finish_at": true,
-            "created_at": true,
-            "updated_at": true,
-            "is_auto_generated": true
-        },
-        "index": {
-            "PANTH_SEO_REDIRECT_IDX_STORE_ACTIVE": true,
-            "PANTH_SEO_REDIRECT_IDX_PATTERN": true,
-            "PANTH_SEO_REDIRECT_STORE_ID_IS_ACTIVE_PRIORITY": true,
-            "PANTH_SEO_REDIRECT_PATTERN": true
-        },
-        "constraint": {
-            "PRIMARY": true,
-            "PANTH_SEO_REDIRECT_STORE_ID_STORE_STORE_ID": true
-        }
-    },
-    "panth_seo_404_log": {
-        "column": {
-            "log_id": true,
-            "store_id": true,
-            "request_path": true,
-            "path_hash": true,
-            "referer": true,
-            "hit_count": true,
-            "cluster_key": true,
-            "first_seen_at": true,
-            "last_seen_at": true
-        },
-        "index": {
-            "PANTH_SEO_404_LOG_IDX_CLUSTER": true,
-            "PANTH_SEO_404_LOG_CLUSTER_KEY": true
-        },
-        "constraint": {
-            "PRIMARY": true,
-            "PANTH_SEO_404_LOG_UNQ_STORE_HASH": true,
-            "PANTH_SEO_404_LOG_STORE_ID_PATH_HASH": true
-        }
-    },
-    "panth_seo_404_cluster": {
-        "column": {
-            "cluster_id": true,
-            "store_id": true,
-            "pattern": true,
-            "hits": true,
-            "sample_url": true,
-            "created_at": true
-        },
-        "index": {
-            "PANTH_SEO_404_CLUSTER_IDX_STORE_HITS": true,
-            "PANTH_SEO_404_CLUSTER_STORE_ID_HITS": true
-        },
-        "constraint": {
-            "PRIMARY": true,
-            "PANTH_SEO_404_CLUSTER_STORE_ID_STORE_STORE_ID": true
         }
     },
     "panth_seo_hreflang_group": {
@@ -260,99 +189,6 @@
             "PANTH_SEO_META_EMBEDDING_STORE_ID_ENTITY_TYPE_ENTITY_ID_FIELD": true
         }
     },
-    "panth_seo_generation_job": {
-        "column": {
-            "job_id": true,
-            "uuid": true,
-            "store_id": true,
-            "entity_type": true,
-            "total": true,
-            "processed": true,
-            "failed": true,
-            "status": true,
-            "provider": true,
-            "tokens_used": true,
-            "options": true,
-            "error_message": true,
-            "created_by": true,
-            "created_at": true,
-            "updated_at": true,
-            "prompt_id": true
-        },
-        "index": {
-            "PANTH_SEO_GENERATION_JOB_IDX_STATUS": true,
-            "PANTH_SEO_GENERATION_JOB_STATUS": true
-        },
-        "constraint": {
-            "PRIMARY": true,
-            "PANTH_SEO_GENERATION_JOB_UNQ_UUID": true,
-            "PANTH_SEO_GENERATION_JOB_UUID": true
-        }
-    },
-    "panth_seo_robots_policy": {
-        "column": {
-            "policy_id": true,
-            "store_id": true,
-            "user_agent": true,
-            "directive": true,
-            "path": true,
-            "priority": true,
-            "is_active": true,
-            "updated_at": true
-        },
-        "index": {
-            "PANTH_SEO_ROBOTS_POLICY_IDX_STORE_UA": true,
-            "PANTH_SEO_ROBOTS_POLICY_STORE_ID_USER_AGENT": true
-        },
-        "constraint": {
-            "PRIMARY": true,
-            "PANTH_SEO_ROBOTS_POLICY_STORE_ID": true,
-            "PANTH_SEO_ROBOTS_POLICY_STORE_ID_STORE_STORE_ID": true
-        }
-    },
-    "panth_seo_ai_usage": {
-        "column": {
-            "usage_id": true,
-            "provider": true,
-            "model": true,
-            "prompt_tokens": true,
-            "completion_tokens": true,
-            "total_tokens": true,
-            "cost_usd": true,
-            "job_id": true,
-            "period": true,
-            "created_at": true
-        },
-        "index": {
-            "PANTH_SEO_AI_USAGE_IDX_PERIOD": true,
-            "PANTH_SEO_AI_USAGE_IDX_JOB": true,
-            "PANTH_SEO_AI_USAGE_PERIOD": true,
-            "PANTH_SEO_AI_USAGE_JOB_ID": true
-        },
-        "constraint": {
-            "PRIMARY": true
-        }
-    },
-    "panth_seo_ai_cache": {
-        "column": {
-            "cache_id": true,
-            "cache_key": true,
-            "provider": true,
-            "response": true,
-            "tokens": true,
-            "expires_at": true,
-            "created_at": true
-        },
-        "index": {
-            "PANTH_SEO_AI_CACHE_IDX_EXPIRES": true,
-            "PANTH_SEO_AI_CACHE_EXPIRES_AT": true
-        },
-        "constraint": {
-            "PRIMARY": true,
-            "PANTH_SEO_AI_CACHE_UNQ_KEY": true,
-            "PANTH_SEO_AI_CACHE_CACHE_KEY": true
-        }
-    },
     "panth_seo_duplicate": {
         "column": {
             "duplicate_id": true,
@@ -424,34 +260,6 @@
             "PANTH_SEO_CTGR_FILTER_META_CTGR_ID_ATTR_CODE_OPT_ID_STORE_ID": true
         }
     },
-    "panth_seo_crosslink": {
-        "column": {
-            "crosslink_id": true,
-            "keyword": true,
-            "url": true,
-            "url_title": true,
-            "max_replacements": true,
-            "nofollow": true,
-            "priority": true,
-            "is_active": true,
-            "in_product": true,
-            "in_category": true,
-            "in_cms": true,
-            "store_id": true,
-            "created_at": true,
-            "active_from": true,
-            "active_to": true,
-            "reference_type": true,
-            "reference_value": true
-        },
-        "index": {
-            "PANTH_SEO_CROSSLINK_IDX_ACTIVE_STORE": true,
-            "PANTH_SEO_CROSSLINK_IS_ACTIVE_STORE_ID": true
-        },
-        "constraint": {
-            "PRIMARY": true
-        }
-    },
     "panth_seo_crawl_result": {
         "column": {
             "id": true,
@@ -495,31 +303,6 @@
             "PANTH_SEO_RELATED_IDX_TARGET": true,
             "PANTH_SEO_RELATED_SOURCE_TYPE_SOURCE_ID_STORE_ID": true,
             "PANTH_SEO_RELATED_TARGET_TYPE_TARGET_ID": true
-        },
-        "constraint": {
-            "PRIMARY": true
-        }
-    },
-    "panth_seo_ai_knowledge": {
-        "column": {
-            "knowledge_id": true,
-            "category": true,
-            "subcategory": true,
-            "title": true,
-            "content": true,
-            "tags": true,
-            "is_active": true,
-            "sort_order": true,
-            "created_at": true,
-            "updated_at": true
-        },
-        "index": {
-            "PANTH_SEO_AI_KNOWLEDGE_IDX_CATEGORY_ACTIVE": true,
-            "PANTH_SEO_AI_KNOWLEDGE_IDX_SUBCATEGORY": true,
-            "PANTH_SEO_AI_KNOWLEDGE_IDX_SORT": true,
-            "PANTH_SEO_AI_KNOWLEDGE_CATEGORY_IS_ACTIVE": true,
-            "PANTH_SEO_AI_KNOWLEDGE_SUBCATEGORY": true,
-            "PANTH_SEO_AI_KNOWLEDGE_SORT_ORDER": true
         },
         "constraint": {
             "PRIMARY": true
@@ -630,26 +413,6 @@
         "constraint": {
             "PRIMARY": true,
             "PANTH_SEO_SITEMAP_PROFILE_STORE_ID_STORE_STORE_ID": true
-        }
-    },
-    "panth_seo_ai_prompt": {
-        "column": {
-            "prompt_id": true,
-            "name": true,
-            "entity_type": true,
-            "prompt_template": true,
-            "is_default": true,
-            "is_active": true,
-            "sort_order": true,
-            "created_at": true,
-            "updated_at": true
-        },
-        "index": {
-            "PANTH_SEO_AI_PROMPT_ENTITY_TYPE_IS_ACTIVE": true,
-            "PANTH_SEO_AI_PROMPT_IS_DEFAULT": true
-        },
-        "constraint": {
-            "PRIMARY": true
         }
     }
 }

@@ -2,7 +2,6 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/topology.xsd">
     <exchange name="panth_seo.exchange" type="topic" connection="db">
-        <binding id="panth_seo_generate_meta_binding" topic="panth_seo.generate_meta" destinationType="queue" destination="panth_seo.generate_meta.q"/>
         <binding id="panth_seo_score_entity_binding" topic="panth_seo.score_entity" destinationType="queue" destination="panth_seo.score_entity.q"/>
         <binding id="panth_seo_sitemap_shard_binding" topic="panth_seo.sitemap_shard" destinationType="queue" destination="panth_seo.sitemap_shard.q"/>
     </exchange>

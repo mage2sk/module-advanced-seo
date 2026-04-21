@@ -32,9 +32,8 @@ use Psr\Log\LoggerInterface;
  *      both title and description patterns.
  *   2. A sensible fallback meta description so SERP snippets are never empty
  *      when no template is configured (or the template lacks a description).
- *   3. `noindex,follow` when `panth_seo/robots/noindex_search_results=1`,
- *      taking precedence over any layout-default robots value that would
- *      otherwise allow indexing of the low-value search result page.
+ *   3. A robots directive when the matching template row defines one, taken
+ *      from the per-template `robots` column.
  *
  * The description/robots are written to the PageConfig instance that is
  * passed into `publicBuild` (which is the same instance the head renderer
@@ -130,14 +129,10 @@ class SearchResultMetaPlugin
                 $subject->setDescription($renderedDesc);
             }
 
-            // Robots directive: a template value wins first, then the
-            // `noindex_search_results` system config, so site owners can
-            // opt out of noindex for a specific search template without
-            // changing global config.
+            // Robots directive: only applied when the template row itself
+            // defines a value. The per-entity `robots` column is still the
+            // sole source for search meta.
             $robotsValue = (string) ($template['robots'] ?? '');
-            if ($robotsValue === '' && $this->seoConfig->isNoindexSearchResults($storeId)) {
-                $robotsValue = 'noindex,follow';
-            }
             if ($robotsValue !== '') {
                 $subject->setRobots($robotsValue);
             }

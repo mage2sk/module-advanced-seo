@@ -34,15 +34,6 @@ class Config
     public const XML_SD_FAQ          = 'panth_seo/structured_data/faq';
     public const XML_SD_ARTICLE      = 'panth_seo/structured_data/article';
 
-    public const XML_ROBOTS_DEFAULT_META       = 'panth_seo/robots/default_meta';
-    public const XML_ROBOTS_NOINDEX_FILTERED   = 'panth_seo/robots/noindex_filtered';
-    public const XML_ROBOTS_NOINDEX_SEARCH     = 'panth_seo/robots/noindex_search_results';
-    public const XML_ROBOTS_NOINDEX_PATHS      = 'panth_seo/robots/noindex_paths';
-    public const XML_ROBOTS_LLM_PREFIX         = 'panth_seo/robots/llm_bots/';
-    public const XML_ROBOTS_MAX_IMAGE_PREVIEW  = 'panth_seo/robots/max_image_preview';
-    public const XML_ROBOTS_MAX_SNIPPET        = 'panth_seo/robots/max_snippet';
-    public const XML_ROBOTS_CRAWL_DELAY        = 'panth_seo/robots/crawl_delay';
-
     public const XML_SITEMAP_ENABLED          = 'panth_seo/sitemap/enabled';
     public const XML_SITEMAP_SHARD_SIZE       = 'panth_seo/sitemap/shard_size';
     public const XML_SITEMAP_GZIP             = 'panth_seo/sitemap/gzip';
@@ -51,14 +42,6 @@ class Config
 
     public const XML_HREFLANG_ENABLED  = 'panth_seo/hreflang/enabled';
     public const XML_HREFLANG_XDEFAULT = 'panth_seo/hreflang/emit_x_default';
-
-    public const XML_AI_PROVIDER       = 'panth_seo/ai/provider';
-    public const XML_AI_API_KEY        = 'panth_seo/ai/api_key';
-    public const XML_AI_MONTHLY_BUDGET = 'panth_seo/ai/monthly_budget';
-    public const XML_AI_CACHE_TTL      = 'panth_seo/ai/cache_ttl';
-    public const XML_AI_TEMPERATURE    = 'panth_seo/ai/temperature';
-    public const XML_AI_MAX_TOKENS     = 'panth_seo/ai/max_tokens';
-    public const XML_AI_TONE           = 'panth_seo/ai/tone';
 
     // Social / Open Graph
     public const XML_SOCIAL_OG_ENABLED        = 'panth_seo/social/og_enabled';
@@ -90,18 +73,6 @@ class Config
     public const XML_FILTER_META_ENABLED            = 'panth_seo/filter_meta/filter_meta_enabled';
     public const XML_FILTER_META_INJECT_TITLE       = 'panth_seo/filter_meta/inject_filter_in_title';
     public const XML_FILTER_META_INJECT_DESCRIPTION = 'panth_seo/filter_meta/inject_filter_in_description';
-
-    // Crosslinks
-    public const XML_CROSSLINKS_ENABLED       = 'panth_seo/crosslinks/crosslinks_enabled';
-    public const XML_CROSSLINKS_MAX_PER_PAGE  = 'panth_seo/crosslinks/max_links_per_page';
-    public const XML_CROSSLINKS_EXCLUDED_TAGS = 'panth_seo/crosslinks/excluded_tags';
-
-    // Auto Redirect
-    public const XML_AUTO_REDIRECT_ENABLED          = 'panth_seo/auto_redirect/auto_redirect_enabled';
-    public const XML_AUTO_REDIRECT_TARGET_STRATEGY  = 'panth_seo/auto_redirect/redirect_target_strategy';
-    public const XML_AUTO_REDIRECT_CUSTOM_URL       = 'panth_seo/auto_redirect/redirect_custom_url';
-    public const XML_AUTO_REDIRECT_LOWERCASE        = 'panth_seo/auto_redirect/lowercase_redirect';
-    public const XML_AUTO_REDIRECT_HOMEPAGE        = 'panth_seo/auto_redirect/homepage_redirect';
 
     // Sitemap (new)
     public const XML_SITEMAP_EXCLUDE_OOS     = 'panth_seo/sitemap/exclude_out_of_stock';
@@ -155,25 +126,6 @@ class Config
     public const XML_URL_URL_KEY_TEMPLATE          = 'panth_seo/url/url_key_template';
     public const XML_URL_AUTO_URL_KEY_FOR_EXISTING = 'panth_seo/url/auto_url_key_for_existing';
 
-    // Crosslinks (new)
-    public const XML_CROSSLINKS_TIME_ACTIVATION = 'panth_seo/crosslinks/crosslink_time_activation';
-
-    // HTML Sitemap
-    public const XML_HTML_SITEMAP_ENABLED            = 'panth_seo/html_sitemap/enabled';
-    public const XML_HTML_SITEMAP_SHOW_CATEGORIES    = 'panth_seo/html_sitemap/show_categories';
-    public const XML_HTML_SITEMAP_MAX_CATEGORY_DEPTH = 'panth_seo/html_sitemap/max_category_depth';
-    public const XML_HTML_SITEMAP_SHOW_PRODUCTS      = 'panth_seo/html_sitemap/show_products';
-    public const XML_HTML_SITEMAP_PRODUCT_SORT_ORDER = 'panth_seo/html_sitemap/product_sort_order';
-    public const XML_HTML_SITEMAP_PRODUCT_URL_STRUCTURE = 'panth_seo/html_sitemap/product_url_structure';
-    public const XML_HTML_SITEMAP_SHOW_CMS_PAGES     = 'panth_seo/html_sitemap/show_cms_pages';
-    public const XML_HTML_SITEMAP_SHOW_STORES        = 'panth_seo/html_sitemap/show_stores';
-    public const XML_HTML_SITEMAP_SHOW_CUSTOM_LINKS  = 'panth_seo/html_sitemap/show_custom_links';
-    public const XML_HTML_SITEMAP_CUSTOM_LINKS       = 'panth_seo/html_sitemap/custom_links';
-    public const XML_HTML_SITEMAP_META_TITLE         = 'panth_seo/html_sitemap/meta_title';
-    public const XML_HTML_SITEMAP_META_DESCRIPTION   = 'panth_seo/html_sitemap/meta_description';
-    public const XML_HTML_SITEMAP_EXCLUDE_CMS_PAGES  = 'panth_seo/html_sitemap/exclude_cms_pages';
-    public const XML_HTML_SITEMAP_SHOW_SEARCH_FIELD  = 'panth_seo/html_sitemap/show_search_field';
-
     // Reports & Diagnostics
     public const XML_REPORTS_CRAWL_AUDIT_ENABLED = 'panth_seo/reports/enable_crawl_audit';
     public const XML_REPORTS_CRAWL_DEPTH         = 'panth_seo/reports/crawl_depth';
@@ -196,7 +148,6 @@ class Config
 
     public const XML_ADV_ASYNC_INDEXING          = 'panth_seo/advanced/async_indexing';
     public const XML_ADV_MVIEW_ENABLED           = 'panth_seo/advanced/mview_enabled';
-    public const XML_ADV_LOG_404                 = 'panth_seo/advanced/log_404';
     public const XML_ADV_LAST_MODIFIED_HEADER    = 'panth_seo/advanced/last_modified_header';
     public const XML_ADV_SPECULATION_RULES       = 'panth_seo/advanced/speculation_rules_enabled';
 
@@ -205,13 +156,6 @@ class Config
 
     // Sitemap (video)
     public const XML_SITEMAP_INCLUDE_VIDEO = 'panth_seo/sitemap/include_video';
-
-    // Auto Redirect (expiry)
-    public const XML_AUTO_REDIRECT_EXPIRY_DAYS = 'panth_seo/auto_redirect/expiry_days';
-
-    // AI provider-specific keys
-    public const XML_AI_OPENAI_API_KEY = 'panth_seo/ai/openai_api_key';
-    public const XML_AI_CLAUDE_API_KEY = 'panth_seo/ai/claude_api_key';
 
     // LLMs.txt
     public const XML_LLMS_TXT_ENABLED        = 'panth_seo/llms_txt/enabled';
@@ -281,22 +225,6 @@ class Config
     public function isDebug(?int $storeId = null): bool
     {
         return $this->flag(self::XML_GENERAL_DEBUG, $storeId);
-    }
-
-    /**
-     * Check if AI meta generation is enabled (provider is configured).
-     */
-    public function isAiEnabled(?int $storeId = null): bool
-    {
-        if (!$this->isEnabled($storeId)) {
-            return false;
-        }
-        $provider = (string)$this->scopeConfig->getValue(
-            self::XML_AI_PROVIDER,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $storeId
-        );
-        return $provider !== '' && $provider !== 'none' && $provider !== 'null';
     }
 
     public function useTemplates(?int $storeId = null): bool
@@ -376,62 +304,6 @@ class Config
         return $this->flag($path, $storeId);
     }
 
-    public function getDefaultMetaRobots(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_ROBOTS_DEFAULT_META, $storeId) ?? 'index,follow');
-    }
-
-    public function isNoindexFiltered(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_ROBOTS_NOINDEX_FILTERED, $storeId);
-    }
-
-    public function isNoindexSearchResults(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_ROBOTS_NOINDEX_SEARCH, $storeId);
-    }
-
-    /**
-     * Newline-separated list of URL path patterns (supporting `*` wildcards)
-     * that must always emit `noindex,nofollow` at both the meta tag and
-     * X-Robots-Tag HTTP header. Blank to fall back to module defaults.
-     */
-    public function getNoindexPaths(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_ROBOTS_NOINDEX_PATHS, $storeId) ?? '');
-    }
-
-    /**
-     * max-image-preview directive value: "none", "standard", or "large".
-     */
-    public function getMaxImagePreview(?int $storeId = null): string
-    {
-        $value = (string) ($this->value(self::XML_ROBOTS_MAX_IMAGE_PREVIEW, $storeId) ?? 'large');
-        $allowed = ['none', 'standard', 'large'];
-        return in_array($value, $allowed, true) ? $value : 'large';
-    }
-
-    /**
-     * max-snippet directive value: -1 (unlimited) or a positive character count.
-     */
-    public function getMaxSnippet(?int $storeId = null): int
-    {
-        return (int) ($this->value(self::XML_ROBOTS_MAX_SNIPPET, $storeId) ?? -1);
-    }
-
-    /**
-     * Crawl-delay directive for robots.txt (seconds). 0 means omit the directive.
-     */
-    public function getRobotsCrawlDelay(?int $storeId = null): int
-    {
-        return max(0, (int) ($this->value(self::XML_ROBOTS_CRAWL_DELAY, $storeId) ?? 0));
-    }
-
-    public function isLlmBotAllowed(string $bot, ?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_ROBOTS_LLM_PREFIX . $bot, $storeId);
-    }
-
     public function isSitemapEnabled(?int $storeId = null): bool
     {
         return $this->flag(self::XML_SITEMAP_ENABLED, $storeId);
@@ -465,42 +337,6 @@ class Config
     public function emitHreflangXDefault(?int $storeId = null): bool
     {
         return $this->flag(self::XML_HREFLANG_XDEFAULT, $storeId);
-    }
-
-    public function getAiProvider(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_AI_PROVIDER, $storeId) ?? 'null');
-    }
-
-    public function getAiApiKey(?int $storeId = null): string
-    {
-        $raw = (string) ($this->value(self::XML_AI_API_KEY, $storeId) ?? '');
-        return $raw === '' ? '' : $this->encryptor->decrypt($raw);
-    }
-
-    public function getAiMonthlyBudget(?int $storeId = null): int
-    {
-        return (int) ($this->value(self::XML_AI_MONTHLY_BUDGET, $storeId) ?? 1000000);
-    }
-
-    public function getAiCacheTtl(?int $storeId = null): int
-    {
-        return (int) ($this->value(self::XML_AI_CACHE_TTL, $storeId) ?? 2592000);
-    }
-
-    public function getAiTemperature(?int $storeId = null): float
-    {
-        return (float) ($this->value(self::XML_AI_TEMPERATURE, $storeId) ?? 0.4);
-    }
-
-    public function getAiMaxTokens(?int $storeId = null): int
-    {
-        return (int) ($this->value(self::XML_AI_MAX_TOKENS, $storeId) ?? 400);
-    }
-
-    public function getAiTone(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_AI_TONE, $storeId) ?? 'professional');
     }
 
     // --- Social / Open Graph ---
@@ -624,50 +460,6 @@ class Config
         return $this->flag(self::XML_FILTER_META_INJECT_DESCRIPTION, $storeId);
     }
 
-    // --- Crosslinks ---
-
-    public function isCrosslinksEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_CROSSLINKS_ENABLED, $storeId);
-    }
-
-    public function getCrosslinksMaxPerPage(?int $storeId = null): int
-    {
-        return (int) ($this->value(self::XML_CROSSLINKS_MAX_PER_PAGE, $storeId) ?? 5);
-    }
-
-    public function getCrosslinksExcludedTags(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_CROSSLINKS_EXCLUDED_TAGS, $storeId) ?? 'h1,h2,h3,h4,h5,h6,a,button,script,style');
-    }
-
-    // --- Auto Redirect ---
-
-    public function isAutoRedirectEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_AUTO_REDIRECT_ENABLED, $storeId);
-    }
-
-    public function getAutoRedirectTargetStrategy(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_AUTO_REDIRECT_TARGET_STRATEGY, $storeId) ?? 'parent_category');
-    }
-
-    public function getAutoRedirectCustomUrl(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_AUTO_REDIRECT_CUSTOM_URL, $storeId) ?? '');
-    }
-
-    public function isLowercaseRedirectEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_AUTO_REDIRECT_LOWERCASE, $storeId);
-    }
-
-    public function isHomepageRedirectEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_AUTO_REDIRECT_HOMEPAGE, $storeId);
-    }
-
     // --- Sitemap (new) ---
 
     public function sitemapExcludeOutOfStock(?int $storeId = null): bool
@@ -739,11 +531,6 @@ class Config
     public function isMviewEnabled(?int $storeId = null): bool
     {
         return $this->flag(self::XML_ADV_MVIEW_ENABLED, $storeId);
-    }
-
-    public function isLog404Enabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_ADV_LOG_404, $storeId);
     }
 
     // --- Meta: Pagination ---
@@ -923,13 +710,6 @@ class Config
     public const XML_SOCIAL_PROFILE_PINTEREST = 'panth_seo/social_profiles/pinterest_url';
     public const XML_SOCIAL_PROFILE_TIKTOK    = 'panth_seo/social_profiles/tiktok_url';
 
-    // --- Crosslinks: Time Activation ---
-
-    public function isCrosslinkTimeActivationEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_CROSSLINKS_TIME_ACTIVATION, $storeId);
-    }
-
     // --- URL Key Automation ---
 
     public function isAutoUrlKeyEnabled(?int $storeId = null): bool
@@ -979,91 +759,6 @@ class Config
     public function isBreadcrumbPriorityEnabled(?int $storeId = null): bool
     {
         return $this->flag(self::XML_BREADCRUMBS_PRIORITY_ENABLED, $storeId);
-    }
-
-    // --- HTML Sitemap ---
-
-    public function isHtmlSitemapEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_HTML_SITEMAP_ENABLED, $storeId);
-    }
-
-    public function isHtmlSitemapShowCategories(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_HTML_SITEMAP_SHOW_CATEGORIES, $storeId);
-    }
-
-    public function getHtmlSitemapMaxCategoryDepth(?int $storeId = null): int
-    {
-        return (int) ($this->value(self::XML_HTML_SITEMAP_MAX_CATEGORY_DEPTH, $storeId) ?? 0);
-    }
-
-    public function isHtmlSitemapShowProducts(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_HTML_SITEMAP_SHOW_PRODUCTS, $storeId);
-    }
-
-    public function getHtmlSitemapProductSortOrder(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_HTML_SITEMAP_PRODUCT_SORT_ORDER, $storeId) ?? 'name');
-    }
-
-    public function getHtmlSitemapProductUrlStructure(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_HTML_SITEMAP_PRODUCT_URL_STRUCTURE, $storeId) ?? 'short');
-    }
-
-    public function isHtmlSitemapShowCmsPages(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_HTML_SITEMAP_SHOW_CMS_PAGES, $storeId);
-    }
-
-    public function isHtmlSitemapShowStores(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_HTML_SITEMAP_SHOW_STORES, $storeId);
-    }
-
-    public function isHtmlSitemapShowCustomLinks(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_HTML_SITEMAP_SHOW_CUSTOM_LINKS, $storeId);
-    }
-
-    public function getHtmlSitemapCustomLinks(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_HTML_SITEMAP_CUSTOM_LINKS, $storeId) ?? '');
-    }
-
-    public function getHtmlSitemapMetaTitle(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_HTML_SITEMAP_META_TITLE, $storeId) ?? '');
-    }
-
-    public function getHtmlSitemapMetaDescription(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_HTML_SITEMAP_META_DESCRIPTION, $storeId) ?? '');
-    }
-
-    /**
-     * Return CMS page identifiers to exclude from the HTML sitemap.
-     *
-     * @return string[]
-     */
-    public function getHtmlSitemapExcludeCmsPages(?int $storeId = null): array
-    {
-        $raw = trim((string) ($this->value(self::XML_HTML_SITEMAP_EXCLUDE_CMS_PAGES, $storeId) ?? ''));
-        if ($raw === '') {
-            return [];
-        }
-
-        return array_filter(
-            array_map('trim', explode(',', $raw)),
-            static fn(string $v): bool => $v !== ''
-        );
-    }
-
-    public function isHtmlSitemapShowSearchField(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_HTML_SITEMAP_SHOW_SEARCH_FIELD, $storeId);
     }
 
     // --- Image SEO ---
@@ -1267,20 +962,6 @@ class Config
         return trim((string) ($this->value(self::XML_SC_SITE_VERIFICATION_CODE, $storeId) ?? ''));
     }
 
-    // --- AI: Provider-specific API Keys ---
-
-    public function getAiOpenaiApiKey(?int $storeId = null): string
-    {
-        $raw = (string) ($this->value(self::XML_AI_OPENAI_API_KEY, $storeId) ?? '');
-        return $raw === '' ? '' : $this->encryptor->decrypt($raw);
-    }
-
-    public function getAiClaudeApiKey(?int $storeId = null): string
-    {
-        $raw = (string) ($this->value(self::XML_AI_CLAUDE_API_KEY, $storeId) ?? '');
-        return $raw === '' ? '' : $this->encryptor->decrypt($raw);
-    }
-
     // --- Canonical: Strip Params ---
 
     public function getCanonicalStripParams(?int $storeId = null): string
@@ -1293,13 +974,6 @@ class Config
     public function sitemapIncludeVideo(?int $storeId = null): bool
     {
         return $this->flag(self::XML_SITEMAP_INCLUDE_VIDEO, $storeId);
-    }
-
-    // --- Auto Redirect: Expiry ---
-
-    public function getAutoRedirectExpiryDays(?int $storeId = null): int
-    {
-        return (int) ($this->value(self::XML_AUTO_REDIRECT_EXPIRY_DAYS, $storeId) ?? 365);
     }
 
     // --- Advanced: Last-Modified Header ---

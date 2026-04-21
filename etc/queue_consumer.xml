@@ -1,12 +1,6 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/consumer.xsd">
-    <consumer name="panth_seo.generate_meta.consumer"
-              queue="panth_seo.generate_meta.q"
-              connection="db"
-              maxMessages="500"
-              consumerInstance="Panth\AdvancedSEO\Model\Queue\BulkGenerateConsumer"
-              handler="Panth\AdvancedSEO\Model\Queue\BulkGenerateConsumer::process"/>
     <consumer name="panth_seo.score_entity.consumer"
               queue="panth_seo.score_entity.q"
               connection="db"

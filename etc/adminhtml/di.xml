@@ -76,39 +76,4 @@
                 sortOrder="30"/>
     </type>
 
-    <!--
-        Third-party Panth module AI integrations.
-
-        SAFE: Magento silently ignores plugin declarations for non-existent
-        target classes during DI compilation. Each plugin also includes an
-        internal class_exists() check as an extra safety net.
-    -->
-
-    <!-- FAQ: AI buttons on FAQ item edit form -->
-    <type name="Panth\Faq\Model\Item\DataProvider">
-        <plugin name="panth_seo_faq_item_ai"
-                type="Panth\AdvancedSEO\Plugin\ThirdParty\FaqItemAiPlugin"
-                sortOrder="100"/>
-    </type>
-
-    <!-- Testimonials: AI buttons on testimonial edit form -->
-    <type name="Panth\Testimonials\Model\Testimonial\DataProvider">
-        <plugin name="panth_seo_testimonial_ai"
-                type="Panth\AdvancedSEO\Plugin\ThirdParty\TestimonialAiPlugin"
-                sortOrder="100"/>
-    </type>
-
-    <!-- BannerSlider: AI buttons on slide edit form -->
-    <type name="Panth\BannerSlider\Ui\DataProvider\SlideFormDataProvider">
-        <plugin name="panth_seo_banner_slide_ai"
-                type="Panth\AdvancedSEO\Plugin\ThirdParty\BannerSlideAiPlugin"
-                sortOrder="100"/>
-    </type>
-
-    <!-- DynamicForms: AI buttons on form edit page -->
-    <type name="Panth\DynamicForms\Ui\DataProvider\FormDataProvider">
-        <plugin name="panth_seo_dynamic_form_ai"
-                type="Panth\AdvancedSEO\Plugin\ThirdParty\DynamicFormAiPlugin"
-                sortOrder="100"/>
-    </type>
 </config>

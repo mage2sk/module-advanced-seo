@@ -11,16 +11,12 @@
                     <resource id="Panth_AdvancedSEO::filter_rewrites" title="Filter URL Rewrites" sortOrder="35"/>
                     <resource id="Panth_AdvancedSEO::custom_canonical" title="Custom Canonicals" sortOrder="36"/>
                     <resource id="Panth_AdvancedSEO::filter_meta" title="Category Filter Meta" sortOrder="37"/>
-                    <resource id="Panth_AdvancedSEO::crosslinks" title="Cross-Links" sortOrder="38"/>
-                    <resource id="Panth_AdvancedSEO::redirects" title="Redirects &amp; 404s" sortOrder="40"/>
                     <resource id="Panth_AdvancedSEO::hreflang" title="Hreflang Groups" sortOrder="50"/>
                     <resource id="Panth_AdvancedSEO::sitemap" title="Sitemaps" sortOrder="60"/>
-                    <resource id="Panth_AdvancedSEO::robots" title="Robots &amp; LLMs" sortOrder="70"/>
                     <resource id="Panth_AdvancedSEO::reports" title="SEO Reports" sortOrder="74"/>
                     <resource id="Panth_AdvancedSEO::missing_meta" title="Missing Meta Report" sortOrder="75"/>
                     <resource id="Panth_AdvancedSEO::crawl_audit" title="Crawl Audit" sortOrder="76"/>
                     <resource id="Panth_AdvancedSEO::audit" title="SEO Audit" sortOrder="80"/>
-                    <resource id="Panth_AdvancedSEO::ai" title="AI Settings" sortOrder="90"/>
                     <resource id="Panth_AdvancedSEO::config" title="Configuration" sortOrder="100"/>
                 </resource>
             </resource>

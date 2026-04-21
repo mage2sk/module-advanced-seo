@@ -13,7 +13,6 @@ use Magento\Store\Model\StoreManagerInterface;
 use Panth\AdvancedSEO\Api\CanonicalResolverInterface;
 use Panth\AdvancedSEO\Api\HreflangResolverInterface;
 use Panth\AdvancedSEO\Api\MetaResolverInterface;
-use Panth\AdvancedSEO\Api\RobotsPolicyInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Panth\AdvancedSEO\Model\Social\OpenGraphResolver;
 use Panth\AdvancedSEO\Model\Social\TwitterCardResolver;
@@ -33,7 +32,6 @@ class SeoToolbar implements ArgumentInterface
     public function __construct(
         private readonly PageConfig $pageConfig,
         private readonly CanonicalResolverInterface $canonicalResolver,
-        private readonly RobotsPolicyInterface $robotsPolicy,
         private readonly HreflangResolverInterface $hreflangResolver,
         private readonly OpenGraphResolver $openGraphResolver,
         private readonly TwitterCardResolver $twitterCardResolver,
@@ -215,7 +213,6 @@ class SeoToolbar implements ArgumentInterface
                 'description'      => $description,
                 'description_length' => mb_strlen($description),
                 'keywords'         => $this->getMetaKeywords(),
-                'robots'           => $this->getRobots(),
                 'canonical'        => $this->getCanonicalUrl(),
                 'base_url'         => $baseUrl,
             ],
@@ -286,24 +283,6 @@ class SeoToolbar implements ArgumentInterface
         try {
             $storeId = (int) $this->storeManager->getStore()->getId();
             return $this->canonicalResolver->getCanonicalUrl($type, $id, $storeId);
-        } catch (\Throwable) {
-            return '';
-        }
-    }
-
-    private function getRobots(): string
-    {
-        [$type, $id] = $this->detectEntity();
-        if ($type === null) {
-            try {
-                return $this->config->getDefaultMetaRobots();
-            } catch (\Throwable) {
-                return '';
-            }
-        }
-        try {
-            $storeId = (int) $this->storeManager->getStore()->getId();
-            return $this->robotsPolicy->getMetaRobots($type, $id, $storeId);
         } catch (\Throwable) {
             return '';
         }

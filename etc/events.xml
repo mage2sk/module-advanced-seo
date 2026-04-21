@@ -33,20 +33,6 @@
         <observer name="panth_seo_category_move_after"
                   instance="Panth\AdvancedSEO\Observer\Category\MoveAfter"/>
     </event>
-    <!--
-        NOTE: We subscribe to `model_delete_before` (dispatched first in
-        AbstractModel::beforeDelete) rather than `catalog_product_delete_before`
-        so we run BEFORE Magento_CatalogUrlRewrite's `process_url_rewrite_removing`
-        observer, which deletes the url_rewrite rows we need to read.
-    -->
-    <event name="model_delete_before">
-        <observer name="panth_seo_product_delete_before"
-                  instance="Panth\AdvancedSEO\Observer\Redirect\ProductDeleteBefore"/>
-        <observer name="panth_seo_category_delete_before"
-                  instance="Panth\AdvancedSEO\Observer\Redirect\CategoryDeleteBefore"/>
-        <observer name="panth_seo_cms_page_delete_before"
-                  instance="Panth\AdvancedSEO\Observer\Redirect\CmsPageDeleteBefore"/>
-    </event>
     <event name="catalog_entity_attribute_save_after">
         <observer name="panth_seo_filter_attribute_option_save"
                   instance="Panth\AdvancedSEO\Observer\FilterUrl\AttributeOptionSave"/>

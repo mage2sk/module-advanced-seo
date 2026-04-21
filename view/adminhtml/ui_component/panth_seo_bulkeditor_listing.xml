@@ -29,19 +29,6 @@
         <bookmark name="bookmarks"/>
         <columnsControls name="columns_controls"/>
         <filters name="listing_filters"/>
-        <massaction name="listing_massaction">
-            <action name="generate_ai_meta">
-                <settings>
-                    <confirm>
-                        <message translate="true">Are you sure you want to generate AI meta for the selected entities?</message>
-                        <title translate="true">Generate AI Meta</title>
-                    </confirm>
-                    <url path="panth_seo/bulkeditor/massGenerate"/>
-                    <type>generate_ai_meta</type>
-                    <label translate="true">Generate AI Meta</label>
-                </settings>
-            </action>
-        </massaction>
         <paging name="listing_paging">
             <settings>
                 <options>

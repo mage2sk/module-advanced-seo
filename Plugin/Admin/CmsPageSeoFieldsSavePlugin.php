@@ -170,7 +170,6 @@ class CmsPageSeoFieldsSavePlugin
         $ignoredKeys = [
             'override_id', 'entity_type', 'entity_id', 'store_id',
             'robots', 'hreflang_identifier',
-            'ai_generated', 'ai_approved',
             'created_at', 'updated_at',
         ];
 

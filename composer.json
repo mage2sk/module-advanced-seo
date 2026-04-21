@@ -1,8 +1,8 @@
 {
     "name": "mage2kishan/module-advanced-seo",
-    "description": "Panth Advanced SEO — enterprise-grade SEO suite for Magento 2: meta templates, rules engine, AI content generation, structured data (JSON-LD), hreflang, canonical URLs, redirects & 404 management, XML/HTML sitemaps, robots & LLM bot policy, SEO scoring & audit, social meta (OpenGraph/Twitter), image SEO, cross-linking, filter URL control, IndexNow, llms.txt, product feeds, and analytics. Hyva and Luma compatible.",
+    "description": "Panth Advanced SEO — enterprise-grade SEO suite for Magento 2: SEO dashboard, meta templates, SEO rules engine, bulk meta editor, custom canonicals, filter URL rewrites, filter page meta, hreflang, XML sitemaps, product feeds, missing meta report, SEO audit & crawl results, structured data (JSON-LD), breadcrumbs, OpenGraph/Twitter social meta, llms.txt + llms-full.txt. Hyva and Luma compatible.",
     "type": "magento2-module",
-    "version": "1.0.6",
+    "version": "1.1.0",
     "license": "proprietary",
     "keywords": [
         "magento2",
@@ -13,10 +13,7 @@
         "json-ld",
         "hreflang",
         "canonical",
-        "redirects",
         "sitemap",
-        "robots",
-        "ai-seo",
         "opengraph",
         "hyva",
         "panth"
@@ -49,7 +46,12 @@
         "magento/module-config": "^101.2"
     },
     "suggest": {
-        "hyva-themes/magento2-default-theme": "For Hyva frontend compatibility (no jQuery, TailwindCSS, AlpineJS)."
+        "hyva-themes/magento2-default-theme": "For Hyva frontend compatibility (no jQuery, TailwindCSS, AlpineJS).",
+        "mage2kishan/module-crosslinks": "Auto cross-linking keyword → URL replacement in CMS/product/category HTML.",
+        "mage2kishan/module-redirects": "301/302/303/307/308/410/451 redirects + 404 log + CSV import/export + loop detector.",
+        "mage2kishan/module-robots-seo": "Dedicated /robots.txt, X-Robots-Tag HTTP header, and LLM-bot policy (GPTBot, ClaudeBot, PerplexityBot, etc.) for Magento 2.",
+        "mage2kishan/module-pagebuilder-ai": "AI meta generation via OpenAI / Claude with prompts, knowledge base, async jobs, and Generate-with-AI buttons on admin forms.",
+        "mage2kishan/module-html-sitemap": "Frontend HTML sitemap page (/sitemap) with categories, products, CMS pages, stores, and custom links."
     },
     "autoload": {
         "files": [

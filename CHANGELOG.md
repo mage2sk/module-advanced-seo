@@ -4,6 +4,91 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.1.0] — 2026-04-21
+
+### BREAKING — feature split
+
+Panth_AdvancedSEO has been refactored into a family of focused modules. Five
+feature areas have been extracted into dedicated Packagist modules. Installing
+only `mage2kishan/module-advanced-seo` after upgrading to 1.1.0 will remove
+the following features; reinstall the corresponding sibling module to restore
+each.
+
+- **Cross-Links** → `mage2kishan/module-crosslinks`
+  Auto keyword → internal-link replacement in CMS / product / category HTML.
+  Same table name (`panth_seo_crosslink`) — zero data migration required.
+
+- **Redirects & 404s** → `mage2kishan/module-redirects`
+  301/302/303/307/308/410/451 redirects, 404 log with clustering, CSV
+  import/export, homepage-alias canonicaliser, lowercase + trailing-slash
+  normalisers, expiry cron, loop detector, XHR guard. Table names preserved
+  (`panth_seo_redirect`, `panth_seo_404_log`, `panth_seo_404_cluster`).
+
+- **Robots & LLM Bots** → `mage2kishan/module-robots-seo`
+  Dedicated `/robots.txt` endpoint, `X-Robots-Tag` HTTP response header,
+  per-entity `<meta name="robots">` pipeline, 14 LLM / AI crawler toggles
+  (GPTBot, ClaudeBot, PerplexityBot, Google-Extended, Bytespider, CCBot,
+  Applebot-Extended, Meta-ExternalAgent, Amazonbot, Cohere-AI, …). Table
+  name preserved (`panth_seo_robots_policy`).
+
+- **AI Meta Generation** → `mage2kishan/module-pagebuilder-ai`
+  OpenAI + Claude adapter factory, monthly token budget, response cache,
+  async job queue, AI Prompts CRUD, AI Knowledge Base with seeded reference
+  content, "Generate with AI" button injection on product / category / CMS
+  Page / FAQ / Testimonial / Banner / Dynamic Form admin surfaces. Table
+  names preserved (`panth_seo_ai_prompt`, `panth_seo_ai_knowledge`,
+  `panth_seo_ai_usage`, `panth_seo_ai_cache`, `panth_seo_generation_job`).
+
+- **HTML Sitemap** → `mage2kishan/module-html-sitemap`
+  Frontend `/sitemap` HTML page with categories, products, CMS pages, stores,
+  custom links. Custom router rewriting `/sitemap` → module controller.
+
+### Removed
+
+- ~70 files — controllers, models, blocks, plugins, UI components,
+  layouts, templates, setup patches belonging exclusively to the five
+  extracted features.
+- System-config groups under `Stores → Configuration → Panth Infotech →
+  SEO`: Auto Cross-Links, Redirects, Robots & LLM Bots, AI Meta Generation,
+  HTML Sitemap. Each is now exposed by its own module's config section.
+- 9 LLM bot toggles + robots.txt custom-body override (moved to Panth_RobotsSeo).
+- DB tables `panth_seo_crosslink`, `panth_seo_redirect`, `panth_seo_404_log`,
+  `panth_seo_404_cluster`, `panth_seo_robots_policy`, `panth_seo_ai_prompt`,
+  `panth_seo_ai_knowledge`, `panth_seo_ai_usage`, `panth_seo_ai_cache`,
+  `panth_seo_generation_job` — Magento will NOT drop existing rows because
+  the sibling module re-declares each table byte-identically.
+- AI-approval columns (`ai_generated`, `ai_approved`) on `panth_seo_override`
+  — Override usability no longer gates on AI approval. Panth_PageBuilderAi
+  owns the AI review workflow separately.
+
+### Changed
+
+- Shared `Helper/Config.php`: removed ~40 deprecated constants + accessor
+  methods for the five extracted features.
+- `Plugin/PageConfig/HeadPlugin.php`: the "always set robots from config
+  default" branch is removed. Per-entity `robots` column still feeds the
+  `<meta name="robots">` tag via `Model/Meta/Resolver`. Install
+  Panth_RobotsSeo to restore per-store default, noindex-paths, and
+  advanced directives (`max-image-preview`, `max-snippet`).
+- Admin dashboard (`Block/Adminhtml/Dashboard.php` + `dashboard.phtml`):
+  dropped Active Crosslinks, Active Redirects, Recent 404s, AI Generation
+  Status cards.
+- `Plugin/Admin/{Product,Category,CmsPage}SeoFieldsPlugin.php`: "Generate
+  with AI" button + prompt selector + image upload removed. Install
+  Panth_PageBuilderAi to restore — it plugs into the same fieldsets via
+  its own DI.
+
+### Migration notes
+
+- No database migration is required. Every table kept its pre-split name
+  and shape; the sibling modules declare the same schemas.
+- Composer users: after `composer update mage2kishan/module-advanced-seo`,
+  run `composer require mage2kishan/module-<feature>` for each sibling you
+  want, then `bin/magento setup:upgrade && setup:di:compile && cache:flush`.
+- Admin config values saved under `panth_seo/*` paths for the extracted
+  features are ignored by AdvancedSEO 1.1.0. The sibling modules expose
+  their own config paths; re-save settings under the new paths.
+
 ## [1.0.6]
 
 ### Fixed

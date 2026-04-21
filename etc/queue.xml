@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/queue.xsd">
-    <broker topic="panth_seo.generate_meta" exchange="panth_seo.exchange" type="db">
-        <queue name="panth_seo.generate_meta.q" consumer="panth_seo.generate_meta.consumer" consumerInstance="Panth\AdvancedSEO\Model\Queue\BulkGenerateConsumer" handler="Panth\AdvancedSEO\Model\Queue\BulkGenerateConsumer::process"/>
-    </broker>
     <broker topic="panth_seo.score_entity" exchange="panth_seo.exchange" type="db">
         <queue name="panth_seo.score_entity.q" consumer="panth_seo.score_entity.consumer" consumerInstance="Panth\AdvancedSEO\Model\Queue\ScoreConsumer" handler="Panth\AdvancedSEO\Model\Queue\ScoreConsumer::process"/>
     </broker>

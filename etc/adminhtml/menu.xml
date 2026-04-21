@@ -42,28 +42,12 @@
              action="panth_seo/bulkeditor/index"
              resource="Panth_AdvancedSEO::manage"/>
 
-        <add id="Panth_AdvancedSEO::redirects"
-             title="Redirects &amp; 404s"
-             module="Panth_AdvancedSEO"
-             parent="Panth_AdvancedSEO::root"
-             sortOrder="35"
-             action="panth_seo/redirect/index"
-             resource="Panth_AdvancedSEO::manage"/>
-
         <add id="Panth_AdvancedSEO::custom_canonical"
              title="Custom Canonicals"
              module="Panth_AdvancedSEO"
              parent="Panth_AdvancedSEO::root"
              sortOrder="40"
              action="panth_seo/customcanonical/index"
-             resource="Panth_AdvancedSEO::manage"/>
-
-        <add id="Panth_AdvancedSEO::crosslinks"
-             title="Cross-Links"
-             module="Panth_AdvancedSEO"
-             parent="Panth_AdvancedSEO::root"
-             sortOrder="45"
-             action="panth_seo/crosslink/index"
              resource="Panth_AdvancedSEO::manage"/>
 
         <add id="Panth_AdvancedSEO::filter_rewrites"
@@ -128,30 +112,6 @@
              parent="Panth_AdvancedSEO::root"
              sortOrder="77"
              action="panth_seo/audit/crawlResults"
-             resource="Panth_AdvancedSEO::manage"/>
-
-        <add id="Panth_AdvancedSEO::ai_jobs"
-             title="AI Generation Jobs"
-             module="Panth_AdvancedSEO"
-             parent="Panth_AdvancedSEO::root"
-             sortOrder="80"
-             action="panth_seo/aisettings/jobs"
-             resource="Panth_AdvancedSEO::manage"/>
-
-        <add id="Panth_AdvancedSEO::ai_prompts"
-             title="AI Prompts"
-             module="Panth_AdvancedSEO"
-             parent="Panth_AdvancedSEO::root"
-             sortOrder="82"
-             action="panth_seo/aiprompt/index"
-             resource="Panth_AdvancedSEO::manage"/>
-
-        <add id="Panth_AdvancedSEO::ai_knowledge"
-             title="AI Knowledge Base"
-             module="Panth_AdvancedSEO"
-             parent="Panth_AdvancedSEO::root"
-             sortOrder="84"
-             action="panth_seo/aiknowledge/index"
              resource="Panth_AdvancedSEO::manage"/>
 
         <add id="Panth_AdvancedSEO::config"

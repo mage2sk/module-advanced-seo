@@ -133,67 +133,6 @@
                 <enable_breadcrumb_priority>0</enable_breadcrumb_priority>
                 <breadcrumb_format>longest</breadcrumb_format>
             </breadcrumbs>
-            <crosslinks>
-                <crosslinks_enabled>1</crosslinks_enabled>
-                <max_links_per_page>5</max_links_per_page>
-                <excluded_tags>h1,h2,h3,h4,h5,h6,a,button,script,style</excluded_tags>
-                <crosslink_time_activation>0</crosslink_time_activation>
-            </crosslinks>
-            <auto_redirect>
-                <auto_redirect_enabled>1</auto_redirect_enabled>
-                <redirect_target_strategy>parent_category</redirect_target_strategy>
-                <lowercase_redirect>1</lowercase_redirect>
-                <homepage_redirect>1</homepage_redirect>
-                <expiry_days>365</expiry_days>
-            </auto_redirect>
-            <robots>
-                <default_meta>index,follow</default_meta>
-                <noindex_filtered>1</noindex_filtered>
-                <noindex_search_results>1</noindex_search_results>
-                <noindex_paths>/customer/*
-/checkout
-/checkout/*
-/wishlist
-/wishlist/*
-/sales/*
-/contact
-/contact/*
-/contacts
-/contacts/*
-/catalogsearch/*
-/multishipping/*
-/newsletter/manage
-/newsletter/manage/*
-/review/customer/*
-/captcha
-/captcha/*
-/sendfriend/*
-/paypal/*
-/downloadable/customer/*
-/vault/*
-/giftcard/customer/*
-/rewards/*
-/oauth/*
-/connect/*</noindex_paths>
-                <max_image_preview>large</max_image_preview>
-                <max_snippet>-1</max_snippet>
-                <llm_bots>
-                    <gptbot>1</gptbot>
-                    <claudebot>1</claudebot>
-                    <google_extended>1</google_extended>
-                    <ccbot>0</ccbot>
-                    <perplexitybot>1</perplexitybot>
-                    <bytespider>0</bytespider>
-                    <chatgpt_user>1</chatgpt_user>
-                    <oai_searchbot>1</oai_searchbot>
-                    <anthropic_ai>1</anthropic_ai>
-                    <cohere_ai>1</cohere_ai>
-                    <amazonbot>1</amazonbot>
-                    <applebot_extended>1</applebot_extended>
-                    <facebookbot>1</facebookbot>
-                    <meta_externalagent>1</meta_externalagent>
-                </llm_bots>
-            </robots>
             <sitemap>
                 <enabled>1</enabled>
                 <shard_size>45000</shard_size>
@@ -218,14 +157,6 @@
                 <hreflang_scope>website</hreflang_scope>
                 <cms_relation_method>by_url_key</cms_relation_method>
             </hreflang>
-            <ai>
-                <provider>null</provider>
-                <monthly_budget>1000000</monthly_budget>
-                <cache_ttl>2592000</cache_ttl>
-                <temperature>0.4</temperature>
-                <max_tokens>400</max_tokens>
-                <tone>professional</tone>
-            </ai>
             <reports>
                 <enable_crawl_audit>0</enable_crawl_audit>
                 <crawl_depth>100</crawl_depth>
@@ -238,22 +169,6 @@
                 <title_template>{{name}}</title_template>
                 <gallery_seo_enabled>1</gallery_seo_enabled>
             </image>
-            <html_sitemap>
-                <enabled>1</enabled>
-                <show_categories>1</show_categories>
-                <max_category_depth>0</max_category_depth>
-                <show_products>1</show_products>
-                <product_sort_order>name</product_sort_order>
-                <product_url_structure>short</product_url_structure>
-                <show_cms_pages>1</show_cms_pages>
-                <show_stores>0</show_stores>
-                <show_custom_links>0</show_custom_links>
-                <custom_links></custom_links>
-                <meta_title>Site Map</meta_title>
-                <meta_description></meta_description>
-                <exclude_cms_pages></exclude_cms_pages>
-                <show_search_field>0</show_search_field>
-            </html_sitemap>
             <indexnow>
                 <enabled>0</enabled>
                 <api_key/>
@@ -291,7 +206,6 @@
             <advanced>
                 <async_indexing>1</async_indexing>
                 <mview_enabled>1</mview_enabled>
-                <log_404>1</log_404>
                 <last_modified_header>1</last_modified_header>
                 <speculation_rules_enabled>0</speculation_rules_enabled>
             </advanced>
