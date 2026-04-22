@@ -13,29 +13,24 @@ use Magento\Store\Model\StoreManagerInterface;
 use Panth\AdvancedSEO\Api\CanonicalResolverInterface;
 use Panth\AdvancedSEO\Api\MetaResolverInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
-use Panth\Hreflang\Api\HreflangResolverInterface;
-use Panth\SocialMeta\Model\Social\OpenGraphResolver;
-use Panth\SocialMeta\Model\Social\TwitterCardResolver;
-use Panth\StructuredData\Model\StructuredData\Composite;
 
 /**
- * Collects all SEO signals for the current page and exposes them to the
+ * Collects SEO signals for the current page and exposes them to the
  * frontend toolbar. Hyva-safe: no jQuery, no RequireJS.
  *
- * The data returned by {@see getData()} is used by the client-side toolbar
- * to render a diagnostic overlay. Any value that requires HTML parsing is
- * intentionally NOT collected here — those values are computed client-side
- * from the rendered DOM so the toolbar does not double-parse the response.
+ * After the module split the toolbar shows only signals owned by
+ * Panth_AdvancedSEO itself (canonical, meta, identity, score) and the
+ * generic HTTP/cookie diagnostics. Cross-module diagnostics (OG, Twitter,
+ * Hreflang, JSON-LD) previously read via the standalone SocialMeta /
+ * Hreflang / StructuredData modules have been removed from the toolbar
+ * so AdvancedSEO has zero cross-Panth dependencies; those tags can be
+ * inspected directly in the rendered DOM.
  */
 class SeoToolbar implements ArgumentInterface
 {
     public function __construct(
         private readonly PageConfig $pageConfig,
         private readonly CanonicalResolverInterface $canonicalResolver,
-        private readonly HreflangResolverInterface $hreflangResolver,
-        private readonly OpenGraphResolver $openGraphResolver,
-        private readonly TwitterCardResolver $twitterCardResolver,
-        private readonly Composite $structuredDataComposite,
         private readonly SeoConfig $config,
         private readonly Registry $registry,
         private readonly RequestInterface $request,
@@ -217,20 +212,24 @@ class SeoToolbar implements ArgumentInterface
                 'base_url'         => $baseUrl,
             ],
 
-            // --- Section 3: Open Graph ---
-            'og_tags' => $this->getOpenGraphTags(),
+            // --- Section 3: Open Graph (owned by Panth_SocialMeta) ---
+            // Read client-side from rendered <meta property="og:..."> tags.
+            'og_tags' => [],
 
-            // --- Section 4: Twitter Card ---
-            'twitter_tags' => $this->getTwitterTags(),
+            // --- Section 4: Twitter Card (owned by Panth_SocialMeta) ---
+            // Read client-side from rendered <meta name="twitter:..."> tags.
+            'twitter_tags' => [],
 
-            // --- Section 5: Hreflang ---
-            'hreflang' => $this->getHreflangLinks(),
+            // --- Section 5: Hreflang (owned by Panth_Hreflang) ---
+            // Read client-side from rendered <link rel="alternate" hreflang="..."> tags.
+            'hreflang' => [],
 
-            // --- Section 6: JSON-LD ---
-            'jsonld' => $this->getJsonLdBlocks(),
+            // --- Section 6: JSON-LD (owned by Panth_StructuredData) ---
+            // Read client-side from rendered <script type="application/ld+json"> blocks.
+            'jsonld' => [],
 
-            // --- Section 11: Schema validation (warnings collected) ---
-            'jsonld_warnings' => $this->getJsonLdWarnings(),
+            // --- Section 11: Schema validation (collected client-side) ---
+            'jsonld_warnings' => [],
 
             // --- Section 13: HTTP Headers (sniffed) ---
             'headers' => $this->getResponseHeaders(),
@@ -285,138 +284,6 @@ class SeoToolbar implements ArgumentInterface
             return $this->canonicalResolver->getCanonicalUrl($type, $id, $storeId);
         } catch (\Throwable) {
             return '';
-        }
-    }
-
-    /**
-     * @return array<int, array{locale: string, url: string}>
-     */
-    private function getHreflangLinks(): array
-    {
-        [$type, $id] = $this->detectEntity();
-        if ($type === null) {
-            return [];
-        }
-        try {
-            $storeId = (int) $this->storeManager->getStore()->getId();
-            return $this->hreflangResolver->getAlternates($type, $id, $storeId);
-        } catch (\Throwable) {
-            return [];
-        }
-    }
-
-    /**
-     * Return each JSON-LD block the module would emit, with its @type list
-     * AND a pretty-printed JSON body for display in the toolbar.
-     *
-     * @return array<int, array{types: list<string>, pretty: string}>
-     */
-    private function getJsonLdBlocks(): array
-    {
-        try {
-            $json = $this->structuredDataComposite->build();
-            if ($json === '') {
-                return [];
-            }
-            $decoded = json_decode($json, true, 64, JSON_THROW_ON_ERROR);
-            if (!is_array($decoded)) {
-                return [];
-            }
-
-            // If this is a composite @graph, break it into one block per node
-            // so each can be inspected independently.
-            $blocks = [];
-            if (isset($decoded['@graph']) && is_array($decoded['@graph'])) {
-                foreach ($decoded['@graph'] as $node) {
-                    if (!is_array($node)) {
-                        continue;
-                    }
-                    $blocks[] = [
-                        'types'  => $this->extractTypes($node),
-                        'pretty' => (string) json_encode(
-                            $node,
-                            JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
-                        ),
-                    ];
-                }
-            } else {
-                $blocks[] = [
-                    'types'  => $this->extractTypes($decoded),
-                    'pretty' => (string) json_encode(
-                        $decoded,
-                        JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
-                    ),
-                ];
-            }
-            return $blocks;
-        } catch (\Throwable) {
-            return [];
-        }
-    }
-
-    /**
-     * Return a list of human-readable warnings about the JSON-LD payload
-     * (missing required @context, missing @type, parse error, etc.).
-     *
-     * @return list<string>
-     */
-    private function getJsonLdWarnings(): array
-    {
-        $warnings = [];
-        try {
-            $json = $this->structuredDataComposite->build();
-            if ($json === '') {
-                $warnings[] = 'No JSON-LD emitted for this page.';
-                return $warnings;
-            }
-            $decoded = json_decode($json, true);
-            if (!is_array($decoded)) {
-                $warnings[] = 'JSON-LD payload is not a valid JSON object.';
-                return $warnings;
-            }
-            if (!isset($decoded['@context'])) {
-                $warnings[] = 'Top-level @context is missing.';
-            }
-            if (isset($decoded['@graph']) && is_array($decoded['@graph'])) {
-                foreach ($decoded['@graph'] as $i => $node) {
-                    if (!is_array($node)) {
-                        $warnings[] = '@graph node #' . (int) $i . ' is not an object.';
-                        continue;
-                    }
-                    if (!isset($node['@type'])) {
-                        $warnings[] = '@graph node #' . (int) $i . ' is missing @type.';
-                    }
-                }
-            } elseif (!isset($decoded['@type'])) {
-                $warnings[] = 'Top-level @type is missing.';
-            }
-        } catch (\Throwable $e) {
-            $warnings[] = 'JSON-LD validation threw: ' . $e->getMessage();
-        }
-        return $warnings;
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function getOpenGraphTags(): array
-    {
-        try {
-            return $this->openGraphResolver->resolve();
-        } catch (\Throwable) {
-            return [];
-        }
-    }
-
-    /**
-     * @return array<string, string>
-     */
-    private function getTwitterTags(): array
-    {
-        try {
-            return $this->twitterCardResolver->resolve();
-        } catch (\Throwable) {
-            return [];
         }
     }
 
@@ -545,33 +412,6 @@ class SeoToolbar implements ArgumentInterface
     // ------------------------------------------------------------------
     // Helpers
     // ------------------------------------------------------------------
-
-    /**
-     * @param array<string, mixed> $data
-     * @return list<string>
-     */
-    private function extractTypes(array $data): array
-    {
-        $types = [];
-        if (isset($data['@type'])) {
-            $t = $data['@type'];
-            if (is_array($t)) {
-                foreach ($t as $v) {
-                    $types[] = (string) $v;
-                }
-            } else {
-                $types[] = (string) $t;
-            }
-        }
-        if (isset($data['@graph']) && is_array($data['@graph'])) {
-            foreach ($data['@graph'] as $node) {
-                if (is_array($node)) {
-                    $types = array_merge($types, $this->extractTypes($node));
-                }
-            }
-        }
-        return array_values(array_unique($types));
-    }
 
     /**
      * @return array{0: ?string, 1: int}

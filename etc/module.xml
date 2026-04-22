@@ -9,10 +9,6 @@
             <module name="Magento_UrlRewrite"/>
             <module name="Magento_CatalogUrlRewrite"/>
             <module name="Magento_Sitemap"/>
-            <!-- Optional: Panth_ProductGallery is soft-linked via di.xml
-                 arguments so the custom gallery (used by both Hyva and
-                 Luma) can render template-based alt/title text. -->
-            <module name="Panth_ProductGallery"/>
         </sequence>
     </module>
 </config>
