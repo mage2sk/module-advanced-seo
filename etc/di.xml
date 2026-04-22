@@ -33,52 +33,12 @@
             <argument name="config" xsi:type="object">Panth\AdvancedSEO\Helper\Config</argument>
         </arguments>
     </type>
-    <preference for="Panth\AdvancedSEO\Api\HreflangResolverInterface" type="Panth\AdvancedSEO\Model\Hreflang\Resolver"/>
-    <preference for="Panth\AdvancedSEO\Api\StructuredDataProviderInterface" type="Panth\AdvancedSEO\Model\StructuredData\Composite"/>
-    <preference for="Panth\AdvancedSEO\Model\ImageSeo\VisionAdapterInterface" type="Panth\AdvancedSEO\Model\ImageSeo\NullVisionAdapter"/>
-
     <!-- Interface bindings: new feature repositories -->
-    <preference for="Panth\AdvancedSEO\Api\FilterRewriteRepositoryInterface" type="Panth\AdvancedSEO\Model\FilterRewrite\Repository"/>
     <preference for="Panth\AdvancedSEO\Api\CustomCanonicalRepositoryInterface" type="Panth\AdvancedSEO\Model\CustomCanonical\Repository"/>
-    <preference for="Panth\AdvancedSEO\Api\CategoryFilterMetaRepositoryInterface" type="Panth\AdvancedSEO\Model\CategoryFilterMeta\Repository"/>
-
-    <!-- FilterRouter: intercept filter-friendly URLs and resolve them -->
-    <type name="Magento\Framework\App\RouterList">
-        <arguments>
-            <argument name="routerList" xsi:type="array">
-                <item name="panth_seo_filter" xsi:type="array">
-                    <item name="class" xsi:type="string">Panth\AdvancedSEO\Controller\Router\FilterRouter</item>
-                    <item name="disable" xsi:type="boolean">false</item>
-                    <item name="sortOrder" xsi:type="string">22</item>
-                </item>
-            </argument>
-        </arguments>
-    </type>
-
-    <!-- Filter item plugins -->
-    <type name="Magento\Catalog\Model\Layer\Filter\Item">
-        <plugin name="panth_seo_filter_item_url" type="Panth\AdvancedSEO\Plugin\FilterUrl\FilterItemUrlPlugin" sortOrder="10"/>
-        <plugin name="panth_seo_filter_item_remove_url" type="Panth\AdvancedSEO\Plugin\FilterUrl\FilterItemRemoveUrlPlugin" sortOrder="20"/>
-    </type>
-
-    <!-- Swatch filter URL plugin -->
-    <type name="Magento\Swatches\Block\LayeredNavigation\RenderLayered">
-        <plugin name="panth_seo_swatch_url" type="Panth\AdvancedSEO\Plugin\FilterUrl\SwatchUrlPlugin" sortOrder="10"/>
-    </type>
-
-    <!-- Pager URL plugin: preserve SEO-friendly filter URLs in pagination -->
-    <type name="Magento\Theme\Block\Html\Pager">
-        <plugin name="panth_seo_pager_url" type="Panth\AdvancedSEO\Plugin\FilterUrl\PagerPlugin" sortOrder="10"/>
-    </type>
 
     <!-- Strip native title prefix/suffix -->
     <type name="Magento\Framework\View\Page\Title">
         <plugin name="panth_seo_strip_title_prefix_suffix" type="Panth\AdvancedSEO\Plugin\PageConfig\StripTitlePrefixSuffixPlugin" sortOrder="10"/>
-    </type>
-
-    <!-- Remove native JSON-LD markup from Magento -->
-    <type name="Magento\Framework\View\Element\AbstractBlock">
-        <plugin name="panth_seo_remove_native_markup" type="Panth\AdvancedSEO\Plugin\StructuredData\RemoveNativeMarkupPlugin" sortOrder="15"/>
     </type>
 
     <!-- Short category URL plugin: flatten parent/child path to just the url_key -->
@@ -89,113 +49,6 @@
     <!-- Product visibility URL plugin -->
     <type name="Magento\Catalog\Model\Product">
         <plugin name="panth_seo_product_visibility_url" type="Panth\AdvancedSEO\Plugin\Url\ProductVisibilityUrlPlugin" sortOrder="10"/>
-    </type>
-
-    <!-- Blog detector: supported blog post model FQCNs (soft dependencies).
-         These are optional runtime-probed classes; none are Panth code. Add or
-         remove entries here to support additional blog modules without changing
-         PHP source code. -->
-    <type name="Panth\AdvancedSEO\Model\Blog\BlogDetector">
-        <arguments>
-            <argument name="supportedClasses" xsi:type="array">
-                <item name="blog_adapter_1" xsi:type="string">Magefan\Blog\Model\Post</item>
-                <item name="blog_adapter_2" xsi:type="string">Mirasvit\Blog\Model\Post</item>
-                <item name="blog_adapter_3" xsi:type="string">Mageplaza\Blog\Model\Post</item>
-            </argument>
-        </arguments>
-    </type>
-
-    <!-- Image plugins -->
-    <type name="Magento\Catalog\Model\ImageUploader">
-        <plugin name="panth_seo_image_uploader" type="Panth\AdvancedSEO\Plugin\Image\UploaderPlugin"/>
-    </type>
-    <type name="Magento\Catalog\Helper\Image">
-        <plugin name="panth_seo_product_image_label" type="Panth\AdvancedSEO\Plugin\Image\ProductImagePlugin"/>
-        <plugin name="panth_seo_image_attributes" type="Panth\AdvancedSEO\Plugin\Image\ImageAttributesPlugin" sortOrder="20"/>
-    </type>
-    <type name="Magento\Catalog\Block\Product\View\Gallery">
-        <plugin name="panth_seo_gallery_image_seo" type="Panth\AdvancedSEO\Plugin\Image\GalleryImageSeoPlugin" sortOrder="10"/>
-    </type>
-    <!-- Inject the template resolver into Panth_ProductGallery so the
-         custom gallery used on both Hyva and Luma picks up the template-
-         based alt/title from Image SEO config. Soft dependency: the
-         target constructor argument is nullable, so ProductGallery can
-         still run standalone. -->
-    <type name="Panth\ProductGallery\Plugin\HideDefaultGallery">
-        <arguments>
-            <argument name="imageTemplateResolver" xsi:type="object">Panth\AdvancedSEO\Model\ImageSeo\ImageTemplateResolver</argument>
-        </arguments>
-    </type>
-    <type name="Panth\ProductGallery\Block\Gallery">
-        <arguments>
-            <argument name="imageTemplateResolver" xsi:type="object">Panth\AdvancedSEO\Model\ImageSeo\ImageTemplateResolver</argument>
-        </arguments>
-    </type>
-
-    <!-- Composite structured data provider. Providers contributed here produce
-         schema.org JSON-LD nodes that the Aggregator deduplicates into a
-         single @graph. -->
-    <type name="Panth\AdvancedSEO\Model\StructuredData\Composite">
-        <arguments>
-            <argument name="providers" xsi:type="array">
-                <item name="organization" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\OrganizationProvider</item>
-                <item name="website" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\WebsiteProvider</item>
-                <item name="breadcrumb" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\BreadcrumbProvider</item>
-                <item name="product" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\ProductProvider</item>
-                <item name="faq" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\FaqExtractor</item>
-                <item name="review" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\ReviewProvider</item>
-                <item name="video" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\VideoProvider</item>
-                <item name="article" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\CmsArticleProvider</item>
-                <item name="return_policy" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\ReturnPolicyProvider</item>
-                <item name="brand" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\BrandProvider</item>
-                <item name="productList" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\ProductListProvider</item>
-                <item name="paymentMethod" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\PaymentMethodProvider</item>
-                <item name="deliveryMethod" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\DeliveryMethodProvider</item>
-                <item name="multiRegionShipping" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\MultiRegionShippingProvider</item>
-                <item name="configurableOffer" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\ConfigurableOfferProvider</item>
-                <item name="groupedOffer" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\GroupedOfferProvider</item>
-                <item name="bundleOffer" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\BundleOfferProvider</item>
-                <item name="customProperties" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\CustomPropertiesProvider</item>
-                <item name="energyLabel" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\EnergyLabelProvider</item>
-                <item name="certification" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\CertificationProvider</item>
-                <item name="saleEvent" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\SaleEventProvider</item>
-                <item name="productGroup" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\ProductGroupProvider</item>
-                <item name="prosCons" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\ProsConsProvider</item>
-                <item name="seller" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\SellerProvider</item>
-            </argument>
-            <argument name="validator" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Validator</argument>
-        </arguments>
-    </type>
-    <type name="Panth\AdvancedSEO\Model\StructuredData\Aggregator">
-        <arguments>
-            <argument name="providers" xsi:type="array">
-                <item name="organization" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\OrganizationProvider</item>
-                <item name="website" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\WebsiteProvider</item>
-                <item name="breadcrumb" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\BreadcrumbProvider</item>
-                <item name="product" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\ProductProvider</item>
-                <item name="faq" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\FaqExtractor</item>
-                <item name="review" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\ReviewProvider</item>
-                <item name="video" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\VideoProvider</item>
-                <item name="article" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\CmsArticleProvider</item>
-                <item name="return_policy" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\ReturnPolicyProvider</item>
-                <item name="brand" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\BrandProvider</item>
-                <item name="productList" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\ProductListProvider</item>
-                <item name="paymentMethod" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\PaymentMethodProvider</item>
-                <item name="deliveryMethod" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\DeliveryMethodProvider</item>
-                <item name="multiRegionShipping" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\MultiRegionShippingProvider</item>
-                <item name="configurableOffer" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\ConfigurableOfferProvider</item>
-                <item name="groupedOffer" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\GroupedOfferProvider</item>
-                <item name="bundleOffer" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\BundleOfferProvider</item>
-                <item name="customProperties" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\CustomPropertiesProvider</item>
-                <item name="energyLabel" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\EnergyLabelProvider</item>
-                <item name="certification" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\CertificationProvider</item>
-                <item name="saleEvent" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\SaleEventProvider</item>
-                <item name="productGroup" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\ProductGroupProvider</item>
-                <item name="prosCons" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\ProsConsProvider</item>
-                <item name="seller" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Provider\SellerProvider</item>
-            </argument>
-            <argument name="validator" xsi:type="object">Panth\AdvancedSEO\Model\StructuredData\Validator</argument>
-        </arguments>
     </type>
 
     <!-- Score checks + weights -->
@@ -245,11 +98,6 @@
         </arguments>
     </type>
 
-    <!-- Breadcrumb priority plugin -->
-    <type name="Magento\Catalog\Helper\Data">
-        <plugin name="panth_seo_breadcrumb_priority" type="Panth\AdvancedSEO\Plugin\Breadcrumb\BreadcrumbPlugin" sortOrder="10"/>
-    </type>
-
     <!-- PageConfig / storefront metadata plugins -->
     <type name="Magento\Catalog\Block\Product\View">
         <plugin name="panth_seo_product_metadata" type="Panth\AdvancedSEO\Plugin\Catalog\Product\MetadataPlugin"/>
@@ -258,7 +106,6 @@
         <plugin name="panth_seo_category_metadata" type="Panth\AdvancedSEO\Plugin\Catalog\Category\MetadataPlugin"/>
     </type>
     <type name="Magento\Catalog\Controller\Category\View">
-        <plugin name="panth_seo_filter_meta_category" type="Panth\AdvancedSEO\Plugin\FilterMeta\CategoryViewPlugin" sortOrder="15"/>
         <plugin name="panth_seo_brand_meta" type="Panth\AdvancedSEO\Plugin\Brand\BrandMetaPlugin" sortOrder="20"/>
     </type>
     <type name="Magento\Cms\Helper\Page">
@@ -268,21 +115,9 @@
         <plugin name="panth_seo_landing_page_meta" type="Panth\AdvancedSEO\Plugin\LandingPage\CmsPageMetaPlugin" sortOrder="20"/>
     </type>
     <!--
-        OpenGraphResolver needs PageConfig so it can fall back to the
-        controller-set page title/description on routes without a catalog/
-        CMS entity in the registry (e.g. Panth_Testimonials). Direct
-        injection creates a circular dependency because PageConfig::build()
-        builds the layout, which instantiates OpenGraphResolver via the
-        canonical.phtml ViewModel during head assembly. Injecting a Proxy
-        defers the PageConfig resolution until it is actually used — by
-        which point the instance already exists and the fallback can read
-        its current title/description without re-entering the builder.
+        OpenGraphResolver DI configuration has moved to Panth_SocialMeta
+        (packages/module-social-meta/etc/di.xml).
     -->
-    <type name="Panth\AdvancedSEO\Model\Social\OpenGraphResolver">
-        <arguments>
-            <argument name="pageConfig" xsi:type="object">Magento\Framework\View\Page\Config\Proxy</argument>
-        </arguments>
-    </type>
     <type name="Magento\Framework\View\Page\Config">
         <plugin name="panth_seo_pagination_canonical" type="Panth\AdvancedSEO\Plugin\Pagination\CanonicalPlugin" sortOrder="10"/>
         <plugin name="panth_seo_head" type="Panth\AdvancedSEO\Plugin\PageConfig\HeadPlugin" sortOrder="20"/>
@@ -346,34 +181,16 @@
             <argument name="resourceModel" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\Score</argument>
         </arguments>
     </type>
-    <type name="Panth\AdvancedSEO\Model\ResourceModel\HreflangGroup\Grid\Collection">
-        <arguments>
-            <argument name="mainTable" xsi:type="string">panth_seo_hreflang_group</argument>
-            <argument name="resourceModel" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\HreflangGroup</argument>
-        </arguments>
-    </type>
     <type name="Panth\AdvancedSEO\Model\ResourceModel\Template\Grid\Collection">
         <arguments>
             <argument name="mainTable" xsi:type="string">panth_seo_template</argument>
             <argument name="resourceModel" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\Template</argument>
         </arguments>
     </type>
-    <type name="Panth\AdvancedSEO\Model\ResourceModel\FilterRewrite\Grid\Collection">
-        <arguments>
-            <argument name="mainTable" xsi:type="string">panth_seo_filter_rewrite</argument>
-            <argument name="resourceModel" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\FilterRewrite</argument>
-        </arguments>
-    </type>
     <type name="Panth\AdvancedSEO\Model\ResourceModel\CustomCanonical\Grid\Collection">
         <arguments>
             <argument name="mainTable" xsi:type="string">panth_seo_custom_canonical</argument>
             <argument name="resourceModel" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\CustomCanonical</argument>
-        </arguments>
-    </type>
-    <type name="Panth\AdvancedSEO\Model\ResourceModel\CategoryFilterMeta\Grid\Collection">
-        <arguments>
-            <argument name="mainTable" xsi:type="string">panth_seo_category_filter_meta</argument>
-            <argument name="resourceModel" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\CategoryFilterMeta</argument>
         </arguments>
     </type>
     <type name="Panth\AdvancedSEO\Model\ResourceModel\CrawlResult\Grid\Collection">
@@ -412,10 +229,7 @@
                 <item name="panth_seo_rule_listing_data_source" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\Rule\Grid\Collection</item>
                 <item name="panth_seo_score_listing_data_source" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\Score\Grid\Collection</item>
                 <item name="panth_seo_template_listing_data_source" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\Template\Grid\Collection</item>
-                <item name="panth_seo_hreflang_listing_data_source" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\HreflangGroup\Grid\Collection</item>
-                <item name="panth_seo_filterrewrite_listing_data_source" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\FilterRewrite\Grid\Collection</item>
                 <item name="panth_seo_custom_canonical_listing_data_source" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\CustomCanonical\Grid\Collection</item>
-                <item name="panth_seo_filter_meta_listing_data_source" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\CategoryFilterMeta\Grid\Collection</item>
                 <item name="panth_seo_crawl_audit_listing_data_source" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\CrawlResult\Grid\Collection</item>
                 <item name="panth_seo_crawl_result_listing_data_source" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\CrawlResult\Grid\Collection</item>
                 <item name="panth_seo_feed_field_listing_data_source" xsi:type="string">Panth\AdvancedSEO\Model\ResourceModel\FeedField\Grid\Collection</item>

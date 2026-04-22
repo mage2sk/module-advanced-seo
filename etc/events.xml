@@ -8,33 +8,23 @@
     <event name="catalog_product_save_after">
         <observer name="panth_seo_product_save_after"
                   instance="Panth\AdvancedSEO\Observer\Product\SaveAfter"/>
-        <observer name="panth_seo_indexnow_product"
-                  instance="Panth\AdvancedSEO\Observer\IndexNow\EntityChangeObserver"/>
         <observer name="panth_seo_indexing_api_product"
                   instance="Panth\AdvancedSEO\Observer\SearchConsole\EntityChangeObserver"/>
     </event>
     <event name="catalog_category_save_after">
         <observer name="panth_seo_category_save_after"
                   instance="Panth\AdvancedSEO\Observer\Category\SaveAfter"/>
-        <observer name="panth_seo_indexnow_category"
-                  instance="Panth\AdvancedSEO\Observer\IndexNow\EntityChangeObserver"/>
         <observer name="panth_seo_indexing_api_category"
                   instance="Panth\AdvancedSEO\Observer\SearchConsole\EntityChangeObserver"/>
     </event>
     <event name="cms_page_save_after">
         <observer name="panth_seo_cms_save_after"
                   instance="Panth\AdvancedSEO\Observer\Cms\SaveAfter"/>
-        <observer name="panth_seo_indexnow_cms"
-                  instance="Panth\AdvancedSEO\Observer\IndexNow\EntityChangeObserver"/>
         <observer name="panth_seo_indexing_api_cms"
                   instance="Panth\AdvancedSEO\Observer\SearchConsole\EntityChangeObserver"/>
     </event>
     <event name="catalog_category_move_after">
         <observer name="panth_seo_category_move_after"
                   instance="Panth\AdvancedSEO\Observer\Category\MoveAfter"/>
-    </event>
-    <event name="catalog_entity_attribute_save_after">
-        <observer name="panth_seo_filter_attribute_option_save"
-                  instance="Panth\AdvancedSEO\Observer\FilterUrl\AttributeOptionSave"/>
     </event>
 </config>

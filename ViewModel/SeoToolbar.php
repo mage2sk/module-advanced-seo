@@ -11,12 +11,12 @@ use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Framework\View\Page\Config as PageConfig;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\AdvancedSEO\Api\CanonicalResolverInterface;
-use Panth\AdvancedSEO\Api\HreflangResolverInterface;
 use Panth\AdvancedSEO\Api\MetaResolverInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
-use Panth\AdvancedSEO\Model\Social\OpenGraphResolver;
-use Panth\AdvancedSEO\Model\Social\TwitterCardResolver;
-use Panth\AdvancedSEO\Model\StructuredData\Composite;
+use Panth\Hreflang\Api\HreflangResolverInterface;
+use Panth\SocialMeta\Model\Social\OpenGraphResolver;
+use Panth\SocialMeta\Model\Social\TwitterCardResolver;
+use Panth\StructuredData\Model\StructuredData\Composite;
 
 /**
  * Collects all SEO signals for the current page and exposes them to the

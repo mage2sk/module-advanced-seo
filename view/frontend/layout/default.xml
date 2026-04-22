@@ -12,29 +12,25 @@
                 <argument name="view_model_meta" xsi:type="object">Panth\AdvancedSEO\ViewModel\Meta</argument>
                 <argument name="view_model_canonical" xsi:type="object">Panth\AdvancedSEO\ViewModel\Canonical</argument>
             </arguments>
-            <block class="Panth\AdvancedSEO\Block\Head\StructuredData"
-                   name="panth_seo.structured_data"
-                   template="Panth_AdvancedSEO::head/structured_data.phtml"
-                   cacheable="true">
-                <arguments>
-                    <argument name="view_model" xsi:type="object">Panth\AdvancedSEO\ViewModel\StructuredData</argument>
-                </arguments>
-            </block>
-            <!-- Hreflang rendered inline via canonical.phtml -->
+            <!--
+                JSON-LD structured data emission is owned by Panth_StructuredData
+                (packages/module-structured-data/view/frontend/layout/default.xml).
+            -->
+            <!--
+                Hreflang alternate link emission is owned by Panth_Hreflang
+                (packages/module-hreflang/view/frontend/layout/default.xml).
+            -->
             <block class="Panth\AdvancedSEO\Block\Head\Canonical"
                    name="panth_seo.canonical"
                    template="Panth_AdvancedSEO::head/canonical.phtml"
                    cacheable="true">
                 <arguments>
                     <argument name="view_model" xsi:type="object">Panth\AdvancedSEO\ViewModel\Canonical</argument>
-                    <argument name="view_model_og" xsi:type="object">Panth\AdvancedSEO\ViewModel\OpenGraph</argument>
-                    <argument name="view_model_tw" xsi:type="object">Panth\AdvancedSEO\ViewModel\TwitterCard</argument>
-                    <argument name="view_model_hreflang" xsi:type="object">Panth\AdvancedSEO\ViewModel\Hreflang</argument>
                 </arguments>
             </block>
             <!--
-                OG and Twitter tags are rendered inline via canonical.phtml
-                to work around Hyva head.additional child block rendering limits.
+                OG + Twitter tag emission is owned by Panth_SocialMeta
+                (packages/module-social-meta/view/frontend/layout/default.xml).
             -->
             <block class="Panth\AdvancedSEO\Block\Head\SpeculationRules"
                    name="panth_seo.speculation_rules"

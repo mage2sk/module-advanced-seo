@@ -49,124 +49,47 @@
                 <trailing_slash_homepage>none</trailing_slash_homepage>
                 <strip_params></strip_params>
             </canonical>
-            <social>
-                <og_enabled>1</og_enabled>
-                <twitter_enabled>1</twitter_enabled>
-                <twitter_card_type>summary_large_image</twitter_card_type>
-                <twitter_site_handle></twitter_site_handle>
-                <default_og_image></default_og_image>
-            </social>
-            <social_profiles>
-                <facebook_url></facebook_url>
-                <twitter_url></twitter_url>
-                <instagram_url></instagram_url>
-                <linkedin_url></linkedin_url>
-                <youtube_url></youtube_url>
-                <pinterest_url></pinterest_url>
-                <tiktok_url></tiktok_url>
-            </social_profiles>
-            <structured_data>
-                <product>1</product>
-                <breadcrumb>1</breadcrumb>
-                <organization>1</organization>
-                <website>1</website>
-                <faq>1</faq>
-                <article>1</article>
-                <review>1</review>
-                <video>1</video>
-                <brand>1</brand>
-                <seller>1</seller>
-                <configurable_multi_offer>1</configurable_multi_offer>
-                <remove_native_markup>1</remove_native_markup>
-                <return_policy_days>30</return_policy_days>
-                <brand_attribute>manufacturer</brand_attribute>
-                <gtin_attribute></gtin_attribute>
-                <mpn_attribute></mpn_attribute>
-                <enable_product_list_schema>1</enable_product_list_schema>
-                <accepted_payment_methods></accepted_payment_methods>
-                <delivery_methods></delivery_methods>
-                <product_condition>new</product_condition>
-                <price_valid_until_default></price_valid_until_default>
-                <custom_properties></custom_properties>
-                <product_group_enabled>0</product_group_enabled>
-                <pros_cons_enabled>0</pros_cons_enabled>
-                <pros_attribute>product_pros</pros_attribute>
-                <cons_attribute>product_cons</cons_attribute>
-                <energy_label_enabled>0</energy_label_enabled>
-                <energy_class_attribute>energy_class</energy_class_attribute>
-                <certification_enabled>0</certification_enabled>
-                <certification_attribute>certifications</certification_attribute>
-                <sale_event_enabled>1</sale_event_enabled>
-                <business_type>Organization</business_type>
-                <default_brand></default_brand>
-                <return_policy_type>refund</return_policy_type>
-                <return_policy_fees>free</return_policy_fees>
-            </structured_data>
-            <organization>
-                <legal_name></legal_name>
-                <logo></logo>
-                <phone></phone>
-                <email></email>
-                <street></street>
-                <locality></locality>
-                <region></region>
-                <postcode></postcode>
-                <country></country>
-                <same_as></same_as>
-            </organization>
+            <!--
+                panth_seo/social/* defaults are owned by Panth_SocialMeta
+                (see packages/module-social-meta/etc/config.xml). Removed
+                from this module to keep a single source of truth.
+            -->
+            <!--
+                panth_seo/social_profiles, organization, structured_data,
+                breadcrumbs defaults are owned by Panth_StructuredData
+                (see packages/module-structured-data/etc/config.xml).
+            -->
+            <!--
+                panth_seo/hreflang defaults are owned by Panth_Hreflang
+                (see packages/module-hreflang/etc/config.xml).
+            -->
+            <!--
+                panth_seo/filter_urls, filter_meta defaults are owned by
+                Panth_FilterSeo (see packages/module-filter-seo/etc/config.xml).
+            -->
+            <!--
+                panth_seo/image defaults are owned by Panth_ImageSeo
+                (see packages/module-image-seo/etc/config.xml).
+            -->
+            <!--
+                panth_seo/indexnow defaults are owned by Panth_IndexNow
+                (see packages/module-index-now/etc/config.xml).
+            -->
+            <!--
+                panth_seo/llms_txt defaults are owned by Panth_LlmsTxt
+                (see packages/module-llms-txt/etc/config.xml).
+            -->
             <url>
                 <auto_url_key_enabled>0</auto_url_key_enabled>
                 <url_key_template>{{name}}</url_key_template>
                 <auto_url_key_for_existing>0</auto_url_key_for_existing>
             </url>
-            <filter_urls>
-                <filter_urls_enabled>0</filter_urls_enabled>
-                <url_format>short</url_format>
-                <separator>-</separator>
-            </filter_urls>
-            <filter_meta>
-                <filter_meta_enabled>0</filter_meta_enabled>
-                <inject_filter_in_title>1</inject_filter_in_title>
-                <inject_filter_in_description>1</inject_filter_in_description>
-            </filter_meta>
-            <breadcrumbs>
-                <enable_breadcrumb_priority>0</enable_breadcrumb_priority>
-                <breadcrumb_format>longest</breadcrumb_format>
-            </breadcrumbs>
-            <hreflang>
-                <enabled>1</enabled>
-                <emit_x_default>1</emit_x_default>
-                <hreflang_scope>website</hreflang_scope>
-                <cms_relation_method>by_url_key</cms_relation_method>
-            </hreflang>
             <reports>
                 <enable_crawl_audit>0</enable_crawl_audit>
                 <crawl_depth>100</crawl_depth>
                 <seo_toolbar_enabled>0</seo_toolbar_enabled>
                 <seo_toolbar_allowed_ips></seo_toolbar_allowed_ips>
             </reports>
-            <image>
-                <image_seo_enabled>1</image_seo_enabled>
-                <alt_template>{{name}} - {{store}}</alt_template>
-                <title_template>{{name}}</title_template>
-                <gallery_seo_enabled>1</gallery_seo_enabled>
-            </image>
-            <indexnow>
-                <enabled>0</enabled>
-                <api_key/>
-            </indexnow>
-            <llms_txt>
-                <enabled>1</enabled>
-                <summary></summary>
-                <max_categories>20</max_categories>
-                <max_products>50</max_products>
-                <max_cms>10</max_cms>
-                <generate_full_llms>0</generate_full_llms>
-                <shipping_page></shipping_page>
-                <returns_page></returns_page>
-                <about_page></about_page>
-                <faq_page></faq_page>
-            </llms_txt>
             <merchant_feed>
                 <enabled>0</enabled>
                 <include_out_of_stock>0</include_out_of_stock>

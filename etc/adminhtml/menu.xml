@@ -50,30 +50,6 @@
              action="panth_seo/customcanonical/index"
              resource="Panth_AdvancedSEO::manage"/>
 
-        <add id="Panth_AdvancedSEO::filter_rewrites"
-             title="Filter URL Rewrites"
-             module="Panth_AdvancedSEO"
-             parent="Panth_AdvancedSEO::root"
-             sortOrder="50"
-             action="panth_seo/filterrewrite/index"
-             resource="Panth_AdvancedSEO::manage"/>
-
-        <add id="Panth_AdvancedSEO::filter_meta"
-             title="Filter Page Meta"
-             module="Panth_AdvancedSEO"
-             parent="Panth_AdvancedSEO::root"
-             sortOrder="52"
-             action="panth_seo/filtermeta/index"
-             resource="Panth_AdvancedSEO::manage"/>
-
-        <add id="Panth_AdvancedSEO::hreflang"
-             title="Hreflang"
-             module="Panth_AdvancedSEO"
-             parent="Panth_AdvancedSEO::root"
-             sortOrder="55"
-             action="panth_seo/hreflang/index"
-             resource="Panth_AdvancedSEO::manage"/>
-
         <add id="Panth_AdvancedSEO::feeds"
              title="Product Feeds"
              module="Panth_AdvancedSEO"

@@ -3,25 +3,10 @@
     <!-- Form data provider virtual types: use GenericFormDataProvider so that
          form components receive data keyed by entity ID (avoids the
          searchResultToOutput / getCustomAttributes mismatch). -->
-    <virtualType name="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\HreflangFormDataProvider" type="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\GenericFormDataProvider">
-        <arguments>
-            <argument name="collection" xsi:type="object">Panth\AdvancedSEO\Model\ResourceModel\HreflangGroup\Collection</argument>
-        </arguments>
-    </virtualType>
     <!-- RuleFormDataProvider is a real class now (decodes conditions/actions for edit form) -->
-    <virtualType name="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\FilterMetaFormDataProvider" type="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\GenericFormDataProvider">
-        <arguments>
-            <argument name="collection" xsi:type="object">Panth\AdvancedSEO\Model\ResourceModel\CategoryFilterMeta\Collection</argument>
-        </arguments>
-    </virtualType>
     <virtualType name="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\CustomCanonicalFormDataProvider" type="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\GenericFormDataProvider">
         <arguments>
             <argument name="collection" xsi:type="object">Panth\AdvancedSEO\Model\ResourceModel\CustomCanonical\Collection</argument>
-        </arguments>
-    </virtualType>
-    <virtualType name="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\FilterRewriteFormDataProvider" type="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\GenericFormDataProvider">
-        <arguments>
-            <argument name="collection" xsi:type="object">Panth\AdvancedSEO\Model\ResourceModel\FilterRewrite\Collection</argument>
         </arguments>
     </virtualType>
 
@@ -38,9 +23,6 @@
         <plugin name="panth_seo_category_serp_preview"
                 type="Panth\AdvancedSEO\Plugin\Admin\CategorySerpPreviewPlugin"
                 sortOrder="10"/>
-        <plugin name="panth_seo_category_breadcrumb_priority"
-                type="Panth\AdvancedSEO\Plugin\Breadcrumb\CategoryFormPriorityPlugin"
-                sortOrder="20"/>
         <plugin name="panth_seo_category_score_widget"
                 type="Panth\AdvancedSEO\Plugin\Admin\CategorySeoScorePlugin"
                 sortOrder="25"/>

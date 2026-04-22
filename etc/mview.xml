@@ -9,10 +9,4 @@
             <table name="cms_page" entity_column="page_id"/>
         </subscriptions>
     </view>
-    <view id="panth_seo_hreflang" class="Panth\AdvancedSEO\Model\Indexer\Hreflang" group="indexer">
-        <subscriptions>
-            <table name="panth_seo_hreflang_member" entity_column="member_id"/>
-            <table name="panth_seo_hreflang_group" entity_column="group_id"/>
-        </subscriptions>
-    </view>
 </config>

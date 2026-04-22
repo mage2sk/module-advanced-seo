@@ -8,56 +8,12 @@ if ($canonical !== '') {
 <link rel="canonical" href="<?= $escaper->escapeUrl($canonical) ?>" data-panth-seo="canonical" />
 <?php
 }
-// OG and Twitter tags rendered via ViewModels injected through layout XML arguments
-// URL-valued meta tags need escapeUrl; everything else is text and uses escapeHtmlAttr.
-$urlValuedTags = [
-    'og:url' => true,
-    'og:image' => true,
-    'twitter:url' => true,
-    'twitter:image' => true,
-];
 
-/** @var \Panth\AdvancedSEO\ViewModel\OpenGraph|null $ogViewModel */
-$ogViewModel = $block->getData('view_model_og');
-if ($ogViewModel && $ogViewModel->isEnabled()) {
-    foreach ($ogViewModel->getTags() as $ogProp => $ogVal) {
-        $ogVal = trim((string) $ogVal);
-        if ($ogVal !== '') {
-            $content = isset($urlValuedTags[$ogProp])
-                ? $escaper->escapeUrl($ogVal)
-                : $escaper->escapeHtmlAttr($ogVal);
-            // phpcs:ignore Magento2.Security.XssTemplate.FoundUnescaped -- $content is pre-escaped via escapeUrl/escapeHtmlAttr
-            echo '<meta property="' . $escaper->escapeHtml($ogProp) . '" content="' . $content . '" />' . "\n";
-        }
-    }
-}
-
-/** @var \Panth\AdvancedSEO\ViewModel\TwitterCard|null $twViewModel */
-$twViewModel = $block->getData('view_model_tw');
-if ($twViewModel && $twViewModel->isEnabled()) {
-    foreach ($twViewModel->getTags() as $twName => $twVal) {
-        $twVal = trim((string) $twVal);
-        if ($twVal !== '') {
-            $content = isset($urlValuedTags[$twName])
-                ? $escaper->escapeUrl($twVal)
-                : $escaper->escapeHtmlAttr($twVal);
-            // phpcs:ignore Magento2.Security.XssTemplate.FoundUnescaped -- $content is pre-escaped via escapeUrl/escapeHtmlAttr
-            echo '<meta name="' . $escaper->escapeHtml($twName) . '" content="' . $content . '" />' . "\n";
-        }
-    }
-}
-
-// Hreflang alternate tags
-/** @var \Panth\AdvancedSEO\ViewModel\Hreflang|null $hreflangViewModel */
-$hreflangViewModel = $block->getData('view_model_hreflang');
-if ($hreflangViewModel && $hreflangViewModel->isEnabled()) {
-    $alternates = $hreflangViewModel->getAlternates();
-    foreach ($alternates as $alt) {
-        $locale = trim((string) ($alt['locale'] ?? ''));
-        $url = trim((string) ($alt['url'] ?? ''));
-        if ($locale !== '' && $url !== '') {
-            echo '<link rel="alternate" hreflang="' . $escaper->escapeHtmlAttr($locale) . '" href="' . $escaper->escapeUrl($url) . '" />' . "\n";
-        }
-    }
-}
+// OG + Twitter emission has moved to Panth_SocialMeta — rendered via its
+// own head blocks registered under head.additional in that module's
+// default.xml.
+//
+// Hreflang alternate tags have moved to Panth_Hreflang — rendered via its
+// own head block registered under head.additional in that module's
+// default.xml.
 ?>

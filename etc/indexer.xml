@@ -11,13 +11,4 @@
             <indexer id="catalog_category_product"/>
         </dependencies>
     </indexer>
-    <indexer id="panth_seo_hreflang"
-             view_id="panth_seo_hreflang"
-             class="Panth\AdvancedSEO\Model\Indexer\Hreflang">
-        <title translate="true">Panth SEO Hreflang</title>
-        <description translate="true">Builds the hreflang alternates payload per entity.</description>
-        <dependencies>
-            <indexer id="panth_seo_resolved_meta"/>
-        </dependencies>
-    </indexer>
 </config>

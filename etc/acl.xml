@@ -8,10 +8,7 @@
                     <resource id="Panth_AdvancedSEO::dashboard" title="Dashboard" sortOrder="10"/>
                     <resource id="Panth_AdvancedSEO::templates" title="Meta Templates" sortOrder="20"/>
                     <resource id="Panth_AdvancedSEO::rules" title="SEO Rules" sortOrder="30"/>
-                    <resource id="Panth_AdvancedSEO::filter_rewrites" title="Filter URL Rewrites" sortOrder="35"/>
                     <resource id="Panth_AdvancedSEO::custom_canonical" title="Custom Canonicals" sortOrder="36"/>
-                    <resource id="Panth_AdvancedSEO::filter_meta" title="Category Filter Meta" sortOrder="37"/>
-                    <resource id="Panth_AdvancedSEO::hreflang" title="Hreflang Groups" sortOrder="50"/>
                     <resource id="Panth_AdvancedSEO::reports" title="SEO Reports" sortOrder="74"/>
                     <resource id="Panth_AdvancedSEO::missing_meta" title="Missing Meta Report" sortOrder="75"/>
                     <resource id="Panth_AdvancedSEO::crawl_audit" title="Crawl Audit" sortOrder="76"/>

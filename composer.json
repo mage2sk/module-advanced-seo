@@ -47,10 +47,17 @@
     "suggest": {
         "hyva-themes/magento2-default-theme": "For Hyva frontend compatibility (no jQuery, TailwindCSS, AlpineJS).",
         "mage2kishan/module-crosslinks": "Auto cross-linking keyword → URL replacement in CMS/product/category HTML.",
+        "mage2kishan/module-filter-seo": "Panth Filter SEO — clean path-based URLs + dynamic meta for layered navigation.",
+        "mage2kishan/module-hreflang": "Panth Hreflang — multi-language/multi-region hreflang link tags with admin CRUD.",
+        "mage2kishan/module-html-sitemap": "Frontend HTML sitemap page (/sitemap) with categories, products, CMS pages, stores, and custom links.",
+        "mage2kishan/module-image-seo": "Panth Image SEO — template-based alt/title generation for product images.",
+        "mage2kishan/module-index-now": "Panth IndexNow — notify Bing/Yandex via IndexNow protocol on content change.",
+        "mage2kishan/module-llms-txt": "Panth LLMs.txt — serves /llms.txt and /llms-full.txt for AI crawlers.",
+        "mage2kishan/module-pagebuilder-ai": "AI meta generation via OpenAI / Claude with prompts, knowledge base, async jobs, and Generate-with-AI buttons on admin forms.",
         "mage2kishan/module-redirects": "301/302/303/307/308/410/451 redirects + 404 log + CSV import/export + loop detector.",
         "mage2kishan/module-robots-seo": "Dedicated /robots.txt, X-Robots-Tag HTTP header, and LLM-bot policy (GPTBot, ClaudeBot, PerplexityBot, etc.) for Magento 2.",
-        "mage2kishan/module-pagebuilder-ai": "AI meta generation via OpenAI / Claude with prompts, knowledge base, async jobs, and Generate-with-AI buttons on admin forms.",
-        "mage2kishan/module-html-sitemap": "Frontend HTML sitemap page (/sitemap) with categories, products, CMS pages, stores, and custom links.",
+        "mage2kishan/module-social-meta": "Panth SocialMeta — OpenGraph and Twitter Card head tags.",
+        "mage2kishan/module-structured-data": "Panth Structured Data — JSON-LD schemas (Product, Breadcrumb, Organization, FAQ, Video, Review, SaleEvent, ReturnPolicy, etc.).",
         "mage2kishan/module-xml-sitemap": "Sharded XML sitemap generator (/panth-sitemap.xml) with profile CRUD, hreflang, image + video tags, auto-split, gzip, search-engine ping, async shard queue + cron."
     },
     "autoload": {

@@ -105,50 +105,6 @@
     </table>
 
     <!-- ============================================================ -->
-    <!-- panth_seo_hreflang_group / _member                             -->
-    <!-- ============================================================ -->
-    <table name="panth_seo_hreflang_group" resource="default" engine="innodb" comment="Hreflang groups">
-        <column xsi:type="int" name="group_id" unsigned="true" nullable="false" identity="true" comment="Group ID"/>
-        <column xsi:type="varchar" name="code" length="64" nullable="false" comment="Group code"/>
-        <column xsi:type="varchar" name="entity_type" length="32" nullable="false" comment="Entity type"/>
-        <column xsi:type="text" name="notes" nullable="true" comment="Notes"/>
-        <column xsi:type="boolean" name="is_active" nullable="false" default="true" comment="Active"/>
-        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created at"/>
-        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Updated at"/>
-        <constraint xsi:type="primary" referenceId="PRIMARY">
-            <column name="group_id"/>
-        </constraint>
-        <constraint xsi:type="unique" referenceId="PANTH_SEO_HREFLANG_GROUP_UNQ_CODE">
-            <column name="code"/>
-        </constraint>
-    </table>
-
-    <table name="panth_seo_hreflang_member" resource="default" engine="innodb" comment="Hreflang group members">
-        <column xsi:type="int" name="member_id" unsigned="true" nullable="false" identity="true" comment="Member ID"/>
-        <column xsi:type="int" name="group_id" unsigned="true" nullable="false" comment="Group ID"/>
-        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0" comment="Store ID"/>
-        <column xsi:type="varchar" name="entity_type" length="32" nullable="false" comment="Entity type"/>
-        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" comment="Entity ID"/>
-        <column xsi:type="varchar" name="locale" length="16" nullable="false" comment="Locale tag (e.g. en-US, x-default)"/>
-        <column xsi:type="varchar" name="url" length="1024" nullable="false" comment="Alternate URL"/>
-        <column xsi:type="boolean" name="is_default" nullable="false" default="false" comment="x-default flag"/>
-        <constraint xsi:type="primary" referenceId="PRIMARY">
-            <column name="member_id"/>
-        </constraint>
-        <constraint xsi:type="foreign" referenceId="PANTH_SEO_HREFLANG_MEMBER_GROUP_ID"
-                    table="panth_seo_hreflang_member" column="group_id"
-                    referenceTable="panth_seo_hreflang_group" referenceColumn="group_id" onDelete="CASCADE"/>
-        <constraint xsi:type="foreign" referenceId="PANTH_SEO_HREFLANG_MEMBER_STORE_ID"
-                    table="panth_seo_hreflang_member" column="store_id"
-                    referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
-        <index referenceId="PANTH_SEO_HREFLANG_MEMBER_IDX_ENTITY" indexType="btree">
-            <column name="entity_type"/>
-            <column name="entity_id"/>
-            <column name="store_id"/>
-        </index>
-    </table>
-
-    <!-- ============================================================ -->
     <!-- panth_seo_rule                                                 -->
     <!-- ============================================================ -->
     <table name="panth_seo_rule" resource="default" engine="innodb" comment="SEO Rules">
@@ -251,22 +207,6 @@
     </table>
 
     <!-- ============================================================ -->
-    <!-- panth_seo_filter_rewrite                                       -->
-    <!-- ============================================================ -->
-    <table name="panth_seo_filter_rewrite" resource="default" engine="innodb" comment="Panth SEO Filter URL Rewrites">
-        <column xsi:type="int" name="rewrite_id" unsigned="true" nullable="false" identity="true"/>
-        <column xsi:type="varchar" name="attribute_code" length="255" nullable="false"/>
-        <column xsi:type="int" name="option_id" unsigned="true" nullable="false"/>
-        <column xsi:type="varchar" name="option_label" length="255" nullable="false"/>
-        <column xsi:type="varchar" name="rewrite_slug" length="255" nullable="false"/>
-        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0"/>
-        <column xsi:type="boolean" name="is_active" nullable="false" default="true"/>
-        <constraint xsi:type="primary" referenceId="PRIMARY"><column name="rewrite_id"/></constraint>
-        <constraint xsi:type="unique" referenceId="PANTH_SEO_FILTER_REWRITE_UNQ"><column name="attribute_code"/><column name="option_id"/><column name="store_id"/></constraint>
-        <index referenceId="PANTH_SEO_FILTER_REWRITE_IDX_STORE"><column name="store_id"/></index>
-    </table>
-
-    <!-- ============================================================ -->
     <!-- panth_seo_custom_canonical                                     -->
     <!-- ============================================================ -->
     <table name="panth_seo_custom_canonical" resource="default" engine="innodb" comment="Panth SEO Custom Canonical URLs">
@@ -280,23 +220,6 @@
         <column xsi:type="boolean" name="is_active" nullable="false" default="true"/>
         <constraint xsi:type="primary" referenceId="PRIMARY"><column name="canonical_id"/></constraint>
         <constraint xsi:type="unique" referenceId="PANTH_SEO_CUSTOM_CANONICAL_UNQ"><column name="source_entity_type"/><column name="source_entity_id"/><column name="store_id"/></constraint>
-    </table>
-
-    <!-- ============================================================ -->
-    <!-- panth_seo_category_filter_meta                                 -->
-    <!-- ============================================================ -->
-    <table name="panth_seo_category_filter_meta" resource="default" engine="innodb" comment="Panth SEO Category Filter Meta">
-        <column xsi:type="int" name="id" unsigned="true" nullable="false" identity="true"/>
-        <column xsi:type="int" name="category_id" unsigned="true" nullable="false"/>
-        <column xsi:type="varchar" name="attribute_code" length="255" nullable="false"/>
-        <column xsi:type="int" name="option_id" unsigned="true" nullable="false"/>
-        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0"/>
-        <column xsi:type="varchar" name="meta_title" length="512" nullable="true"/>
-        <column xsi:type="text" name="meta_description" nullable="true"/>
-        <column xsi:type="varchar" name="meta_keywords" length="512" nullable="true"/>
-        <column xsi:type="int" name="breadcrumbs_priority" unsigned="false" nullable="false" default="0" comment="Breadcrumb priority weight"/>
-        <constraint xsi:type="primary" referenceId="PRIMARY"><column name="id"/></constraint>
-        <constraint xsi:type="unique" referenceId="PANTH_SEO_CAT_FILTER_META_UNQ"><column name="category_id"/><column name="attribute_code"/><column name="option_id"/><column name="store_id"/></constraint>
     </table>
 
     <!-- ============================================================ -->

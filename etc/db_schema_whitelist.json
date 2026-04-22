@@ -83,45 +83,6 @@
             "PANTH_SEO_RESOLVED_STORE_ID_ENTITY_TYPE_ENTITY_ID": true
         }
     },
-    "panth_seo_hreflang_group": {
-        "column": {
-            "group_id": true,
-            "code": true,
-            "entity_type": true,
-            "notes": true,
-            "is_active": true,
-            "created_at": true,
-            "updated_at": true
-        },
-        "constraint": {
-            "PRIMARY": true,
-            "PANTH_SEO_HREFLANG_GROUP_UNQ_CODE": true,
-            "PANTH_SEO_HREFLANG_GROUP_CODE": true
-        }
-    },
-    "panth_seo_hreflang_member": {
-        "column": {
-            "member_id": true,
-            "group_id": true,
-            "store_id": true,
-            "entity_type": true,
-            "entity_id": true,
-            "locale": true,
-            "url": true,
-            "is_default": true
-        },
-        "index": {
-            "PANTH_SEO_HREFLANG_MEMBER_IDX_ENTITY": true,
-            "PANTH_SEO_HREFLANG_MEMBER_ENTITY_TYPE_ENTITY_ID_STORE_ID": true
-        },
-        "constraint": {
-            "PRIMARY": true,
-            "PANTH_SEO_HREFLANG_MEMBER_GROUP_ID": true,
-            "PANTH_SEO_HREFLANG_MEMBER_STORE_ID": true,
-            "FK_8F8BE92625275A3FF846B48150CC8F20": true,
-            "PANTH_SEO_HREFLANG_MEMBER_STORE_ID_STORE_STORE_ID": true
-        }
-    },
     "panth_seo_rule": {
         "column": {
             "rule_id": true,
@@ -205,26 +166,6 @@
             "PANTH_SEO_DUPLICATE_STORE_ID_FIELD_HASH": true
         }
     },
-    "panth_seo_filter_rewrite": {
-        "column": {
-            "rewrite_id": true,
-            "attribute_code": true,
-            "option_id": true,
-            "option_label": true,
-            "rewrite_slug": true,
-            "store_id": true,
-            "is_active": true
-        },
-        "index": {
-            "PANTH_SEO_FILTER_REWRITE_IDX_STORE": true,
-            "PANTH_SEO_FILTER_REWRITE_STORE_ID": true
-        },
-        "constraint": {
-            "PRIMARY": true,
-            "PANTH_SEO_FILTER_REWRITE_UNQ": true,
-            "PANTH_SEO_FILTER_REWRITE_ATTRIBUTE_CODE_OPTION_ID_STORE_ID": true
-        }
-    },
     "panth_seo_custom_canonical": {
         "column": {
             "canonical_id": true,
@@ -240,24 +181,6 @@
             "PRIMARY": true,
             "PANTH_SEO_CUSTOM_CANONICAL_UNQ": true,
             "UNQ_DADFD36F5F7EAACBDC18CDACCEDFC0B0": true
-        }
-    },
-    "panth_seo_category_filter_meta": {
-        "column": {
-            "id": true,
-            "category_id": true,
-            "attribute_code": true,
-            "option_id": true,
-            "store_id": true,
-            "meta_title": true,
-            "meta_description": true,
-            "meta_keywords": true,
-            "breadcrumbs_priority": true
-        },
-        "constraint": {
-            "PRIMARY": true,
-            "PANTH_SEO_CAT_FILTER_META_UNQ": true,
-            "PANTH_SEO_CTGR_FILTER_META_CTGR_ID_ATTR_CODE_OPT_ID_STORE_ID": true
         }
     },
     "panth_seo_crawl_result": {

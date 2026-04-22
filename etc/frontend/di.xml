@@ -17,17 +17,4 @@
     <type name="Magento\Framework\View\Result\Page">
         <plugin name="panth_seo_seo_toolbar" type="Panth\AdvancedSEO\Plugin\Frontend\SeoToolbarPlugin" sortOrder="10"/>
     </type>
-
-    <!--
-        Explicit constructor binding for the IndexNow Key controller.
-        The RequestInterface argument was added to eliminate a legacy
-        ObjectManager::getInstance() lookup; declaring it here guarantees
-        the DI compiler will pick it up even if stale interceptors exist
-        in the generated/code cache.
-    -->
-    <type name="Panth\AdvancedSEO\Controller\IndexNow\Key">
-        <arguments>
-            <argument name="request" xsi:type="object">Magento\Framework\App\RequestInterface</argument>
-        </arguments>
-    </type>
 </config>

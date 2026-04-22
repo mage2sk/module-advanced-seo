@@ -1,8 +1,11 @@
 <?xml version="1.0"?>
+<!--
+/**
+ * RemoveNativeOgObserver moved to Panth_SocialMeta
+ * (packages/module-social-meta/etc/frontend/events.xml). This file is
+ * kept with an empty <config> so any cached references do not 404.
+ */
+-->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <event name="layout_generate_blocks_after">
-        <observer name="panth_seo_remove_native_og"
-                  instance="Panth\AdvancedSEO\Observer\Social\RemoveNativeOgObserver"/>
-    </event>
 </config>
