@@ -7,7 +7,6 @@ use Magento\Catalog\Block\Category\View as CategoryView;
 use Magento\Eav\Model\ResourceModel\Entity\Attribute\CollectionFactory as AttributeCollectionFactory;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Registry;
-use Magento\Framework\Url as FrameworkUrl;
 use Magento\Framework\View\LayoutInterface;
 use Magento\Framework\View\Page\Config as PageConfig;
 use Magento\Store\Model\StoreManagerInterface;
@@ -87,25 +86,16 @@ class MetadataPlugin
 
     /**
      * True when the page is a layered-nav filter result so we should defer
-     * to the filter-page meta override (Panth_FilterSeo). Two signals:
-     *
-     *  - request alias is set by FilterRouter on pretty path-based filter
-     *    URLs (the SEO surface), or
-     *  - $_GET carries a filterable attribute (legacy ?attr=optid URLs).
-     *
-     * We deliberately read $_GET via getQuery() and NOT $request->getParams(),
-     * because FilterRouter::match() injects attribute codes via setParam()
-     * on pretty URLs — getParams() can't tell those apart from real
-     * user-supplied query params.
+     * to the filter-page meta override (Panth_FilterSeo). Reads getParams()
+     * deliberately — that bag includes both user-supplied $_GET filters AND
+     * the codes that FilterRouter::match() setParam'd on pretty URLs, which
+     * is exactly what "is filter active?" should mean here.
      */
     private function hasActiveFilter(): bool
     {
-        if ((string) $this->request->getAlias(FrameworkUrl::REWRITE_REQUEST_PATH_ALIAS) !== '') {
-            return true;
-        }
-        $query = $this->request->getQuery()->toArray();
+        $params = $this->request->getParams();
         foreach ($this->getFilterableAttributeCodes() as $code) {
-            if (!empty($query[$code])) {
+            if (!empty($params[$code])) {
                 return true;
             }
         }

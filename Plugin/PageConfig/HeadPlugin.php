@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Panth\AdvancedSEO\Plugin\PageConfig;
 
+use Magento\Eav\Model\ResourceModel\Entity\Attribute\CollectionFactory as AttributeCollectionFactory;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\View\Page\Config as PageConfig;
 use Magento\Framework\Registry;
 use Magento\Store\Model\StoreManagerInterface;
@@ -16,11 +18,16 @@ use Panth\AdvancedSEO\Helper\Config as SeoConfig;
  */
 class HeadPlugin
 {
+    /** @var string[]|null */
+    private ?array $filterableAttributeCodes = null;
+
     public function __construct(
         private readonly MetaResolverInterface $metaResolver,
         private readonly StoreManagerInterface $storeManager,
         private readonly Registry $registry,
-        private readonly SeoConfig $seoConfig
+        private readonly SeoConfig $seoConfig,
+        private readonly RequestInterface $request,
+        private readonly AttributeCollectionFactory $attributeCollectionFactory
     ) {
     }
 
@@ -28,6 +35,14 @@ class HeadPlugin
     {
         try {
             if (!$this->seoConfig->isEnabled()) {
+                return [];
+            }
+
+            // When a layered-nav filter is active in the URL, the filter-page
+            // meta override (Panth_FilterSeo) is the source of truth. Defer
+            // here too — otherwise publicBuild() runs after block setLayout
+            // and clobbers FilterSeo's title with the parent category meta.
+            if ($this->hasActiveFilter()) {
                 return [];
             }
 
@@ -110,5 +125,44 @@ class HeadPlugin
             return [MetaResolverInterface::ENTITY_CMS, (int) $cmsPage->getId()];
         }
         return [null, 0];
+    }
+
+    /**
+     * Mirror of MetadataPlugin::hasActiveFilter — getParams() includes both
+     * user-supplied $_GET filters and FilterRouter setParam'd codes on
+     * pretty URLs, which is exactly the union we need to mean "filter
+     * active, defer to FilterSeo".
+     */
+    private function hasActiveFilter(): bool
+    {
+        $params = $this->request->getParams();
+        foreach ($this->getFilterableAttributeCodes() as $code) {
+            if (!empty($params[$code])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getFilterableAttributeCodes(): array
+    {
+        if ($this->filterableAttributeCodes !== null) {
+            return $this->filterableAttributeCodes;
+        }
+        $codes = [];
+        try {
+            $coll = $this->attributeCollectionFactory->create();
+            $coll->setEntityTypeFilter(4);
+            $coll->addFieldToFilter('is_filterable', ['in' => [1, 2]]);
+            foreach ($coll as $attr) {
+                $codes[] = (string) $attr->getAttributeCode();
+            }
+        } catch (\Throwable) {
+            // Empty list = treat as no active filter (safe default).
+        }
+        return $this->filterableAttributeCodes = $codes;
     }
 }

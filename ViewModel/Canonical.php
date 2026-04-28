@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Panth\AdvancedSEO\ViewModel;
 
+use Magento\Eav\Model\ResourceModel\Entity\Attribute\CollectionFactory as AttributeCollectionFactory;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Registry;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
@@ -14,13 +15,17 @@ use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 
 class Canonical implements ArgumentInterface
 {
+    /** @var string[]|null */
+    private ?array $filterableAttributeCodes = null;
+
     public function __construct(
         private readonly CanonicalResolverInterface $canonicalResolver,
         private readonly Registry $registry,
         private readonly RequestInterface $request,
         private readonly StoreManagerInterface $storeManager,
         private readonly SeoConfig $config,
-        private readonly PageConfig $pageConfig
+        private readonly PageConfig $pageConfig,
+        private readonly AttributeCollectionFactory $attributeCollectionFactory
     ) {
     }
 
@@ -62,6 +67,19 @@ class Canonical implements ArgumentInterface
             ];
             if ($page > 0) {
                 $params['p'] = $page;
+            }
+
+            // Filter-aware self-canonical: when a layered-nav filter is
+            // active (pretty FilterRouter URL or legacy ?attr=optid), the
+            // canonical URL must point to THIS page — not the bare parent
+            // category. Use the request URI as the source of truth so the
+            // pretty path-based slug from FilterRouter is preserved verbatim.
+            if ($type === MetaResolverInterface::ENTITY_CATEGORY && $this->hasActiveFilter()) {
+                $absolute = rtrim((string) $store->getBaseUrl(), '/') . $currentPath;
+                if (!$this->config->canonicalPaginatedToFirst($storeId) && $page > 1) {
+                    $absolute .= (str_contains($absolute, '?') ? '&' : '?') . 'p=' . $page;
+                }
+                return $this->canonicalResolver->normalize($absolute, $storeId);
             }
 
             if ($type !== null) {
@@ -199,6 +217,44 @@ class Canonical implements ArgumentInterface
             // PageConfig may not be initialized; assume no canonical present.
         }
         return false;
+    }
+
+    /**
+     * Mirror of MetadataPlugin::hasActiveFilter — getParams() includes both
+     * user-supplied $_GET filters and FilterRouter setParam'd codes on
+     * pretty URLs, which together define "filter active" for the canonical.
+     */
+    private function hasActiveFilter(): bool
+    {
+        $params = $this->request->getParams();
+        foreach ($this->getFilterableAttributeCodes() as $code) {
+            if (!empty($params[$code])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getFilterableAttributeCodes(): array
+    {
+        if ($this->filterableAttributeCodes !== null) {
+            return $this->filterableAttributeCodes;
+        }
+        $codes = [];
+        try {
+            $coll = $this->attributeCollectionFactory->create();
+            $coll->setEntityTypeFilter(4);
+            $coll->addFieldToFilter('is_filterable', ['in' => [1, 2]]);
+            foreach ($coll as $attr) {
+                $codes[] = (string) $attr->getAttributeCode();
+            }
+        } catch (\Throwable) {
+            // empty list — treat as no active filter
+        }
+        return $this->filterableAttributeCodes = $codes;
     }
 
     /**
