@@ -2,7 +2,7 @@
     "name": "mage2kishan/module-advanced-seo",
     "description": "Panth Advanced SEO \u2014 enterprise-grade SEO suite for Magento 2: SEO dashboard, meta templates, SEO rules engine, bulk meta editor, custom canonicals, filter URL rewrites, filter page meta, hreflang, product feeds, missing meta report, SEO audit & crawl results, structured data (JSON-LD), breadcrumbs, OpenGraph/Twitter social meta, llms.txt + llms-full.txt. Hyva and Luma compatible.",
     "type": "magento2-module",
-    "version": "1.3.0",
+    "version": "1.3.1",
     "license": "proprietary",
     "keywords": [
         "magento2",

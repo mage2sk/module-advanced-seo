@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace Panth\AdvancedSEO\Plugin\Catalog\Category;
 
 use Magento\Catalog\Block\Category\View as CategoryView;
+use Magento\Eav\Model\ResourceModel\Entity\Attribute\CollectionFactory as AttributeCollectionFactory;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Registry;
 use Magento\Framework\View\LayoutInterface;
 use Magento\Framework\View\Page\Config as PageConfig;
@@ -14,13 +16,18 @@ use Psr\Log\LoggerInterface;
 
 class MetadataPlugin
 {
+    /** @var string[]|null */
+    private ?array $filterableAttributeCodes = null;
+
     public function __construct(
         private readonly MetaResolverInterface $metaResolver,
         private readonly PageConfig $pageConfig,
         private readonly Registry $registry,
         private readonly StoreManagerInterface $storeManager,
         private readonly SeoConfig $seoConfig,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly RequestInterface $request,
+        private readonly AttributeCollectionFactory $attributeCollectionFactory
     ) {
     }
 
@@ -37,6 +44,15 @@ class MetadataPlugin
             if (!$this->seoConfig->isEnabled()) {
                 return;
             }
+
+            // When a layered-nav filter is active in the URL, the filter-page
+            // meta override (Panth_FilterSeo / equivalents) is the source of
+            // truth. Defer so we don't clobber filter-specific title/desc
+            // with the parent category's plain meta.
+            if ($this->hasActiveFilter()) {
+                return;
+            }
+
             $category = $this->registry->registry('current_category');
             if ($category === null || !$category->getId()) {
                 return;
@@ -66,5 +82,43 @@ class MetadataPlugin
         } catch (\Throwable $e) {
             $this->logger->warning('Panth SEO category metadata plugin failed', ['error' => $e->getMessage()]);
         }
+    }
+
+    /**
+     * True when the request carries a filterable EAV attribute as a query
+     * param — i.e. the page is a layered-nav filter result, not the plain
+     * category landing.
+     */
+    private function hasActiveFilter(): bool
+    {
+        $params = $this->request->getParams();
+        foreach ($this->getFilterableAttributeCodes() as $code) {
+            if (!empty($params[$code])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getFilterableAttributeCodes(): array
+    {
+        if ($this->filterableAttributeCodes !== null) {
+            return $this->filterableAttributeCodes;
+        }
+        $codes = [];
+        try {
+            $coll = $this->attributeCollectionFactory->create();
+            $coll->setEntityTypeFilter(4);
+            $coll->addFieldToFilter('is_filterable', ['in' => [1, 2]]);
+            foreach ($coll as $attr) {
+                $codes[] = (string) $attr->getAttributeCode();
+            }
+        } catch (\Throwable) {
+            // Empty list = treat as no active filter (safe default).
+        }
+        return $this->filterableAttributeCodes = $codes;
     }
 }
