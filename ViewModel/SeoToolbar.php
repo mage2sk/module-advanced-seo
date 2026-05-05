@@ -5,6 +5,7 @@ namespace Panth\AdvancedSEO\ViewModel;
 
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\App\State as AppState;
 use Magento\Framework\Registry;
 use Magento\Framework\View\DesignInterface;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
@@ -36,18 +37,31 @@ class SeoToolbar implements ArgumentInterface
         private readonly RequestInterface $request,
         private readonly StoreManagerInterface $storeManager,
         private readonly DesignInterface $design,
-        private readonly ResourceConnection $resource
+        private readonly ResourceConnection $resource,
+        private readonly AppState $appState
     ) {
     }
 
     /**
      * Check whether the toolbar should be rendered for the current visitor.
      *
+     * Because the toolbar plugin emits `setNoCacheHeaders()` whenever it
+     * fires (so visitors don't see the toolbar served from FPC), an empty
+     * allow-list combined with toolbar-on used to disable FPC for every
+     * visitor. The allow-list is now MANDATORY — empty means "deny except
+     * developer mode" so an admin who toggles the feature on without
+     * adding their IP doesn't accidentally tank FPC site-wide.
+     *
      * Rules:
      *  - Module disabled OR toolbar disabled → deny.
-     *  - Allowed-IPs empty  → allow all visitors (explicit opt-in by admin).
-     *  - Allowed-IPs non-empty → the client IP must match a literal entry
-     *    OR fall inside a CIDR range. Invalid/malformed entries are ignored.
+     *  - Empty allow-list:
+     *      - allow only when MAGE_MODE=developer.
+     *      - production / default mode → deny (prevents site-wide FPC kill).
+     *  - Non-empty allow-list:
+     *      - allow when client IP matches a literal entry, OR
+     *      - falls inside a CIDR range, OR
+     *      - the entry is the wildcard `*` (explicit "allow all" opt-in).
+     *  - Invalid/malformed entries are ignored.
      */
     public function isAllowed(): bool
     {
@@ -58,22 +72,39 @@ class SeoToolbar implements ArgumentInterface
 
             $allowedIps = trim($this->config->getSeoToolbarAllowedIps());
 
-            // Empty list == allow all (per module spec).
             if ($allowedIps === '') {
-                return true;
+                // Empty allow-list now means "developer mode only" — see rule
+                // block above. This prevents the historical footgun where
+                // turning on the toolbar killed FPC for every visitor.
+                try {
+                    return $this->appState->getMode() === AppState::MODE_DEVELOPER;
+                } catch (\Throwable) {
+                    return false;
+                }
             }
 
             $clientIp = $this->getClientIp();
-            if ($clientIp === '') {
-                return false;
-            }
 
             $entries = array_filter(
                 array_map('trim', explode(',', $allowedIps)),
                 static fn (string $e): bool => $e !== ''
             );
 
+            // Explicit "allow all" opt-in — admin must type `*` deliberately
+            // because it's the same FPC-killing behaviour the empty default
+            // used to have, just spelled out in config.
+            if (in_array('*', $entries, true)) {
+                return true;
+            }
+
+            if ($clientIp === '') {
+                return false;
+            }
+
             foreach ($entries as $entry) {
+                if ($entry === '*') {
+                    continue;
+                }
                 if ($this->ipMatches($clientIp, $entry)) {
                     return true;
                 }

@@ -187,9 +187,9 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Shows an on-page SEO diagnostics toolbar on the storefront for allowed IPs.</comment>
                 </field>
-                <field id="seo_toolbar_allowed_ips" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <field id="seo_toolbar_allowed_ips" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>SEO Toolbar Allowed IPs</label>
-                    <comment>Comma-separated list of IP addresses. Leave empty to allow all (not recommended).</comment>
+                    <comment><![CDATA[Comma-separated IP literals or CIDR ranges (e.g. <code>10.0.0.5,192.168.0.0/16</code>). When the toolbar fires it disables Full Page Cache for that response, so the allow-list MUST be tight in production. Leave empty to render the toolbar only in <code>MAGE_MODE=developer</code>. Use <code>*</code> as a single entry to explicitly allow every visitor (this WILL disable FPC site-wide; only use on staging).]]></comment>
                 </field>
             </group>
 
