@@ -53,7 +53,7 @@ class Collection extends AbstractCollection implements SearchResultInterface
     /**
      * @inheritdoc
      */
-    public function setSearchCriteria(SearchCriteriaInterface $searchCriteria = null)
+    public function setSearchCriteria(?SearchCriteriaInterface $searchCriteria = null)
     {
         return $this;
     }
@@ -77,7 +77,7 @@ class Collection extends AbstractCollection implements SearchResultInterface
     /**
      * @inheritdoc
      */
-    public function setItems(array $items = null)
+    public function setItems(?array $items = null)
     {
         return $this;
     }
