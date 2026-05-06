@@ -1,10 +1,18 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/consumer.xsd">
+    <!--
+        ScoreConsumer is a lightweight handler (process(string $message): void),
+        not a full Magento\Framework\MessageQueue\ConsumerInterface impl.
+        Magento 2.4.x rejects classes registered as `consumerInstance` unless
+        they implement that interface — the previous wiring (which set both
+        `consumerInstance` and `handler`) made every `consumers_runner` cron
+        tick fail validation, silently stalling all other queues. Keep only
+        `handler`; the framework's default consumer wraps it.
+    -->
     <consumer name="panth_seo.score_entity.consumer"
               queue="panth_seo.score_entity.q"
               connection="db"
               maxMessages="1000"
-              consumerInstance="Panth\AdvancedSEO\Model\Queue\ScoreConsumer"
               handler="Panth\AdvancedSEO\Model\Queue\ScoreConsumer::process"/>
 </config>

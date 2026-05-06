@@ -2,6 +2,14 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/queue.xsd">
     <broker topic="panth_seo.score_entity" exchange="panth_seo.exchange" type="db">
-        <queue name="panth_seo.score_entity.q" consumer="panth_seo.score_entity.consumer" consumerInstance="Panth\AdvancedSEO\Model\Queue\ScoreConsumer" handler="Panth\AdvancedSEO\Model\Queue\ScoreConsumer::process"/>
+        <!--
+            consumerInstance was set here too — same defect as in
+            queue_consumer.xml. Removed; consumer wiring lives in
+            queue_consumer.xml using the framework's default consumer
+            with our `handler` method.
+        -->
+        <queue name="panth_seo.score_entity.q"
+               consumer="panth_seo.score_entity.consumer"
+               handler="Panth\AdvancedSEO\Model\Queue\ScoreConsumer::process"/>
     </broker>
 </config>
