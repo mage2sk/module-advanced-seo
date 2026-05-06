@@ -390,7 +390,7 @@ It **enhances** them. Magento's native meta fields still work — Panth Advanced
 
 From version 1.1.0 onward these live in dedicated Packagist modules (XML sitemap was extracted in 1.2.0) — install them alongside Advanced SEO when you need them. See [Companion Modules](#companion-modules).
 
-### Will this conflict with Mageplaza SEO, Mirasvit SEO, or Amasty SEO?
+### Will this conflict with another full Magento SEO extension?
 
 Most features overlap, so running Panth Advanced SEO alongside another full SEO suite is not recommended — you'll get duplicate JSON-LD, competing canonical tags, and conflicting robots rules. Uninstall the other SEO extension first.
 
