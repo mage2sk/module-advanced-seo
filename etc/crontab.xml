@@ -2,6 +2,9 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Cron:etc/crontab.xsd">
     <group id="default">
+        <job name="panth_advancedseo_send_heartbeat" instance="Panth\AdvancedSEO\Cron\SendHeartbeat" method="execute">
+            <schedule>3 4 * * *</schedule>
+        </job>
         <job name="panth_seo_score_recompute"
              instance="Panth\AdvancedSEO\Cron\ScoreRecompute"
              method="execute">
