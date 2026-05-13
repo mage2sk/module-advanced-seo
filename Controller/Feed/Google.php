@@ -16,7 +16,7 @@ use Panth\AdvancedSEO\Model\Feed\GoogleMerchantFeedBuilder;
 use Panth\AdvancedSEO\Model\Feed\ProfileBasedFeedBuilder;
 
 /**
- * Frontend controller: GET /seo/feed/google[?id=<feed_id>]
+ * Frontend controller: GET /panth_seo/feed/google[?id=<feed_id>]
  *
  * Serves a product feed as application/xml or text/csv.
  * If `id` param is provided, serves the feed from a specific profile.

@@ -4,6 +4,20 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.3.9] — 2026-05-13
+
+### Fixed
+
+- **Frontend route `frontName` no longer collides with other extensions on the same project.** `etc/frontend/routes.xml` previously declared `frontName="seo"`, a generic value that any other installed SEO extension is likely to claim. Magento merges `routes.xml` across all modules and the XSD enforces uniqueness on `frontName`, so the duplicate caused `Element 'route': Duplicate key-sequence ['seo']` and 500'd every storefront request after both modules loaded. The route id `panth_seo` is unchanged — only the public URL prefix moves.
+
+### Changed
+
+- The Google Merchant feed URL moves from `/seo/feed/google` to `/panth_seo/feed/google`. Two admin-config comments (`etc/adminhtml/system.xml`) and one controller docblock (`Controller/Feed/Google.php`) were updated to match.
+
+### Migration
+
+Update the URL in any external integration that fetches the feed — typically the Merchant Center "Add a primary feed" URL, monitoring probes, and external test scripts — from `/seo/feed/google` to `/panth_seo/feed/google`.
+
 ## [1.2.0] — 2026-04-21
 
 ### BREAKING — XML Sitemap extracted

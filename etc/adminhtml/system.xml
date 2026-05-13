@@ -195,11 +195,11 @@
 
             <group id="merchant_feed" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Google Merchant Feed</label>
-                <comment><![CDATA[Generate a Google Shopping XML product feed for free listings. The feed is served at <code>/seo/feed/google</code> and regenerated daily by cron to <code>pub/media/panth_seo/google_feed_{store_code}.xml</code>. CLI: <code>bin/magento panth:seo:feed</code>.]]></comment>
+                <comment><![CDATA[Generate a Google Shopping XML product feed for free listings. The feed is served at <code>/panth_seo/feed/google</code> and regenerated daily by cron to <code>pub/media/panth_seo/google_feed_{store_code}.xml</code>. CLI: <code>bin/magento panth:seo:feed</code>.]]></comment>
                 <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable Google Merchant Feed</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>When enabled, the Google Shopping XML feed is served at /seo/feed/google and regenerated daily.</comment>
+                    <comment>When enabled, the Google Shopping XML feed is served at /panth_seo/feed/google and regenerated daily.</comment>
                 </field>
                 <field id="include_out_of_stock" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Include Out of Stock Products</label>
