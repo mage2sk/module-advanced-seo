@@ -136,16 +136,21 @@ class Scorer implements SeoScorerInterface
         $connection = $this->resource->getConnection();
         $table = $this->resource->getTableName('panth_seo_score');
         $data = [
-            'entity_type' => $entityType,
-            'entity_id' => $entityId,
-            'store_id' => $storeId,
-            'score' => $score,
-            'grade' => $grade,
-            'breakdown' => $this->serializer->serialize($breakdown),
-            'updated_at' => $this->dateTime->gmtDate(),
+            SeoScoreInterface::ENTITY_TYPE => $entityType,
+            SeoScoreInterface::ENTITY_ID => $entityId,
+            SeoScoreInterface::STORE_ID => $storeId,
+            SeoScoreInterface::SCORE => $score,
+            SeoScoreInterface::GRADE => $grade,
+            SeoScoreInterface::BREAKDOWN => $this->serializer->serialize($breakdown),
+            SeoScoreInterface::COMPUTED_AT => $this->dateTime->gmtDate(),
         ];
         try {
-            $connection->insertOnDuplicate($table, $data, ['score', 'grade', 'breakdown', 'updated_at']);
+            $connection->insertOnDuplicate($table, $data, [
+                SeoScoreInterface::SCORE,
+                SeoScoreInterface::GRADE,
+                SeoScoreInterface::BREAKDOWN,
+                SeoScoreInterface::COMPUTED_AT,
+            ]);
         } catch (\Throwable $e) {
             $this->logger->error('Panth SEO score persist failed: ' . $e->getMessage());
         }

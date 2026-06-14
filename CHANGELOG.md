@@ -4,6 +4,13 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.3.11] — 2026-06-14
+
+### Fixed
+
+- **SEO scores are now persisted instead of silently failing.** `Model/Score/Scorer.php` wrote a non-existent `updated_at` column to `panth_seo_score`, so every persist threw `SQLSTATE[42S22] Unknown column 'updated_at'`. The exception was caught and logged, so the storefront kept working, but no score row was ever written and `var/log/system.log` filled with one error per entity × store on every recompute. The persist now uses the schema's `computed_at` column, referenced via the `SeoScoreInterface` constants so the column names cannot drift again.
+- **Meta-embedding (duplicate-content) storage no longer fails on every score.** `Model/Score/EmbeddingIndex.php` wrote `dims`/`updated_at` to `panth_seo_meta_embedding` and omitted the required `field`/`hash` columns, none of which matched the schema (`dimensions`, `field`, `hash`, `created_at`). Every `DuplicateCheck` run logged `Unknown column 'dims'`. The writer now matches the schema, keying one combined title+description vector per entity under a stable `field`, so near-duplicate detection works and the log stays clean.
+
 ## [1.3.9] — 2026-05-13
 
 ### Fixed

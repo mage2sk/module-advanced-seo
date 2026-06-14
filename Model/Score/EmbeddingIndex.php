@@ -19,6 +19,13 @@ class EmbeddingIndex
 {
     public const DIMS = 1024;
 
+    /**
+     * The schema keys embeddings per (store, entity, field) so multiple meta
+     * fields can be indexed independently. DuplicateCheck stores one combined
+     * title+description vector per entity, so we use a single stable field key.
+     */
+    private const FIELD = 'meta';
+
     public function __construct(
         private readonly ResourceConnection $resource,
         private readonly DateTime $dateTime,
@@ -69,6 +76,7 @@ class EmbeddingIndex
     {
         $connection = $this->resource->getConnection();
         $table = $this->resource->getTableName('panth_seo_meta_embedding');
+        $packed = $this->pack($vector);
         try {
             $connection->insertOnDuplicate(
                 $table,
@@ -76,11 +84,12 @@ class EmbeddingIndex
                     'entity_type' => $entityType,
                     'entity_id' => $entityId,
                     'store_id' => $storeId,
-                    'dims' => self::DIMS,
-                    'vector' => $this->pack($vector),
-                    'updated_at' => $this->dateTime->gmtDate(),
+                    'field' => self::FIELD,
+                    'hash' => hash('sha256', $packed),
+                    'vector' => $packed,
+                    'dimensions' => self::DIMS,
                 ],
-                ['dims', 'vector', 'updated_at']
+                ['hash', 'vector', 'dimensions']
             );
         } catch (\Throwable $e) {
             $this->logger->warning('Panth SEO embedding store failed: ' . $e->getMessage());
@@ -95,7 +104,7 @@ class EmbeddingIndex
         $connection = $this->resource->getConnection();
         $table = $this->resource->getTableName('panth_seo_meta_embedding');
         $select = $connection->select()
-            ->from($table, ['vector', 'dims'])
+            ->from($table, ['vector'])
             ->where('entity_type = ?', $entityType)
             ->where('entity_id = ?', $entityId)
             ->where('store_id = ?', $storeId)
