@@ -1,34 +1,53 @@
 <!-- SEO Meta -->
 <!--
-  Title: Panth Advanced SEO for Magento 2 | Meta Templates, JSON-LD, Hreflang | Panth Infotech
-  Description: Panth Advanced SEO is an enterprise-grade Magento 2 SEO extension covering SEO dashboard, meta templates, SEO rules engine, bulk meta editor, custom canonicals, filter URL rewrites, filter page meta, hreflang, product feeds, missing meta report, SEO audit & crawl results, structured data (JSON-LD), breadcrumbs, OpenGraph/Twitter cards, and llms.txt. Hyva and Luma compatible. Magento 2.4.4 - 2.4.8, PHP 8.1 - 8.4.
-  Keywords: magento 2 seo extension, magento 2 advanced seo, magento 2 meta templates, magento 2 json-ld, magento 2 structured data, magento 2 hreflang, magento 2 canonical url, magento 2 llms.txt, magento 2 opengraph, magento 2 twitter cards, magento 2 seo score, magento 2 product feed, hyva seo, panth advanced seo, panth infotech, hire magento developer, top rated plus upwork, magento 2.4.8, php 8.4
+  Title: Magento 2 Advanced SEO Extension: Meta Templates, JSON-LD, Canonicals, GA4, Product Feeds | Hyva + Luma | Panth Infotech
+  Description: Panth Advanced SEO is an enterprise Magento 2 SEO extension covering meta templates with token variables, a rules engine, bulk meta editor, custom canonicals, SEO scoring, crawl audit, Google Merchant feed, GA4 integration, hreflang, structured data, and more. Hyva and Luma compatible. Magento 2.4.4 to 2.4.8, PHP 8.1 to 8.4.
+  Keywords: magento 2 seo extension, magento 2 advanced seo, magento 2 meta templates, magento 2 canonical url, magento 2 structured data, magento 2 json-ld, magento 2 hreflang, magento 2 seo rules, magento 2 google shopping feed, magento 2 ga4, magento 2 seo score, magento 2 seo audit, hyva seo, luma seo, panth advanced seo, panth infotech, kishan savaliya, hire magento developer, top rated plus upwork
   Author: Kishan Savaliya (Panth Infotech)
-  Canonical: https://github.com/mage2sk/module-advanced-seo
+  Canonical: https://kishansavaliya.com/magento-2-advanced-seo.html
 -->
 
-# Panth Advanced SEO — Enterprise SEO Suite for Magento 2 | Meta Templates, JSON-LD, Hreflang
+# Magento 2 Advanced SEO Extension: Meta Templates, Canonicals, SEO Rules, Google Feed, GA4, Structured Data (Hyva + Luma)
 
 [![Magento 2.4.4 - 2.4.8](https://img.shields.io/badge/Magento-2.4.4%20--%202.4.8-orange?logo=magento&logoColor=white)](https://magento.com)
 [![PHP 8.1 - 8.4](https://img.shields.io/badge/PHP-8.1%20--%208.4-blue?logo=php&logoColor=white)](https://php.net)
-[![License Proprietary](https://img.shields.io/badge/License-Proprietary-blue)]()
+[![Hyva + Luma](https://img.shields.io/badge/Themes-Hyva%20%2B%20Luma-14b8a6)](https://www.hyva.io)
+[![Live Demo & Details](https://img.shields.io/badge/Live%20Demo%20%26%20Details-magento--2--advanced--seo-0D9488?style=flat)](https://kishansavaliya.com/magento-2-advanced-seo.html)
 [![Packagist](https://img.shields.io/badge/Packagist-mage2kishan%2Fmodule--advanced--seo-orange?logo=packagist&logoColor=white)](https://packagist.org/packages/mage2kishan/module-advanced-seo)
 [![Upwork Top Rated Plus](https://img.shields.io/badge/Upwork-Top%20Rated%20Plus-14a800?logo=upwork&logoColor=white)](https://www.upwork.com/freelancers/~016dd1767321100e21)
-[![Panth Infotech Agency](https://img.shields.io/badge/Agency-Panth%20Infotech-14a800?logo=upwork&logoColor=white)](https://www.upwork.com/agencies/1881421506131960778/)
 [![Website](https://img.shields.io/badge/Website-kishansavaliya.com-0D9488)](https://kishansavaliya.com)
-[![Get a Quote](https://img.shields.io/badge/Get%20a%20Quote-Free%20Estimate-DC2626)](https://kishansavaliya.com/get-quote)
 
-> **Core enterprise SEO suite** for Magento 2 (Adobe Commerce + Open Source): SEO dashboard, meta templates with variable tokens, SEO rules engine, bulk meta editor, custom canonicals, filter URL rewrites, filter page meta, hreflang, product feeds, missing meta report, SEO audit + crawl results, full schema.org JSON-LD, breadcrumbs, OpenGraph/Twitter cards, and `llms.txt` / `llms-full.txt` — all MEQP compliant and Hyva + Luma ready.
+> **One integrated SEO suite for Magento 2.** Panth Advanced SEO handles meta templates with token variables, a condition-based SEO rules engine, bulk meta editing, custom canonical URLs, SEO scoring and crawl audit, a Google Merchant feed, GA4 enhanced ecommerce, hreflang management, and URL key automation. Native support for both **Hyva (Alpine.js)** and **Luma**.
 
-**Panth Advanced SEO** is the core SEO module in the Panth Infotech catalog. It covers everything a serious Magento 2 merchant needs to rank on Google, Bing, and AI search engines (ChatGPT, Claude, Perplexity) — from canonical and meta tags to structured data, hreflang reciprocity validation, and `llms.txt` generation. Cross-links, redirects & 404 management, robots & LLM-bot policy, AI meta generation, the frontend HTML sitemap, and the XML sitemap generator now live in dedicated companion modules — see [Companion Modules](#companion-modules) below.
-
-Built to **MEQP (Magento Extension Quality Program)** standards, optimised for **Hyva + Luma**, and shipped with two dedicated indexers (`panth_seo_resolved_meta` and `panth_seo_hreflang`) so large catalogs stay fast. Compatible with Magento **2.4.4 - 2.4.8** and PHP **8.1 - 8.4**.
+**Product page:** [kishansavaliya.com/magento-2-advanced-seo.html](https://kishansavaliya.com/magento-2-advanced-seo.html)
 
 ---
 
-## 🚀 Need Custom Magento 2 Development?
+## Quick Answer
 
-> **Get a free quote for your project in 24 hours** — custom modules, Hyva themes, performance optimization, M1→M2 migrations, and Adobe Commerce Cloud.
+**What is Panth Advanced SEO?** It is a Magento 2 SEO extension that covers meta templates, canonical URLs, SEO rules, bulk meta editing, SEO scoring and crawl audit, a Google Merchant feed, GA4 integration, and hreflang management in a single module. No need to install five different SEO extensions from separate vendors.
+
+**What does it add to my store?**
+
+- **Meta templates** with token variables like `{name}`, `{sku}`, `{price}`, and `{attribute:X}` applied to products, categories, and CMS pages automatically.
+- A **condition-based SEO rules engine** that applies templates, sets canonicals, or marks pages noindex when your conditions match.
+- A **bulk meta editor** so you can review and fix hundreds of meta titles and descriptions in one grid.
+- **Custom canonical URLs** per entity and per store, with fine-grained control over query strings, trailing slashes, and pagination.
+- An **SEO scoring and crawl audit** system that gives each entity a 0-100 score, detects duplicates, and runs a site crawl for broken links and missing meta.
+- A **Google Merchant feed** generated by cron or CLI and served at `/panth_seo/feed/google`.
+- **GA4 enhanced ecommerce** with `view_item`, `view_item_list` events and a Measurement ID field.
+- **Hreflang management** with group CRUD, x-default support, and reciprocity validation.
+- A **URL key automation** tool that generates product URL keys from a configurable template on save.
+
+**Which themes are supported?** Both **Hyva** (server-rendered, no jQuery) and **Luma**. All output is server-rendered through layout XML and ViewModels.
+
+**What does it need?** Magento 2.4.4 to 2.4.8, PHP 8.1 to 8.4, and the free `mage2kishan/module-core` package.
+
+---
+
+## Need Custom Magento 2 Development?
+
+> **Get a free quote for your project in 24 hours** for custom modules, Hyva themes, performance work, M1 to M2 migrations, and Adobe Commerce Cloud.
 
 <p align="center">
   <a href="https://kishansavaliya.com/get-quote">
@@ -40,7 +59,7 @@ Built to **MEQP (Magento Extension Quality Program)** standards, optimised for *
 <tr>
 <td width="50%" align="center">
 
-### 🏆 Kishan Savaliya
+### Kishan Savaliya
 **Top Rated Plus on Upwork**
 
 [![Hire on Upwork](https://img.shields.io/badge/Hire%20on%20Upwork-Top%20Rated%20Plus-14a800?style=for-the-badge&logo=upwork&logoColor=white)](https://www.upwork.com/freelancers/~016dd1767321100e21)
@@ -51,7 +70,7 @@ Adobe Certified • Hyva Specialist
 </td>
 <td width="50%" align="center">
 
-### 🏢 Panth Infotech Agency
+### Panth Infotech Agency
 **Magento Development Team**
 
 [![Visit Agency](https://img.shields.io/badge/Visit%20Agency-Panth%20Infotech-14a800?style=for-the-badge&logo=upwork&logoColor=white)](https://www.upwork.com/agencies/1881421506131960778/)
@@ -69,139 +88,122 @@ Performance • SEO • Adobe Commerce Cloud
 
 ## Table of Contents
 
-- [Why Panth Advanced SEO](#why-panth-advanced-seo)
-- [Companion Modules](#companion-modules)
+- [Who Is It For](#who-is-it-for)
 - [Key Features](#key-features)
+- [Companion Modules](#companion-modules)
 - [Compatibility](#compatibility)
 - [Installation](#installation)
 - [Configuration](#configuration)
-- [Usage Examples](#usage-examples)
-- [Meta Variable Tokens](#meta-variable-tokens)
-- [Indexers](#indexers)
-- [Troubleshooting](#troubleshooting)
+- [How It Works](#how-it-works)
 - [FAQ](#faq)
 - [Support](#support)
+- [About Panth Infotech](#about-panth-infotech)
+- [Quick Links](#quick-links)
 
 ---
 
-## Why Panth Advanced SEO
+## Who Is It For
 
-Most Magento 2 SEO solutions are bundles of 5-7 small extensions from different vendors — each with its own admin UI, its own upgrade path, and its own conflicts. Panth Advanced SEO replaces that entire stack with a **single integrated suite** that shares one settings tree, one permission model, and one cache strategy.
-
-### Key Benefits
-
-- **One vendor, one update cycle** — no more debugging which of seven SEO extensions broke after upgrading to Magento 2.4.8
-- **Ranks on AI search** — dynamic `llms.txt` / `llms-full.txt` and JSON-LD that LLMs actually read
-- **Huge catalogs welcome** — dedicated indexers with mview and delta tracking for multi-million SKU stores
-- **Hyva-first** — zero jQuery, zero `mage/*` dependencies, server-rendered output, `hyva.xml` marker included
-- **Complete audit trail** — SEO scoring (0-100), duplicate detection, readability analysis, trend dashboard
-- **Enterprise compliance** — MEQP compliant, ACL-protected admin actions
-- **Modular by design** — pair with companion modules (cross-links, redirects, robots, AI, HTML sitemap, XML sitemap) only when you need them
-
----
-
-## Companion Modules
-
-Panth Advanced SEO focuses on the core SEO surface (meta, canonicals, hreflang, structured data, `llms.txt`). The following features now live in dedicated Packagist modules — install any of them alongside Advanced SEO to add the extra capability:
-
-| Module | Purpose |
-|---|---|
-| [`mage2kishan/module-crosslinks`](https://packagist.org/packages/mage2kishan/module-crosslinks) | Auto keyword → internal-link replacement in CMS / product / category HTML. |
-| [`mage2kishan/module-redirects`](https://packagist.org/packages/mage2kishan/module-redirects) | 301/302/303/307/308/410/451 redirects, 404 log with clustering, CSV import/export, loop detector. |
-| [`mage2kishan/module-robots-seo`](https://packagist.org/packages/mage2kishan/module-robots-seo) | Dedicated `/robots.txt` endpoint, `X-Robots-Tag` HTTP header, and 14-bot LLM crawler policy (GPTBot, ClaudeBot, PerplexityBot, Google-Extended, Bytespider, …). |
-| [`mage2kishan/module-pagebuilder-ai`](https://packagist.org/packages/mage2kishan/module-pagebuilder-ai) | AI meta generation via OpenAI / Claude with prompts, knowledge base, async jobs, and "Generate with AI" buttons on admin forms. |
-| [`mage2kishan/module-html-sitemap`](https://packagist.org/packages/mage2kishan/module-html-sitemap) | Frontend HTML sitemap page (`/sitemap`) with categories, products, CMS pages, stores, and custom links. |
-| [`mage2kishan/module-xml-sitemap`](https://packagist.org/packages/mage2kishan/module-xml-sitemap) | Sharded XML sitemap generator (`/panth-sitemap.xml`) with profile CRUD, hreflang, image + video tags, auto-split, gzip, search-engine ping, async shard queue + cron. |
-
-Each companion module is independent — install only what you need.
+- **Stores with large catalogs** that need consistent, keyword-rich meta titles and descriptions without editing every product by hand. Meta templates with tokens do it automatically.
+- **Merchants who need control over canonicals** on paginated, filtered, or multi-store pages to avoid duplicate content issues.
+- **Stores targeting multiple languages or regions** that need hreflang tags with a reliable admin interface and reciprocity checks.
+- **Merchants using Google Shopping** who want a cron-generated product feed without a separate third-party service.
+- **Developers and agency teams** who need a central SEO audit, scoring dashboard, and bulk editor to manage SEO health across hundreds of entities.
 
 ---
 
 ## Key Features
 
-### 🧩 Meta Templates & Variable Tokens
+### Meta Templates and Token Engine
+- **Token variables** like `{name}`, `{sku}`, `{price}`, `{category}`, `{store}`, `{attribute:X}`, `{brand}`, `{short_description}`, and `{year}` in title and description templates.
+- **Tokens support fallbacks**: `{brand|Generic}` renders `Generic` when the attribute is empty.
+- **Per-entity overrides** on product, category, and CMS page edit forms. Overrides always take priority over templates.
+- **Force template over existing meta** option to push templates to products that already have manually written meta.
+- **Append store name** to all titles automatically, with a separate option to strip Magento's native title prefix and suffix.
+- **Pagination label** in the meta title with configurable position (prefix, suffix, or none) and format.
 
-- Smarty-lite token system: `{name}`, `{price}`, `{sku}`, `{category}`, `{store}`, `{attribute:X}`, `{brand}`, `{short_description}`
-- Per-entity overrides (product, category, CMS page) with bulk editor grid
-- Template inheritance: store view → category tree → product type → individual override
-- Length validation with live character counter (title 50-60, description 150-160)
+### SEO Rules Engine
+- **Condition-combine tree** using Magento's native rule system: match on entity type, product attributes, stock status, price range, category membership, and URL path.
+- **Three action types**: apply a meta template, set a canonical URL, or set a noindex directive.
+- **Priority ordering** so you control which rule wins when multiple conditions match.
+- **Stop on match** flag to skip lower-priority rules.
 
-### 🧠 Structured Data (JSON-LD)
+### Bulk Meta Editor
+- **Admin grid** showing resolved meta titles and descriptions for every product, category, and CMS page.
+- **Inline edit** so you can fix titles and descriptions without opening each entity.
+- **Filter and sort** by entity type, SEO score, or store view.
 
-- Schema.org providers for **Product**, **Breadcrumb**, **Organization**, **WebSite**, **FAQPage**, **Article**, **Video**
-- Automatic `@graph` merging to avoid duplicate Organization/WebSite nodes
-- Rich result validation against Google's structured data requirements
-- Per-store overrides for Organization logo, social profiles, sameAs array
+### Canonical URL Control
+- **Emit canonical tag** toggle with query string stripping, lowercase hostname, trailing slash removal, and homepage trailing slash settings.
+- **Paginated pages canonical to page 1** option, or keep self-canonical per page.
+- **Associated product canonical to parent** for simple products used inside configurables, grouped, or bundle products.
+- **Cross-domain canonical store** selector for multi-site setups.
+- **Per-entity ignore list** to skip canonical emission on specific URL paths.
+- **Selective query parameter stripping** via a comma-separated list, in addition to the full strip option.
+- **Product canonical URL type** selector: no category path, shortest path, or deepest path.
 
-### 🌐 Hreflang & International SEO
+### SEO Scoring and Audit
+- **0-100 score per entity** based on title length, description length, duplicates, and readability.
+- **Duplicate meta detection** using a content hash index stored in `panth_seo_duplicate`.
+- **Crawl audit** that checks pages for broken links, missing meta, and redirect chains. Depth and max pages are configurable.
+- **SEO Toolbar** for the storefront (restricted to allowed IPs) showing on-page diagnostics without a full page reload.
+- **Missing Meta Report** under the admin menu showing entities with no title or description.
+- **Crawl Results grid** under Admin showing each crawled URL, its HTTP status, canonical, robots directive, and detected issues.
 
-- Hreflang **group management** with auto-binding by SKU or URL key
-- `x-default` fallback support
-- Reciprocity validation (warns when Store A links to B but B doesn't link back)
-- Dedicated `panth_seo_hreflang` indexer for fast rendering on huge catalogs
+### Google Merchant Feed
+- **Google Shopping XML feed** served at `/panth_seo/feed/google`, regenerated by cron.
+- **Feed profile CRUD** with per-store settings, field mapping, category and attribute set filters, out-of-stock toggle, and FTP/SFTP delivery.
+- **CLI generation**: `bin/magento panth:seo:feed`.
+- **Configurable shipping fields**, Google product category attribute, and product condition.
 
-### 🔗 Canonical URLs
+### GA4 Integration
+- **GA4 script output** with your Measurement ID, controlled by a toggle.
+- **Enhanced ecommerce events**: `view_item` on product pages and `view_item_list` on category pages.
+- Measurement ID validated server-side and stored safely.
 
-- Query-parameter stripping (configurable whitelist/blacklist)
-- Pagination awareness (`rel="next"` / `rel="prev"` on category pages)
-- Layered navigation filter control (noindex + canonical-to-parent)
-- Per-product, per-category, per-CMS override
+### Google Search Console
+- **Site verification meta tag** from a single admin field.
+- **Google Indexing API** integration that submits changed product, category, and CMS page URLs automatically on save (rate limited to 200 per day).
 
-### 📡 llms.txt for AI Search
+### Hreflang Management
+- **Hreflang group CRUD** in the admin with locale-to-store mapping and x-default designation.
+- **Reciprocity validation** that flags when Store A links to Store B but Store B does not link back.
+- **Dedicated indexer** (`panth_seo_hreflang`) with mview for fast rendering on large catalogs.
 
-- **llms.txt** — dynamic endpoint describing your site's structure for LLM crawlers
-- **llms-full.txt** — extended variant with deeper catalog context
-- Auto-generated from store information with custom directive support
+### URL Key Automation
+- **Template-based URL key generation** for new products using tokens like `{{name}}` and `{{sku}}`.
+- Option to **re-apply the template on every save** for existing products.
 
-### 📊 SEO Scoring & Audit
+### Advanced Performance Settings
+- **Async indexing via message queue** to keep catalog saves non-blocking.
+- **MView incremental rebuild** so only changed entities are reindexed.
+- **Last-Modified and ETag HTTP headers** on product and category pages for efficient CDN revalidation.
+- **Speculation Rules API** support for browser-native prefetch and prerender on Chrome 121+.
 
-- 0-100 score per URL based on: length, duplicates, readability (Flesch-Kincaid), entity recognition, keyword density
-- **Trend dashboard** — track score evolution over 90 days
-- Duplicate title/description finder with bulk fix wizard
-- Broken internal link detector
+### Hyva + Luma Ready
+- **`view/frontend/hyva.xml` marker** recognized by `hyva-themes/hyva-compat`.
+- No `requirejs-config.js` in `view/frontend/`, no jQuery, no `mage/*` widgets on the storefront.
+- Server-rendered output through layout XML and ViewModels.
+- Works on stock Luma without modification.
 
-### 📱 Social Meta
+---
 
-- OpenGraph tags (`og:title`, `og:description`, `og:image`, `og:type`, `og:url`, `product:*`)
-- Twitter Card tags (`summary`, `summary_large_image`)
-- Per-entity overrides with fallback image picker
-- Image auto-resize for OG recommended dimensions (1200x630)
+## Companion Modules
 
-### ⚙️ SEO Rules Engine
+Panth Advanced SEO focuses on the core SEO surface. The following features live in dedicated Packagist modules. Install them alongside Advanced SEO when you need them.
 
-- Magento-native **condition-combine tree** (attributes, stock status, price, category, URL path)
-- Actions: apply meta template, set canonical, set noindex, inject schema
-- Priority-based execution order
-- Scheduled rules (start/end dates)
+| Module | Purpose |
+|---|---|
+| [`mage2kishan/module-crosslinks`](https://packagist.org/packages/mage2kishan/module-crosslinks) | Auto keyword to internal-link replacement in CMS, product, and category HTML. |
+| [`mage2kishan/module-redirects`](https://packagist.org/packages/mage2kishan/module-redirects) | 301/302/303/307/308/410/451 redirects, 404 log with clustering, CSV import, loop detector. |
+| [`mage2kishan/module-robots-seo`](https://packagist.org/packages/mage2kishan/module-robots-seo) | Dedicated `/robots.txt` endpoint, `X-Robots-Tag` header, and 14-bot LLM crawler policy. |
+| [`mage2kishan/module-pagebuilder-ai`](https://packagist.org/packages/mage2kishan/module-pagebuilder-ai) | AI meta generation via OpenAI or Claude with async jobs and "Generate with AI" buttons on admin forms. |
+| [`mage2kishan/module-html-sitemap`](https://packagist.org/packages/mage2kishan/module-html-sitemap) | Frontend HTML sitemap page (`/sitemap`) with categories, products, CMS pages, stores, and custom links. |
+| [`mage2kishan/module-xml-sitemap`](https://packagist.org/packages/mage2kishan/module-xml-sitemap) | Sharded XML sitemap at `/panth-sitemap.xml` with profile CRUD, hreflang, image tags, gzip, and search engine ping. |
+| [`mage2kishan/module-structured-data`](https://packagist.org/packages/mage2kishan/module-structured-data) | JSON-LD schemas for Product, Breadcrumb, Organization, FAQ, Video, Review, and more. |
+| [`mage2kishan/module-social-meta`](https://packagist.org/packages/mage2kishan/module-social-meta) | OpenGraph and Twitter Card head tags. |
 
-### 🛒 Product Feeds & Analytics
-
-- **Google Shopping feed** (XML + CSV)
-- **Facebook Catalog feed**
-- Generic CSV export with custom field mapping
-- Cron-driven generation with incremental mode
-- **GA4** + **Matomo** integration for SEO event tracking (score changes, audit events)
-
-### 🖼️ Image SEO
-
-- Alt-text templates using the same variable token system
-- Batch regeneration with queue
-- Pair with `mage2kishan/module-pagebuilder-ai` for AI-generated alt text
-
-### 🎨 Hyva & Luma Compatible
-
-- `view/frontend/hyva.xml` marker shipped (recognized by `hyva-themes/hyva-compat`)
-- No `requirejs-config.js` in `view/frontend/`
-- No jQuery / no `mage/*` widgets on storefront
-- Server-rendered output via layout XML (blocks + ViewModels)
-- Works on stock Luma theme without modification
-
-### 🛡️ Security & Performance
-
-- **MEQP compliant** — passes Adobe's Magento Extension Quality Program
-- Two dedicated indexers with mview (`panth_seo_resolved_meta`, `panth_seo_hreflang`)
-- Per-cache-type cache tags for surgical flushes
-- ACL-protected admin actions for every UI surface
+Each companion module is independent. Install only what your store needs.
 
 ---
 
@@ -211,19 +213,11 @@ Each companion module is independent — install only what you need.
 |---|---|
 | Magento Open Source | 2.4.4, 2.4.5, 2.4.6, 2.4.7, 2.4.8 |
 | Adobe Commerce | 2.4.4, 2.4.5, 2.4.6, 2.4.7, 2.4.8 |
-| Adobe Commerce Cloud | 2.4.4 — 2.4.8 |
+| Adobe Commerce Cloud | 2.4.4 to 2.4.8 |
 | PHP | 8.1.x, 8.2.x, 8.3.x, 8.4.x |
-| MySQL | 8.0+ |
-| MariaDB | 10.4+ |
 | Hyva Theme | 1.0+ (native, `hyva.xml` marker) |
 | Luma Theme | Native support |
-| Elasticsearch / OpenSearch | 7.x, 8.x |
-| Required dependency | `mage2kishan/module-core` ^1.0 |
-
-Tested on:
-- Magento 2.4.8-p4 with PHP 8.4 + Hyva 1.3
-- Magento 2.4.7 with PHP 8.3 + Luma
-- Magento 2.4.6 with PHP 8.2 + Hyva 1.2
+| Required Dependency | `mage2kishan/module-core` (free) |
 
 ---
 
@@ -243,10 +237,10 @@ bin/magento cache:flush
 
 ### Manual Installation via ZIP
 
-1. Download the extension package from [Packagist](https://packagist.org/packages/mage2kishan/module-advanced-seo) or the [Adobe Commerce Marketplace](https://commercemarketplace.adobe.com)
-2. Extract to `app/code/Panth/AdvancedSEO/`
-3. Ensure `app/code/Panth/Core/` is also present (required dependency — `mage2kishan/module-core`)
-4. Run the same commands as above starting from `bin/magento module:enable ...`
+1. Download the latest release from [Packagist](https://packagist.org/packages/mage2kishan/module-advanced-seo) or from the [product page](https://kishansavaliya.com/magento-2-advanced-seo.html).
+2. Extract it to `app/code/Panth/AdvancedSEO/` in your Magento install.
+3. Make sure `Panth_Core` is installed too (required dependency).
+4. Run the commands above starting from `bin/magento module:enable`.
 
 ### Verify Installation
 
@@ -255,7 +249,7 @@ bin/magento module:status Panth_AdvancedSEO
 # Expected: Module is enabled
 ```
 
-After installation, navigate to:
+After install, open:
 ```
 Admin → Stores → Configuration → Panth Extensions → Advanced SEO
 ```
@@ -264,155 +258,100 @@ Admin → Stores → Configuration → Panth Extensions → Advanced SEO
 
 ## Configuration
 
-All settings live under `Stores → Configuration → Panth Extensions → Advanced SEO`:
+Go to **Stores → Configuration → Panth Extensions → Advanced SEO**.
 
-| Section | Setting | Description |
-|---|---|---|
-| General | Enable Module | Master toggle for all Advanced SEO functionality |
-| Meta Templates | Default Product Title | Template used when product has no override, e.g. `{name} - Buy Online at {store}` |
-| Meta Templates | Default Product Description | Description template with token support |
-| Meta Templates | Default Category Title | `{name} - Shop {count} Products at {store}` |
-| Canonicals | Strip Query Params | Enable query-param stripping (with whitelist) |
-| Canonicals | Pagination `rel=next/prev` | Emit pagination hints on category pages |
-| Hreflang | Enable Hreflang | Render `<link rel="alternate" hreflang="...">` tags |
-| Hreflang | Enable x-default | Include `x-default` fallback |
-| Structured Data | Enable Product Schema | Emit Product JSON-LD |
-| Structured Data | Enable Breadcrumb Schema | Emit BreadcrumbList JSON-LD |
-| Structured Data | Organization Logo | URL to your org logo (used in WebSite/Organization schema) |
-| Social Meta | Enable OpenGraph | Emit OG tags |
-| Social Meta | Twitter Card Type | `summary` or `summary_large_image` |
-| SEO Scoring | Enable Scoring Cron | Recalculate scores daily |
-| Analytics | GA4 Measurement ID | For SEO event forwarding |
-| Analytics | Matomo Site ID | Optional Matomo integration |
-
----
-
-## Usage Examples
-
-### Example 1 — Product Meta Template with Attribute Token
-
-```
-{name} {attribute:color} {attribute:size} | {brand} - Shop at {store}
-```
-
-Renders as:
-
-```
-Nike Pegasus 40 Running Shoes Black Size 10 | Nike - Shop at My Store
-```
-
-### Example 2 — Layout XML: Inject Product JSON-LD Manually
-
-```xml
-<referenceContainer name="head.additional">
-    <block class="Panth\AdvancedSEO\Block\StructuredData\Product"
-           name="panth.seo.product.jsonld"
-           template="Panth_AdvancedSEO::structured-data/product.phtml" />
-</referenceContainer>
-```
-
-### Example 3 — Condition-Based SEO Rule
-
-**Condition:** `Category = Men > Shoes` AND `Stock Status = In Stock` AND `Price > 100`
-**Action:** Apply template `Premium {name} - Free Shipping | {store}` + set canonical to self
-
----
-
-## Meta Variable Tokens
-
-Available tokens in meta templates, OG tags, alt text, and titles:
-
-| Token | Resolves To | Scope |
-|---|---|---|
-| `{name}` | Entity name | All |
-| `{sku}` | Product SKU | Product |
-| `{price}` | Final price with currency | Product |
-| `{special_price}` | Special price | Product |
-| `{brand}` | Brand attribute | Product |
-| `{short_description}` | Stripped short description | Product |
-| `{category}` | Primary category name | Product |
-| `{category_path}` | Full breadcrumb path | Product / Category |
-| `{count}` | Product count | Category |
-| `{store}` | Store view name | All |
-| `{website}` | Website name | All |
-| `{attribute:X}` | Any product attribute by code | Product |
-| `{url_key}` | URL key | All |
-| `{year}` | Current year | All |
-| `{month}` | Current month name | All |
-
-Tokens support **default fallbacks**: `{brand|Generic}` renders `Generic` when the brand attribute is empty.
+| Setting | Group | Default | Description |
+|---|---|---|---|
+| Enable Module | General | Yes | Master switch for all Advanced SEO features. |
+| Debug Logging | General | No | Writes detailed logs to `var/log/panth_seo.log`. Disable in production. |
+| Use Meta Templates | Meta Tags | Yes | Apply token-based templates to entities that have no custom meta. |
+| Meta Title Max Length | Meta Tags | 60 | Maximum characters for the title tag. |
+| Meta Description Max Length | Meta Tags | 160 | Maximum characters for the description tag. |
+| Append Store Name to Title | Meta Tags | No | Adds " - Store Name" to all meta titles. |
+| Strip Native Title Prefix/Suffix | Meta Tags | No | Removes Magento's default title prefix and suffix to give full control to templates. |
+| Enable SEO Name Token | Meta Tags | No | Enables the `{{seo_name}}` token using a dedicated product SEO name attribute. |
+| Pagination Label Position | Meta Tags | None | Where to place the page number indicator in the title: prefix, suffix, or none. |
+| Pagination Format | Meta Tags | \| Page %p | Use `%p` as the page number placeholder. |
+| Force Template Over Existing Meta | Meta Tags | No | When on, templates override manually written meta on products and categories. |
+| Emit Canonical Tag | Canonical URLs | Yes | Outputs `rel="canonical"` on all pages. |
+| Strip Query String | Canonical URLs | No | Removes all query parameters from canonical URLs. |
+| Lowercase Host | Canonical URLs | Yes | Forces the hostname in canonical URLs to lowercase. |
+| Remove Trailing Slash | Canonical URLs | Yes | Removes trailing slashes from canonical URLs (except homepage). |
+| Paginated Pages Canonical to Page 1 | Canonical URLs | No | When on, page 2, 3, etc. point their canonical to page 1. |
+| Associated Product Canonical to Parent | Canonical URLs | No | Simple products in configurables or bundles point their canonical to the parent. |
+| Cross-Domain Canonical Store | Canonical URLs | - | Select a store view for cross-domain canonical links. |
+| Ignore Pages | Canonical URLs | - | URL paths that should not emit a canonical tag (one per line). |
+| Disable Canonical for NOINDEX Pages | Canonical URLs | No | Suppresses canonical on noindex pages. |
+| Product Canonical URL Type | Canonical URLs | No category path | Build product canonicals without any category path, with the shortest path, or the deepest path. |
+| Use Short Category URL for Canonical | Canonical URLs | No | Use the shallowest URL path for category canonical URLs. |
+| Trailing Slash on Homepage | Canonical URLs | Add | Controls trailing slash on the homepage canonical independently. |
+| Strip Query Parameters | Canonical URLs | - | Comma-separated list of parameter names to strip in addition to the full strip option. |
+| Auto-Generate URL Key on Product Creation | URL Key Automation | No | Generates a URL key from a template when a new product has no key set. |
+| URL Key Template | URL Key Automation | - | Tokens: `{{name}}`, `{{sku}}`, `{{attribute:code}}`. |
+| Also Apply to Existing Products on Save | URL Key Automation | No | Re-applies the URL key template every time an existing product is saved. |
+| Enable Crawl Audit | Reports & Diagnostics | No | Runs periodic site crawl audits. Resource intensive on large catalogs. |
+| Crawl Depth (max pages) | Reports & Diagnostics | 100 | Maximum pages per audit run. |
+| Enable SEO Toolbar | Reports & Diagnostics | No | Shows an on-page SEO diagnostics toolbar on the storefront for allowed IPs. |
+| SEO Toolbar Allowed IPs | Reports & Diagnostics | - | Comma-separated IPs or CIDR ranges. Disables FPC for matched requests. |
+| Enable Google Merchant Feed | Google Merchant Feed | No | Serves the feed at `/panth_seo/feed/google` and regenerates it daily. |
+| Include Out of Stock Products | Google Merchant Feed | No | Adds out-of-stock products with availability "out of stock". |
+| Default Product Condition | Google Merchant Feed | new | Condition value used when no product-level condition is set. |
+| Google Product Category Attribute | Google Merchant Feed | - | Product attribute code holding the Google taxonomy value. |
+| Shipping Country | Google Merchant Feed | - | Two-letter ISO country code for the shipping element. |
+| Shipping Price | Google Merchant Feed | - | Flat shipping price for the shipping element. |
+| Enable GA4 | Google Analytics 4 | No | Outputs the `gtag.js` snippet on the storefront. |
+| Measurement ID | Google Analytics 4 | - | Your `G-XXXXXXXXXX` GA4 Measurement ID. |
+| Enhanced Ecommerce Events | Google Analytics 4 | No | Fires `view_item` and `view_item_list` events on product and category pages. |
+| Site Verification Code | Google Search Console | - | Content value from the Google HTML tag verification method. |
+| Enable Indexing API | Google Search Console | No | Submits changed URLs to the Google Indexing API on content save. |
+| Service Account JSON Key | Google Search Console | - | Your Google Cloud service account key (stored encrypted). |
+| Async Indexing via Queue | Advanced | No | Offloads SEO indexing to the message queue for non-blocking catalog saves. |
+| Use MView for Incremental Rebuild | Advanced | No | Uses Magento's mview changelog for incremental reindexing instead of full reindex. |
+| Enable Last-Modified HTTP Header | Advanced | No | Sets Last-Modified and ETag headers on product and category pages. |
+| Enable Speculation Rules API | Advanced | No | Outputs Speculation Rules for browser-native prefetch and prerender on Chrome 121+. |
 
 ---
 
-## Indexers
+## How It Works
 
-Panth Advanced SEO ships two dedicated indexers to keep storefront rendering fast on large catalogs:
-
-| Indexer | Purpose | Mode |
-|---|---|---|
-| `panth_seo_resolved_meta` | Pre-resolves meta template tokens for every entity + store view | Update by schedule (mview) |
-| `panth_seo_hreflang` | Pre-builds hreflang group mappings per entity + store view | Update by schedule (mview) |
-
-Reindex manually:
-
-```bash
-bin/magento indexer:reindex panth_seo_resolved_meta panth_seo_hreflang
-```
-
-Switch mode:
-
-```bash
-bin/magento indexer:set-mode schedule panth_seo_resolved_meta panth_seo_hreflang
-```
-
----
-
-## Troubleshooting
-
-| Issue | Cause | Resolution |
-|---|---|---|
-| Meta template shows raw `{name}` token on storefront | Indexer not run | `bin/magento indexer:reindex panth_seo_resolved_meta` |
-| Hreflang tags missing on product page | Hreflang group not built, or indexer stale | Build group under `Advanced SEO → Hreflang → Groups`, then reindex `panth_seo_hreflang` |
-| JSON-LD missing or duplicate | Other SEO extension injecting same schema | Disable competing JSON-LD extension or Panth's provider for that entity |
-| `llms.txt` returns 404 | Route not registered | Flush cache and verify `Advanced SEO → General → Enable llms.txt` is Yes |
-
-For other issues, enable **Debug Mode** under `Panth Extensions → Core Settings` and check `var/log/panth_seo.log`.
+1. When a product, category, or CMS page loads, the module reads the **resolved meta indexer** (`panth_seo_resolved_meta`) to get the pre-built title, description, canonical, and robots directive for that entity and store.
+2. The indexer resolves in this priority order: entity-level override, then matching SEO rule, then matching meta template, then Magento's native field value.
+3. **Meta templates** are evaluated at index time with tokens replaced by live attribute values from the catalog.
+4. **Canonical URLs** are built from the configuration settings and any per-entity override stored in `panth_seo_custom_canonical`.
+5. The **SEO scoring cron** runs against `panth_seo_score` and assigns each entity a 0-100 score based on length, duplicates, and readability checks. Results appear in the admin audit grid.
+6. The **Google Merchant feed** is built by the `panth:seo:feed` command or the daily cron and written to `pub/media/panth_seo/google_feed_{store_code}.xml`, then served at `/panth_seo/feed/google`.
+7. **GA4 tracking** outputs the `gtag.js` snippet in the page head and fires structured ecommerce events from a ViewModel, with no jQuery dependency.
 
 ---
 
 ## FAQ
 
-### Does Panth Advanced SEO replace Magento's native SEO features?
+### Does Panth Advanced SEO work with Hyva themes?
+Yes. The module ships a `view/frontend/hyva.xml` marker, contains no `requirejs-config.js`, and renders all meta and canonical output server-side through layout XML. No jQuery or `mage/*` widgets on the storefront.
 
-It **enhances** them. Magento's native meta fields still work — Panth Advanced SEO adds template-based defaults, tokens, hreflang groups, JSON-LD, SEO scoring, and dozens of other features Magento ships without.
+### Will meta templates overwrite meta I already wrote on my products?
+Not by default. The "Force Template Over Existing Meta" setting is off. Templates fill in the meta only when a product or category has no manually set value. Turn the setting on if you want templates to always apply.
 
-### What happened to cross-links, redirects, robots, AI, HTML sitemap, and XML sitemap?
+### What is the SEO rules engine for?
+It lets you apply SEO settings to groups of products based on conditions, without editing each product. For example: all in-stock products in a specific category get a canonical pointing to the parent, or all filtered layered navigation pages get a noindex directive.
 
-From version 1.1.0 onward these live in dedicated Packagist modules (XML sitemap was extracted in 1.2.0) — install them alongside Advanced SEO when you need them. See [Companion Modules](#companion-modules).
+### Does the Google Merchant feed require a separate plugin?
+No. The feed is built into the module. Enable it under Configuration, configure the feed profile with your field mapping and store, and the cron regenerates it daily. You can also trigger it manually with `bin/magento panth:seo:feed`.
 
-### Will this conflict with another full Magento SEO extension?
+### How does GA4 work without jQuery?
+The module outputs the `gtag.js` snippet directly in the page head via a layout block. The `view_item` and `view_item_list` events are fired from server-side rendered `<script>` blocks in the product and category page layout. No Alpine.js or jQuery involved.
 
-Most features overlap, so running Panth Advanced SEO alongside another full SEO suite is not recommended — you'll get duplicate JSON-LD, competing canonical tags, and conflicting robots rules. Uninstall the other SEO extension first.
+### Do I need all the companion modules to use Advanced SEO?
+No. Advanced SEO works on its own for meta templates, canonicals, rules, scoring, feed, and GA4. The companion modules (redirects, robots, XML sitemap, etc.) are optional and each installs independently.
 
-### Is it Hyva compatible out of the box?
+### Is hreflang handled inside this module?
+Yes, the hreflang group CRUD and the `panth_seo_hreflang` indexer are built into Advanced SEO. You create groups in the admin, map stores to locales, and the indexer pre-builds the alternate links. A dedicated companion module (`mage2kishan/module-hreflang`) is also available if you need a standalone version.
 
-Yes. The module ships `view/frontend/hyva.xml`, contains zero `requirejs-config.js` entries, and renders all meta / JSON-LD server-side via layout XML. No jQuery, no `mage/*` widgets on the storefront. The `hyva-themes/hyva-compat` package recognizes it automatically.
+### Can I run the SEO audit on demand?
+Yes. Use `bin/magento panth:seo:audit` from the command line, or enable the crawl audit in configuration to run it on a schedule. Results appear in Admin under Advanced SEO > Crawl Results.
 
-### How does `llms.txt` help my SEO?
-
-`llms.txt` is an emerging standard (similar to `robots.txt` but for LLM crawlers) that describes your site's structure in a format optimised for ChatGPT, Claude, Perplexity, and other AI search engines. Panth Advanced SEO generates it dynamically from your catalog structure and store config.
-
-### How big is the performance impact on a 500K-SKU catalog?
-
-Minimal. Both indexers run in `update by schedule` mode, so storefront requests hit pre-resolved data. Most overhead is admin-side (generation jobs, scoring cron). Benchmarked on a 1M-SKU Hyva store: storefront TTFB impact under 5ms.
-
-### Can I use my own JSON-LD schema alongside Panth's providers?
-
-Yes. Each provider (Product, Breadcrumb, Organization, etc.) has an independent toggle. Disable the ones you want to handle yourself and Panth will skip them — your custom schema won't be duplicated.
-
-### Is there a refund policy?
-
-Yes — 30-day money-back guarantee on the Adobe Commerce Marketplace purchase. Email kishansavaliyakb@gmail.com with your order ID.
+### Does Panth Advanced SEO need Panth Core?
+Yes. `mage2kishan/module-core` is a free, required dependency that Composer installs for you automatically.
 
 ---
 
@@ -420,17 +359,17 @@ Yes — 30-day money-back guarantee on the Adobe Commerce Marketplace purchase. 
 
 | Channel | Contact |
 |---|---|
+| Product Page | [kishansavaliya.com/magento-2-advanced-seo.html](https://kishansavaliya.com/magento-2-advanced-seo.html) |
 | Email | kishansavaliyakb@gmail.com |
 | Website | [kishansavaliya.com](https://kishansavaliya.com) |
-| Get a Quote | [kishansavaliya.com/get-quote](https://kishansavaliya.com/get-quote) |
 | WhatsApp | +91 84012 70422 |
 | GitHub Issues | [github.com/mage2sk/module-advanced-seo/issues](https://github.com/mage2sk/module-advanced-seo/issues) |
 | Upwork (Top Rated Plus) | [Hire Kishan Savaliya](https://www.upwork.com/freelancers/~016dd1767321100e21) |
 | Upwork Agency | [Panth Infotech](https://www.upwork.com/agencies/1881421506131960778/) |
 
-Response time: 1-2 business days. Priority support included with Adobe Commerce Marketplace purchase. Custom development and SEO audits available on request.
+Response time: 1-2 business days.
 
-### 💼 Need Custom Magento Development?
+### Need Custom Magento Development?
 
 Looking for **custom Magento SEO audits**, **Hyva theme development**, **store migrations**, or **performance optimization**? Get a free quote in 24 hours:
 
@@ -449,63 +388,46 @@ Looking for **custom Magento SEO audits**, **Hyva theme development**, **store m
     <img src="https://img.shields.io/badge/Visit-Panth%20Infotech%20Agency-14a800?style=for-the-badge&logo=upwork&logoColor=white" alt="Visit Agency" />
   </a>
   &nbsp;&nbsp;
-  <a href="https://kishansavaliya.com">
-    <img src="https://img.shields.io/badge/Visit%20Website-kishansavaliya.com-0D9488?style=for-the-badge" alt="Visit Website" />
+  <a href="https://kishansavaliya.com/magento-2-advanced-seo.html">
+    <img src="https://img.shields.io/badge/View%20Product%20Page-magento--2--advanced--seo-0D9488?style=for-the-badge" alt="View Product Page" />
   </a>
 </p>
-
-**Specializations:**
-
-- 🔍 **Magento 2 SEO** — structured data, hreflang, meta templates, `llms.txt`
-- 🛒 **Magento 2 Module Development** — custom extensions following MEQP standards
-- 🎨 **Hyva Theme Development** — Alpine.js + Tailwind CSS, lightning-fast storefronts
-- 🖌️ **Luma Theme Customization** — pixel-perfect designs, responsive layouts
-- ⚡ **Performance Optimization** — Core Web Vitals, page speed, caching strategies
-- 🛍️ **Checkout Optimization** — one-page checkout, conversion rate optimization
-- 🚀 **M1 to M2 Migrations** — data migration, custom feature porting
-- ☁️ **Adobe Commerce Cloud** — deployment, CI/CD, performance tuning
-- 🤖 **AI-Powered eCommerce** — OpenAI/Claude integration for content, search, recommendations
-- 🔌 **Third-party Integrations** — payment gateways, ERP, CRM, marketing tools
-
-**Industries served:** Fashion & Apparel, Electronics, Health & Beauty, Food & Beverage, Home & Garden, B2B Wholesale, Multi-vendor Marketplaces.
-
----
-
-## License
-
-Panth Advanced SEO is distributed under a **proprietary license** — see [`LICENSE.txt`](LICENSE.txt) for full terms. A single license covers one production Magento installation plus unlimited staging / development environments.
 
 ---
 
 ## About Panth Infotech
 
-Built and maintained by **Kishan Savaliya** — [kishansavaliya.com](https://kishansavaliya.com) — a **Top Rated Plus** Magento developer on Upwork with 10+ years of eCommerce experience.
+Built and maintained by **Kishan Savaliya** ([kishansavaliya.com](https://kishansavaliya.com)), a **Top Rated Plus** Magento developer on Upwork with 10+ years of eCommerce experience.
 
-**Panth Infotech** is a Magento 2 development agency specialising in high-quality, security-focused extensions and themes for both Hyva and Luma storefronts. Our extension suite covers SEO, performance, checkout, product presentation, customer engagement, and store management — over 34 modules built to MEQP standards and tested across Magento 2.4.4 to 2.4.8.
+**Panth Infotech** is a Magento 2 development agency that builds high quality, security focused extensions and themes for both Hyva and Luma storefronts. The extension suite covers SEO, performance, checkout, product presentation, customer engagement, and store management, with each module built to MEQP standards and tested across Magento 2.4.4 to 2.4.8.
 
-Browse the full extension catalog on the [Adobe Commerce Marketplace](https://commercemarketplace.adobe.com) or [Packagist](https://packagist.org/packages/mage2kishan/).
+Browse the full extension catalog on our [Magento extensions page](https://kishansavaliya.com/magento-extensions.html) or on [Packagist](https://packagist.org/packages/mage2kishan/).
 
-### Quick Links
+---
 
-- 🌐 **Website:** [kishansavaliya.com](https://kishansavaliya.com)
-- 💬 **Get a Quote:** [kishansavaliya.com/get-quote](https://kishansavaliya.com/get-quote)
-- 👨‍💻 **Upwork Profile (Top Rated Plus):** [upwork.com/freelancers/~016dd1767321100e21](https://www.upwork.com/freelancers/~016dd1767321100e21)
-- 🏢 **Upwork Agency:** [upwork.com/agencies/1881421506131960778](https://www.upwork.com/agencies/1881421506131960778/)
-- 📦 **Packagist:** [packagist.org/packages/mage2kishan/module-advanced-seo](https://packagist.org/packages/mage2kishan/module-advanced-seo)
-- 🐙 **GitHub:** [github.com/mage2sk/module-advanced-seo](https://github.com/mage2sk/module-advanced-seo)
-- 🛒 **Adobe Marketplace:** [commercemarketplace.adobe.com](https://commercemarketplace.adobe.com)
-- 📧 **Email:** kishansavaliyakb@gmail.com
-- 📱 **WhatsApp:** +91 84012 70422
+## Quick Links
+
+| Resource | Link |
+|---|---|
+| **Product Page** | [magento-2-advanced-seo.html](https://kishansavaliya.com/magento-2-advanced-seo.html) |
+| **Packagist** | [mage2kishan/module-advanced-seo](https://packagist.org/packages/mage2kishan/module-advanced-seo) |
+| **GitHub** | [mage2sk/module-advanced-seo](https://github.com/mage2sk/module-advanced-seo) |
+| **Website** | [kishansavaliya.com](https://kishansavaliya.com) |
+| **Free Quote** | [kishansavaliya.com/get-quote](https://kishansavaliya.com/get-quote) |
+| **Upwork (Top Rated Plus)** | [Hire Kishan Savaliya](https://www.upwork.com/freelancers/~016dd1767321100e21) |
+| **Upwork Agency** | [Panth Infotech](https://www.upwork.com/agencies/1881421506131960778/) |
+| **Email** | kishansavaliyakb@gmail.com |
+| **WhatsApp** | +91 84012 70422 |
 
 ---
 
 <p align="center">
-  <strong>Ready to dominate search rankings on Google, Bing, and AI engines?</strong><br/>
-  <a href="https://kishansavaliya.com/get-quote">
-    <img src="https://img.shields.io/badge/%F0%9F%9A%80%20Get%20Started%20%E2%86%92-Free%20Quote%20in%2024h-DC2626?style=for-the-badge" alt="Get Started" />
+  <strong>Ready to take control of your Magento 2 store's SEO?</strong><br/>
+  <a href="https://kishansavaliya.com/magento-2-advanced-seo.html">
+    <img src="https://img.shields.io/badge/%F0%9F%9A%80%20See%20Advanced%20SEO%20%E2%86%92-Product%20Page%20%26%20Details-DC2626?style=for-the-badge" alt="See Advanced SEO" />
   </a>
 </p>
 
 ---
 
-**SEO Keywords:** magento 2 seo extension, magento 2 advanced seo, panth advanced seo, panth infotech seo, magento 2 meta templates, magento 2 meta tag generator, magento 2 meta title template, magento 2 meta description template, magento 2 json-ld, magento 2 structured data, magento 2 schema.org, magento 2 rich snippets, magento 2 product schema, magento 2 breadcrumb schema, magento 2 faq schema, magento 2 organization schema, magento 2 hreflang, magento 2 hreflang extension, magento 2 multi-store hreflang, magento 2 canonical url, magento 2 canonical tag, magento 2 redirects, magento 2 301 redirect manager, magento 2 regex redirects, magento 2 404 management, magento 2 404 monitor, magento 2 html sitemap, magento 2 robots.txt, magento 2 dynamic robots, magento 2 llm bot control, magento 2 gptbot robots, magento 2 claudebot, magento 2 google-extended, magento 2 indexnow, magento 2 bing indexnow, magento 2 llms.txt, magento 2 ai seo, magento 2 openai seo, magento 2 chatgpt seo, magento 2 claude seo, magento 2 ai meta description, magento 2 ai product description, magento 2 opengraph, magento 2 twitter cards, magento 2 social meta tags, magento 2 seo score, magento 2 seo audit, magento 2 seo dashboard, magento 2 duplicate meta finder, magento 2 product feed, magento 2 google shopping feed, magento 2 facebook catalog feed, magento 2 seo rules engine, magento 2 layered navigation seo, magento 2 filter noindex, magento 2 internal linking, magento 2 pagerank, magento 2 image seo, magento 2 alt text generator, hyva seo, hyva advanced seo, hyva structured data, magento 2.4.8 seo, magento 2.4.7 seo, php 8.4 seo, mage2kishan, mage2sk, hire magento seo developer, top rated plus magento seo, kishan savaliya seo, panth infotech seo extension, magento 2 enterprise seo, magento 2 b2b seo, multi-store seo magento, international seo magento, magento commerce cloud seo, adobe commerce seo
+**SEO Keywords:** magento 2 seo extension, magento 2 advanced seo, panth advanced seo, panth infotech seo, magento 2 meta templates, magento 2 meta title template, magento 2 meta description template, magento 2 seo rules engine, magento 2 canonical url, magento 2 canonical tag extension, magento 2 bulk meta editor, magento 2 seo score, magento 2 seo audit, magento 2 crawl audit, magento 2 google merchant feed, magento 2 google shopping feed, magento 2 ga4 integration, magento 2 ga4 enhanced ecommerce, magento 2 hreflang, magento 2 hreflang extension, magento 2 multi-store hreflang, magento 2 url key automation, magento 2 duplicate meta finder, magento 2 missing meta report, magento 2 seo dashboard, magento 2 speculation rules, magento 2 last modified header, magento 2 indexing api, magento 2 google search console, magento 2 seo toolbar, magento 2 token meta templates, hyva seo, hyva advanced seo, luma seo extension, magento 2.4.8 seo, magento 2.4.7 seo, php 8.4 seo extension, mage2kishan advanced seo, mage2kishan seo, mage2sk advanced seo, hire magento seo developer, top rated plus magento seo, kishan savaliya seo, panth infotech magento seo, adobe commerce seo extension, magento open source seo, magento 2 enterprise seo, magento 2 b2b seo, multi-store seo magento, magento commerce cloud seo
