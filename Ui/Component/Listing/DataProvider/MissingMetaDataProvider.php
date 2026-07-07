@@ -34,22 +34,18 @@ class MissingMetaDataProvider extends AbstractDataProvider
         array $meta = [],
         array $data = []
     ) {
-        // Create a dummy product collection — will be replaced in initCollection()
         $this->collection = $this->productCollectionFactory->create();
         parent::__construct($name, $primaryFieldName, $requestFieldName, $meta, $data);
     }
 
     private function resolveEntityType(): string
     {
-        // 1. Check request param (direct page load and AJAX with forwarded params)
         $type = (string)$this->request->getParam('type', '');
         if (in_array($type, ['product', 'category'], true)) {
-            // Store in session for future AJAX calls
             $this->backendSession->setData('panth_seo_missing_meta_type', $type);
             return $type;
         }
 
-        // 2. Check the HTTP referer URL for the type param (AJAX calls from mui/index/render)
         $referer = (string)($this->request->getServer('HTTP_REFERER') ?? '');
         if ($referer !== '' && preg_match('#/type/(product|category)(?:/|$)#', $referer, $m)) {
             $resolved = $m[1];
@@ -57,14 +53,12 @@ class MissingMetaDataProvider extends AbstractDataProvider
             return $resolved;
         }
 
-        // 2b. Also check the original request URI (some setups forward the full URI)
         $uri = (string)($this->request->getRequestUri() ?? '');
         if ($uri !== '' && preg_match('#/type/(product|category)(?:/|$)#', $uri, $m)) {
             $this->backendSession->setData('panth_seo_missing_meta_type', $m[1]);
             return $m[1];
         }
 
-        // 3. Fallback to session
         $sessionType = (string)($this->backendSession->getData('panth_seo_missing_meta_type') ?? 'product');
         return in_array($sessionType, ['product', 'category'], true) ? $sessionType : 'product';
     }
@@ -87,7 +81,6 @@ class MissingMetaDataProvider extends AbstractDataProvider
             $this->collection->addAttributeToSelect(self::PRODUCT_EAV);
         }
 
-        // Apply missing meta filter
         $this->collection->addAttributeToFilter([
             ['attribute' => 'meta_title', 'null' => true],
             ['attribute' => 'meta_title', 'eq' => ''],
@@ -161,7 +154,7 @@ class MissingMetaDataProvider extends AbstractDataProvider
                 return '';
             }
             $pathIds = explode('/', $path);
-            // Remove root (1) and default category (2)
+
             $pathIds = array_filter($pathIds, fn($id) => (int)$id > 2);
             if (empty($pathIds)) {
                 return 'Root';

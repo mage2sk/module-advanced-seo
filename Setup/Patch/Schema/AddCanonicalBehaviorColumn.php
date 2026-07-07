@@ -7,13 +7,6 @@ use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\Patch\SchemaPatchInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 
-/**
- * Adds the `layered_navigation_canonical` column to `catalog_eav_attribute`.
- *
- * DDL statements cannot run inside the transaction that Magento wraps around
- * data patches, so this column creation lives in a schema patch (which runs
- * outside of a transaction).
- */
 class AddCanonicalBehaviorColumn implements SchemaPatchInterface
 {
     public function __construct(
@@ -47,17 +40,11 @@ class AddCanonicalBehaviorColumn implements SchemaPatchInterface
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
     public static function getDependencies(): array
     {
         return [];
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getAliases(): array
     {
         return [];

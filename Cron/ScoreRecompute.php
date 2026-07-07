@@ -8,10 +8,6 @@ use Magento\Framework\App\ResourceConnection;
 use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * Daily score recompute for the most-stale entities.
- * Recomputes up to 500 products + 100 categories per run.
- */
 class ScoreRecompute
 {
     private const PRODUCT_BATCH = 500;

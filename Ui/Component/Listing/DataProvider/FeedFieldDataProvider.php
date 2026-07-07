@@ -61,13 +61,11 @@ class FeedFieldDataProvider extends DataProvider
 
     private function resolveFeedId(): int
     {
-        // Try request param first
         $feedId = (int) $this->request->getParam('feed_id');
         if ($feedId > 0) {
             return $feedId;
         }
 
-        // Fall back to session
         return (int) $this->backendSession->getData('panth_seo_feed_field_feed_id');
     }
 }

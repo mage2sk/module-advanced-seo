@@ -15,17 +15,10 @@ use Panth\AdvancedSEO\Helper\Config;
 use Panth\AdvancedSEO\Model\Feed\GoogleMerchantFeedBuilder;
 use Panth\AdvancedSEO\Model\Feed\ProfileBasedFeedBuilder;
 
-/**
- * Frontend controller: GET /panth_seo/feed/google[?id=<feed_id>]
- *
- * Serves a product feed as application/xml or text/csv.
- * If `id` param is provided, serves the feed from a specific profile.
- * Otherwise, serves the legacy cached Google Merchant feed.
- */
 class Google implements HttpGetActionInterface
 {
     private const CACHE_PREFIX = 'panth_seo_google_feed_';
-    private const CACHE_TTL = 3600; // 1 hour
+    private const CACHE_TTL = 3600;
     private const CACHE_TAG = 'PANTH_SEO_GOOGLE_FEED';
 
     public function __construct(
@@ -45,7 +38,6 @@ class Google implements HttpGetActionInterface
         $result = $this->rawFactory->create();
         $storeId = (int) $this->storeManager->getStore()->getId();
 
-        // Gate: check if the merchant feed feature is enabled
         if (!$this->config->isEnabled($storeId) || !$this->config->isMerchantFeedEnabled($storeId)) {
             $result->setHttpResponseCode(404);
             $result->setHeader('Content-Type', 'text/plain; charset=utf-8', true);
@@ -55,18 +47,13 @@ class Google implements HttpGetActionInterface
 
         $feedId = (int) $this->request->getParam('id', 0);
 
-        // Profile-based feed: serve from pre-generated file
         if ($feedId > 0) {
             return $this->serveProfileFeed($result, $feedId, $storeId);
         }
 
-        // Legacy: serve from cache or generate on-the-fly
         return $this->serveLegacyFeed($result, $storeId);
     }
 
-    /**
-     * Serve a feed from a profile's pre-generated file.
-     */
     private function serveProfileFeed(
         \Magento\Framework\Controller\Result\Raw $result,
         int $feedId,
@@ -81,7 +68,6 @@ class Google implements HttpGetActionInterface
             return $result;
         }
 
-        // Verify the profile belongs to the current store
         if ((int) ($profile['store_id'] ?? 0) !== $storeId) {
             $result->setHttpResponseCode(404);
             $result->setHeader('Content-Type', 'text/plain; charset=utf-8', true);
@@ -92,7 +78,7 @@ class Google implements HttpGetActionInterface
         $filename = $profile['filename'] ?? '';
         $format = $profile['format'] ?? 'xml';
         $mediaDir = $this->directoryList->getPath(DirectoryList::MEDIA);
-        // Sanitize filename to prevent path traversal
+
         $filename = basename($filename);
         if ($filename === '' || $filename === '.' || $filename === '..') {
             $result->setHttpResponseCode(400);
@@ -101,7 +87,6 @@ class Google implements HttpGetActionInterface
         }
         $filePath = $mediaDir . '/panth_seo/feeds/' . $filename;
 
-        // Verify the resolved path is within the expected directory
         $realBase = realpath($mediaDir . '/panth_seo/feeds');
         if ($realBase !== false && file_exists($filePath)) {
             $realFile = realpath($filePath);
@@ -113,7 +98,6 @@ class Google implements HttpGetActionInterface
         }
 
         if (!file_exists($filePath)) {
-            // Generate on demand if file doesn't exist yet
             try {
                 $this->profileFeedBuilder->generate($profile);
             } catch (\Throwable) {
@@ -143,9 +127,6 @@ class Google implements HttpGetActionInterface
         return $result;
     }
 
-    /**
-     * Serve the legacy cached Google Merchant feed.
-     */
     private function serveLegacyFeed(
         \Magento\Framework\Controller\Result\Raw $result,
         int $storeId

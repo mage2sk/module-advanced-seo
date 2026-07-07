@@ -7,13 +7,6 @@ use Magento\Catalog\Model\Category\DataProvider as CategoryDataProvider;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 
-/**
- * Injects a live Google SERP preview fieldset into the category edit form.
- *
- * Mirrors the product plugin but targets the category data provider and the
- * category form's "search_engine_optimization" fieldset (note the underscore
- * naming convention that Magento uses for category forms).
- */
 class CategorySerpPreviewPlugin
 {
     public function __construct(
@@ -22,11 +15,6 @@ class CategorySerpPreviewPlugin
     ) {
     }
 
-    /**
-     * @param CategoryDataProvider $subject
-     * @param array<string, mixed> $result
-     * @return array<string, mixed>
-     */
     public function afterGetMeta(CategoryDataProvider $subject, array $result): array
     {
         if (!$this->seoConfig->isEnabled()) {
@@ -35,11 +23,6 @@ class CategorySerpPreviewPlugin
 
         $baseUrl = rtrim((string) $this->storeManager->getStore()->getBaseUrl(), '/');
 
-        /*
-         * Magento category form uses "search_engine_optimization" (underscores)
-         * while the product form uses "search-engine-optimization" (hyphens).
-         * We inject into whichever key exists, falling back to the underscore variant.
-         */
         $seoGroupKey = 'search_engine_optimization';
         if (!isset($result[$seoGroupKey])) {
             $seoGroupKey = 'search-engine-optimization';

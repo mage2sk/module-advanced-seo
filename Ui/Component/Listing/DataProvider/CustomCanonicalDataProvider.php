@@ -6,9 +6,6 @@ namespace Panth\AdvancedSEO\Ui\Component\Listing\DataProvider;
 use Magento\Ui\DataProvider\AbstractDataProvider;
 use Panth\AdvancedSEO\Model\ResourceModel\CustomCanonical\CollectionFactory;
 
-/**
- * Data provider for the panth_seo_custom_canonical_listing UI component.
- */
 class CustomCanonicalDataProvider extends AbstractDataProvider
 {
     public function __construct(

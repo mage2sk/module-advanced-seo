@@ -6,10 +6,6 @@ namespace Panth\AdvancedSEO\Model\Meta;
 use Magento\Framework\DataObject;
 use Panth\AdvancedSEO\Api\Data\ResolvedMetaInterface;
 
-/**
- * DTO implementation of ResolvedMetaInterface. Not persisted directly;
- * ResolvedRepository handles reads/writes to `panth_seo_resolved`.
- */
 class ResolvedMeta extends DataObject implements ResolvedMetaInterface
 {
     public function getResolvedId(): ?int
@@ -111,7 +107,6 @@ class ResolvedMeta extends DataObject implements ResolvedMetaInterface
         return $this;
     }
 
-    /** @return array<string,mixed> */
     public function getOgPayload(): array
     {
         $value = $this->getData(self::OG_PAYLOAD);
@@ -124,7 +119,6 @@ class ResolvedMeta extends DataObject implements ResolvedMetaInterface
         return $this;
     }
 
-    /** @return array<string,mixed> */
     public function getJsonldPayload(): array
     {
         $value = $this->getData(self::JSONLD_PAYLOAD);
@@ -137,7 +131,6 @@ class ResolvedMeta extends DataObject implements ResolvedMetaInterface
         return $this;
     }
 
-    /** @return array<string,mixed> */
     public function getHreflangPayload(): array
     {
         $value = $this->getData(self::HREFLANG_PAYLOAD);

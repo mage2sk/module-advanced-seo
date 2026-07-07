@@ -10,17 +10,12 @@ use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\App\CacheInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * Rule engine: loads active rules ordered by priority, evaluates them
- * against a context array and returns merged actions.
- */
 class Engine implements RuleEvaluatorInterface
 {
     private const CACHE_KEY_PREFIX = 'panth_seo_rules_';
     private const CACHE_LIFETIME = 3600;
     private const CACHE_TAG = 'panth_seo_rule';
 
-    /** @var array<int,array<int,array<string,mixed>>> */
     private array $runtimeCache = [];
 
     public function __construct(
@@ -32,10 +27,6 @@ class Engine implements RuleEvaluatorInterface
     ) {
     }
 
-    /**
-     * @param array<string,mixed> $context
-     * @return array<string,mixed>
-     */
     public function evaluate(string $entityType, int $entityId, int $storeId, array $context = []): array
     {
         $context['entity_type'] = $entityType;
@@ -93,9 +84,6 @@ class Engine implements RuleEvaluatorInterface
         return $mergedActions;
     }
 
-    /**
-     * @return array<int,array<string,mixed>>
-     */
     private function loadRules(int $storeId, string $entityType): array
     {
         $cacheKey = self::CACHE_KEY_PREFIX . $storeId . '_' . $entityType;
@@ -111,11 +99,9 @@ class Engine implements RuleEvaluatorInterface
                     return $this->runtimeCache[$cacheKey] = $decoded;
                 }
             } catch (\Throwable $e) {
-                // fall through to reload
             }
         }
 
-        // Map entity type aliases: 'cms' and 'cms_page' should match each other
         $entityTypes = [$entityType, 'all'];
         if ($entityType === 'cms' || $entityType === 'cms_page') {
             $entityTypes[] = 'cms';

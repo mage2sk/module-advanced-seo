@@ -15,20 +15,6 @@ use Panth\AdvancedSEO\Model\Brand\BrandDetector;
 use Panth\AdvancedSEO\Model\Meta\TemplateRenderer;
 use Psr\Log\LoggerInterface;
 
-/**
- * After-plugin on Magento\Catalog\Controller\Category\View::execute().
- *
- * When the brand filter is active, searches for a template row with
- * `entity_type = 'brand'` in `panth_seo_template` and renders it.
- * This allows merchants to define templates like:
- *
- *   "{{brand}} Products | {{category}} | {{store}}"
- *
- * The plugin runs *after* the controller returns so that the layout is already
- * generated and the category metadata plugin has already applied its defaults.
- * Brand-specific meta takes the highest priority when a matching brand template
- * exists.
- */
 class BrandMetaPlugin
 {
     public function __construct(
@@ -43,9 +29,6 @@ class BrandMetaPlugin
     ) {
     }
 
-    /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
     public function afterExecute(CategoryViewController $subject, ResultInterface|null $result): ResultInterface|null
     {
         try {
@@ -93,14 +76,6 @@ class BrandMetaPlugin
         $this->renderAndApply($template, $category, $context);
     }
 
-    /**
-     * Load the best-matching active brand template for the given store.
-     *
-     * Precedence: store-specific first, then default (store_id = 0).
-     * Within a store scope, the highest-priority (lowest number) wins.
-     *
-     * @return array<string, mixed>|null
-     */
     private function loadBrandTemplate(int $storeId): ?array
     {
         $connection = $this->resourceConnection->getConnection();
@@ -119,12 +94,6 @@ class BrandMetaPlugin
         return is_array($row) && $row !== [] ? $row : null;
     }
 
-    /**
-     * Render templates from the row and apply non-empty results to page config.
-     *
-     * @param array<string, mixed> $template
-     * @param array<string, mixed> $context
-     */
     private function renderAndApply(array $template, mixed $entity, array $context): void
     {
         $metaTitle = $this->renderField($template, 'meta_title', $entity, $context);
@@ -148,12 +117,6 @@ class BrandMetaPlugin
         }
     }
 
-    /**
-     * Render a single template field through the token engine.
-     *
-     * @param array<string, mixed> $template
-     * @param array<string, mixed> $context
-     */
     private function renderField(array $template, string $field, mixed $entity, array $context): string
     {
         $pattern = trim((string) ($template[$field] ?? ''));

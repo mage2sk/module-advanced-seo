@@ -11,11 +11,6 @@ use Panth\AdvancedSEO\Api\Data\ResolvedMetaInterface;
 use Panth\AdvancedSEO\Api\MetaResolverInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 
-/**
- * Frontend ViewModel exposing the resolved meta for the current page.
- * Works in both Luma and Hyva because it only consumes Registry + ViewModel
- * contracts — no jQuery, no RequireJS, no x-magento-init.
- */
 class Meta implements ArgumentInterface
 {
     private ?ResolvedMetaInterface $cached = null;
@@ -76,17 +71,11 @@ class Meta implements ArgumentInterface
         return (string) ($this->resolveCurrent()?->getRobots() ?? '');
     }
 
-    /**
-     * @return array<string,mixed>
-     */
     public function getHreflang(): array
     {
         return $this->resolveCurrent()?->getHreflangPayload() ?? [];
     }
 
-    /**
-     * @return array{0:?string,1:int}
-     */
     private function detectEntity(): array
     {
         $product = $this->registry->registry('current_product');
@@ -101,7 +90,7 @@ class Meta implements ArgumentInterface
         if ($cmsPage !== null && $cmsPage->getId()) {
             return [MetaResolverInterface::ENTITY_CMS, (int) $cmsPage->getId()];
         }
-        // Fall back to a request-derived id if someone set it explicitly.
+
         $id = (int) $this->request->getParam('id', 0);
         if ($id > 0) {
             return [MetaResolverInterface::ENTITY_OTHER, $id];

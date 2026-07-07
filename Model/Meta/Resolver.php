@@ -21,18 +21,6 @@ use Panth\AdvancedSEO\Logger\Logger as SeoDebugLogger;
 use Panth\AdvancedSEO\Model\ResourceModel\Template\CollectionFactory as TemplateCollectionFactory;
 use Psr\Log\LoggerInterface;
 
-/**
- * Central meta resolution pipeline.
- *
- * Precedence (first non-empty wins per field):
- *   1. panth_seo_override
- *   2. Rule engine output  (title_template / description_template / robots / canonical)
- *   3. panth_seo_template matched by (entity_type, store, scope)
- *   4. Native entity values (meta_title/meta_description/meta_keywords)
- *
- * Fast path: when a row exists in panth_seo_resolved it is returned directly
- * (single PK lookup, touched by the indexer). Cache layer sits in front.
- */
 class Resolver implements MetaResolverInterface
 {
     public function __construct(
@@ -54,12 +42,6 @@ class Resolver implements MetaResolverInterface
     ) {
     }
 
-    /**
-     * Emit a structured debug line to var/log/panth_seo.log when the admin
-     * "Debug Logging" toggle is on. No-op otherwise.
-     *
-     * @param array<string,mixed> $context
-     */
     private function debug(string $message, array $context = []): void
     {
         if ($this->seoDebugLogger === null) {
@@ -74,7 +56,7 @@ class Resolver implements MetaResolverInterface
     public function resolve(string $entityType, int $entityId, int $storeId): ResolvedMetaInterface
     {
         $context = [];
-        // Try in-memory cache layer first.
+
         $cached = $this->cache->load($entityType, $entityId, $storeId);
         if ($cached !== null) {
             $this->debug('panth_seo: meta.resolved', [
@@ -86,7 +68,6 @@ class Resolver implements MetaResolverInterface
             return $cached;
         }
 
-        // Fast path: precomputed indexer row.
         $fast = $this->resolvedRepository->find($entityType, $entityId, $storeId);
         if ($fast !== null && $fast->getMetaTitle() !== null) {
             $this->cache->save($fast);
@@ -118,7 +99,7 @@ class Resolver implements MetaResolverInterface
         if ($entityIds === []) {
             return $out;
         }
-        // Resolve inline; indexer calls this path specifically to write rows.
+
         foreach ($entityIds as $id) {
             $id = (int) $id;
             try {
@@ -135,9 +116,6 @@ class Resolver implements MetaResolverInterface
         return $out;
     }
 
-    /**
-     * @param array<string,mixed> $context
-     */
     private function renderLive(string $entityType, int $entityId, int $storeId, array $context): ResolvedMetaInterface
     {
         $entity = $this->loadEntity($entityType, $entityId, $storeId);
@@ -146,7 +124,6 @@ class Resolver implements MetaResolverInterface
         $context['entity_type'] = $entityType;
         $context['entity_id']   = $entityId;
 
-        // Rule engine context needs a bit of entity data.
         $ruleContext = $context;
         if ($entity instanceof ProductInterface) {
             $ruleContext['product'] = $entity;
@@ -178,7 +155,6 @@ class Resolver implements MetaResolverInterface
         $canonical = $this->pickCanonical($override, $ruleResult, $entityType, $entityId, $storeId);
         $source = $this->determineSource($override, $ruleResult, $template);
 
-        /** @var ResolvedMetaInterface $dto */
         $dto = $this->resolvedFactory->create();
         $dto->setStoreId($storeId);
         $dto->setEntityType($entityType);
@@ -213,9 +189,6 @@ class Resolver implements MetaResolverInterface
         }
     }
 
-    /**
-     * @return array<string,mixed>|null
-     */
     private function loadOverride(string $entityType, int $entityId, int $storeId): ?array
     {
         $connection = $this->resource->getConnection();
@@ -230,9 +203,6 @@ class Resolver implements MetaResolverInterface
         return $row ?: null;
     }
 
-    /**
-     * @return array<string,mixed>|null
-     */
     private function loadTemplate(string $entityType, int $storeId): ?array
     {
         if (!$this->config->useTemplates($storeId)) {
@@ -252,12 +222,6 @@ class Resolver implements MetaResolverInterface
         return $item->getData();
     }
 
-    /**
-     * @param array<string,mixed>|null $override
-     * @param array<string,mixed>      $rule
-     * @param array<string,mixed>|null $template
-     * @param array<string,mixed>      $context
-     */
     private function pickTitle(?array $override, array $rule, ?array $template, mixed $entity, array $context): ?string
     {
         if ($override && !empty($override['meta_title']) && $this->overrideUsable($override)) {
@@ -268,7 +232,6 @@ class Resolver implements MetaResolverInterface
         }
         $storeId = (int) ($context['store_id'] ?? 0);
         if ($template && !empty($template['meta_title'])) {
-            // When force is disabled, prefer the entity's own meta_title if set.
             if (!$this->config->isForceTemplateOverExisting($storeId)) {
                 $native = $this->nativeMetaTitle($entity);
                 if ($native !== null && $native !== '') {
@@ -280,12 +243,6 @@ class Resolver implements MetaResolverInterface
         return $this->nativeTitle($entity);
     }
 
-    /**
-     * @param array<string,mixed>|null $override
-     * @param array<string,mixed>      $rule
-     * @param array<string,mixed>|null $template
-     * @param array<string,mixed>      $context
-     */
     private function pickDescription(?array $override, array $rule, ?array $template, mixed $entity, array $context): ?string
     {
         if ($override && !empty($override['meta_description']) && $this->overrideUsable($override)) {
@@ -296,7 +253,6 @@ class Resolver implements MetaResolverInterface
         }
         $storeId = (int) ($context['store_id'] ?? 0);
         if ($template && !empty($template['meta_description'])) {
-            // When force is disabled, prefer the entity's own meta_description if set.
             if (!$this->config->isForceTemplateOverExisting($storeId)) {
                 $native = $this->nativeMetaDescription($entity);
                 if ($native !== null && $native !== '') {
@@ -308,11 +264,6 @@ class Resolver implements MetaResolverInterface
         return $this->nativeDescription($entity);
     }
 
-    /**
-     * @param array<string,mixed>|null $override
-     * @param array<string,mixed>|null $template
-     * @param array<string,mixed>      $context
-     */
     private function pickKeywords(?array $override, ?array $template, mixed $entity, array $context): ?string
     {
         if ($override && !empty($override['meta_keywords']) && $this->overrideUsable($override)) {
@@ -324,11 +275,6 @@ class Resolver implements MetaResolverInterface
         return $this->nativeKeywords($entity);
     }
 
-    /**
-     * @param array<string,mixed>|null $override
-     * @param array<string,mixed>      $rule
-     * @param array<string,mixed>|null $template
-     */
     private function pickRobots(?array $override, array $rule, ?array $template, int $storeId): ?string
     {
         if ($override && !empty($override['robots']) && $this->overrideUsable($override)) {
@@ -343,10 +289,6 @@ class Resolver implements MetaResolverInterface
         return '';
     }
 
-    /**
-     * @param array<string,mixed>|null $override
-     * @param array<string,mixed>      $rule
-     */
     private function pickCanonical(?array $override, array $rule, string $entityType, int $entityId, int $storeId): ?string
     {
         if ($override && !empty($override['canonical_url'])) {
@@ -362,11 +304,6 @@ class Resolver implements MetaResolverInterface
         }
     }
 
-    /**
-     * @param array<string,mixed>|null $override
-     * @param array<string,mixed>      $rule
-     * @param array<string,mixed>|null $template
-     */
     private function determineSource(?array $override, array $rule, ?array $template): string
     {
         if ($override && $this->overrideUsable($override)) {
@@ -381,21 +318,11 @@ class Resolver implements MetaResolverInterface
         return 'fallback';
     }
 
-    /**
-     * An override row is usable whenever it exists. Callers pre-filter on the
-     * `entity_type`/`entity_id`/`store_id` columns and only reach this point
-     * after the row has already been loaded.
-     *
-     * @param array<string,mixed> $override
-     */
     private function overrideUsable(array $override): bool
     {
         return $override !== [];
     }
 
-    /**
-     * Return the entity's explicitly set meta_title only (no fallback to name).
-     */
     private function nativeMetaTitle(mixed $entity): ?string
     {
         if ($entity instanceof ProductInterface || $entity instanceof CategoryInterface) {
@@ -409,10 +336,6 @@ class Resolver implements MetaResolverInterface
         return null;
     }
 
-    /**
-     * Return the entity's explicitly set meta_description only (no fallback to
-     * short_description or category description).
-     */
     private function nativeMetaDescription(mixed $entity): ?string
     {
         if ($entity instanceof ProductInterface) {

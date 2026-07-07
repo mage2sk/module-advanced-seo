@@ -5,9 +5,6 @@ namespace Panth\AdvancedSEO\Model\Score\Check;
 
 use Panth\AdvancedSEO\Model\Score\CheckInterface;
 
-/**
- * Checks presence of key entity attributes: brand, sku, image, alt.
- */
 class EntityCheck implements CheckInterface
 {
     public function getCode(): string
@@ -15,10 +12,6 @@ class EntityCheck implements CheckInterface
         return 'entity';
     }
 
-    /**
-     * @param array<string,mixed> $context
-     * @return array{score:float, max:float, message:string, details?:array<string,mixed>}
-     */
     public function run(array $context): array
     {
         $attrs = (array)($context['attributes'] ?? []);
@@ -42,7 +35,6 @@ class EntityCheck implements CheckInterface
             }
         }
 
-        // Alt text check — look for <img ... alt="..."> in content
         $altScore = 100.0;
         $content = (string)($context['content'] ?? '');
         if (preg_match_all('/<img\b[^>]*>/i', $content, $m)) {

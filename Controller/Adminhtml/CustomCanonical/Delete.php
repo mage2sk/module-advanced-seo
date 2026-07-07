@@ -9,9 +9,6 @@ use Magento\Framework\App\Action\HttpPostActionInterface;
 use Panth\AdvancedSEO\Controller\Adminhtml\AbstractAction;
 use Panth\AdvancedSEO\Model\Canonical\CustomCanonicalRepository;
 
-/**
- * Delete controller for custom canonical URL overrides.
- */
 class Delete extends AbstractAction implements HttpGetActionInterface, HttpPostActionInterface
 {
     public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::custom_canonical';

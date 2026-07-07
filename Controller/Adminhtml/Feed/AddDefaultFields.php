@@ -57,7 +57,6 @@ class AddDefaultFields extends AbstractAction implements HttpGetActionInterface,
             $connection = $this->resource->getConnection();
             $table = $this->resource->getTableName('panth_seo_feed_field');
 
-            // Get existing field names for this feed to avoid duplicates
             $existingFields = $connection->fetchCol(
                 $connection->select()
                     ->from($table, ['feed_field'])

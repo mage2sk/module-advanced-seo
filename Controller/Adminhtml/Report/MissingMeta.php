@@ -19,10 +19,8 @@ class MissingMeta extends AbstractAction
     ) {
         parent::__construct($context);
 
-        // Set session IMMEDIATELY so DataProvider can read it during layout build
         $type = (string)$this->getRequest()->getParam('type', '');
         if ($type === '') {
-            // Parse from URI path as fallback
             $uri = (string)$this->getRequest()->getRequestUri();
             if (preg_match('#/type/(product|category)(?:/|$)#', $uri, $m)) {
                 $type = $m[1];

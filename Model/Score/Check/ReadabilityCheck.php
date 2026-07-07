@@ -5,13 +5,6 @@ namespace Panth\AdvancedSEO\Model\Score\Check;
 
 use Panth\AdvancedSEO\Model\Score\CheckInterface;
 
-/**
- * Flesch Reading Ease approximation.
- *
- *   FRE = 206.835 - 1.015*(words/sentences) - 84.6*(syllables/words)
- *
- * We score so that FRE in [60..80] gets 100, trailing off outside.
- */
 class ReadabilityCheck implements CheckInterface
 {
     public function getCode(): string
@@ -19,10 +12,6 @@ class ReadabilityCheck implements CheckInterface
         return 'readability';
     }
 
-    /**
-     * @param array<string,mixed> $context
-     * @return array{score:float, max:float, message:string, details?:array<string,mixed>}
-     */
     public function run(array $context): array
     {
         $text = trim(strip_tags((string)($context['content'] ?? '')));

@@ -7,9 +7,6 @@ use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Catalog\Api\Data\CategoryInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
 
-/**
- * {{category}} → primary category name of product, or name for category entity.
- */
 class CategoryToken implements TokenInterface
 {
     public function __construct(

@@ -11,14 +11,8 @@ use Magento\Store\Model\StoreManagerInterface;
 use Panth\AdvancedSEO\Api\MetaResolverInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 
-/**
- * Generic safety-net: when publicBuild() assembles the <head>, re-assert the
- * resolved meta so nothing set later in the layout tree can shadow it. Only
- * runs when a catalog or CMS entity is in the registry.
- */
 class HeadPlugin
 {
-    /** @var string[]|null */
     private ?array $filterableAttributeCodes = null;
 
     public function __construct(
@@ -38,10 +32,6 @@ class HeadPlugin
                 return [];
             }
 
-            // When a layered-nav filter is active in the URL, the filter-page
-            // meta override (Panth_FilterSeo) is the source of truth. Defer
-            // here too — otherwise publicBuild() runs after block setLayout
-            // and clobbers FilterSeo's title with the parent category meta.
             if ($this->hasActiveFilter()) {
                 return [];
             }
@@ -49,25 +39,16 @@ class HeadPlugin
             $storeId = (int) $this->storeManager->getStore()->getId();
 
             [$type, $id] = $this->detectEntity();
-            // No catalog/CMS entity in registry (e.g. generic storefront
-            // action). Use an empty DataObject as a stand-in so the meta
-            // projection below is a no-op instead of throwing.
+
             $resolved = $type === null
                 ? new \Magento\Framework\DataObject()
                 : $this->metaResolver->resolve($type, $id, $storeId);
 
             if ($resolved->getMetaTitle()) {
                 $title = (string) $resolved->getMetaTitle();
-                // When "Append Store Name to Title" is enabled, append
-                // " - {Store Name}" if it is not already present. Templates
-                // that already interpolate `{{store.name}}` are left alone so
-                // we never double-suffix the store name.
+
                 if ($this->seoConfig->appendStoreName($storeId)) {
                     try {
-                        // Use the store view name (e.g. "Default Store View"),
-                        // not the group/frontend name (e.g. "Main Website
-                        // Store"), so the value matches what templates render
-                        // via `{{store.name}}` and the duplicate guard works.
                         $storeName = (string) $this->storeManager->getStore($storeId)->getName();
                     } catch (\Throwable) {
                         $storeName = '';
@@ -102,14 +83,10 @@ class HeadPlugin
                 $subject->setKeywords($resolved->getMetaKeywords());
             }
         } catch (\Throwable) {
-            // best-effort
         }
         return [];
     }
 
-    /**
-     * @return array{0:?string,1:int}
-     */
     private function detectEntity(): array
     {
         $product = $this->registry->registry('current_product');
@@ -127,12 +104,6 @@ class HeadPlugin
         return [null, 0];
     }
 
-    /**
-     * Mirror of MetadataPlugin::hasActiveFilter — getParams() includes both
-     * user-supplied $_GET filters and FilterRouter setParam'd codes on
-     * pretty URLs, which is exactly the union we need to mean "filter
-     * active, defer to FilterSeo".
-     */
     private function hasActiveFilter(): bool
     {
         $params = $this->request->getParams();
@@ -144,9 +115,6 @@ class HeadPlugin
         return false;
     }
 
-    /**
-     * @return string[]
-     */
     private function getFilterableAttributeCodes(): array
     {
         if ($this->filterableAttributeCodes !== null) {
@@ -161,7 +129,6 @@ class HeadPlugin
                 $codes[] = (string) $attr->getAttributeCode();
             }
         } catch (\Throwable) {
-            // Empty list = treat as no active filter (safe default).
         }
         return $this->filterableAttributeCodes = $codes;
     }

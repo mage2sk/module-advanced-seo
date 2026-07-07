@@ -12,11 +12,6 @@ use Panth\AdvancedSEO\Api\CanonicalResolverInterface;
 use Panth\AdvancedSEO\Api\MetaResolverInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 
-/**
- * Paginated listing canonical policy. Runs around PageConfig::publicBuild so
- * it observes anything other blocks already set, then overrides the canonical
- * asset if the current request has `?p=N`.
- */
 class CanonicalPlugin
 {
     public function __construct(
@@ -29,22 +24,11 @@ class CanonicalPlugin
     ) {
     }
 
-    /**
-     * Canonical for paginated pages is now handled by Block\Head\Canonical
-     * (via ViewModel\Canonical) which is pagination-aware and outputs in
-     * head.additional.  Adding it here via addRemotePageAsset would create
-     * a duplicate <link rel="canonical"> tag.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
     public function beforePublicBuild(PageConfig $subject): array
     {
         return [];
     }
 
-    /**
-     * @return array{0:?string,1:int}
-     */
     private function detectEntity(): array
     {
         $category = $this->registry->registry('current_category');

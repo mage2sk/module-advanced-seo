@@ -8,14 +8,6 @@ use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Serialize\SerializerInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * Suggests related entities using:
- *   1. Embedding cosine similarity from panth_seo_meta_embedding
- *   2. Blended with PageRank weight from InternalLinking\PageRank
- *
- * Writes top-N into cache keyed per (store, type, id). Optionally persists
- * to panth_seo_related if the AddLinkGraphTable patch has run.
- */
 class Suggester
 {
     private const CACHE_TTL = 7200;
@@ -31,9 +23,6 @@ class Suggester
     ) {
     }
 
-    /**
-     * @return array<int,array{type:string,id:int,score:float}>
-     */
     public function suggest(string $entityType, int $entityId, int $storeId, int $limit = 5): array
     {
         $cacheKey = sprintf('panth_seo_related_%d_%s_%d_%d', $storeId, $entityType, $entityId, $limit);
@@ -45,7 +34,6 @@ class Suggester
                     return $decoded;
                 }
             } catch (\Throwable) {
-                // rebuild
             }
         }
 
@@ -96,15 +84,11 @@ class Suggester
                 self::CACHE_TTL
             );
         } catch (\Throwable) {
-            // best effort
         }
 
         return $results;
     }
 
-    /**
-     * @return array<int,array{type:string,id:int,score:float}>
-     */
     private function loadPersisted(string $entityType, int $entityId, int $storeId, int $limit): array
     {
         $conn  = $this->resource->getConnection();
@@ -135,9 +119,6 @@ class Suggester
         return $out;
     }
 
-    /**
-     * @return float[]|null
-     */
     private function loadEmbedding(string $entityType, int $entityId, int $storeId, string $field): ?array
     {
         $conn  = $this->resource->getConnection();
@@ -156,9 +137,6 @@ class Suggester
         return $this->unpackVector((string) $row['vector'], (int) $row['dimensions']);
     }
 
-    /**
-     * @return array<int,array{entity_id:int,vector:float[]}>
-     */
     private function loadCandidateEmbeddings(string $entityType, int $storeId, int $excludeId): array
     {
         $conn  = $this->resource->getConnection();
@@ -183,9 +161,6 @@ class Suggester
         return $rows;
     }
 
-    /**
-     * @return float[]|null
-     */
     private function unpackVector(string $blob, int $dims): ?array
     {
         if ($blob === '' || $dims <= 0) {
@@ -202,10 +177,6 @@ class Suggester
         return array_values($unpacked);
     }
 
-    /**
-     * @param float[] $a
-     * @param float[] $b
-     */
     private function cosine(array $a, array $b): float
     {
         $n = min(count($a), count($b));

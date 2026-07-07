@@ -19,9 +19,6 @@ class BulkEditor extends Template
         parent::__construct($context, $data);
     }
 
-    /**
-     * @return array<int,array<string,mixed>>
-     */
     public function getProducts(int $limit = 50, int $page = 1): array
     {
         $collection = $this->productCollectionFactory->create();

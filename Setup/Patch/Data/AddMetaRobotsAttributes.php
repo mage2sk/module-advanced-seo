@@ -12,18 +12,6 @@ use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Panth\AdvancedSEO\Model\Config\Source\MetaRobots;
 
-/**
- * Creates the `meta_robots` EAV attribute on both `catalog_product` and
- * `catalog_category` entities, allowing merchants to set a per-entity
- * robots directive that overrides the global/template setting.
- *
- * Attribute details:
- *  - Type: varchar
- *  - Input: select (source model MetaRobots)
- *  - Default: null (empty = use global/template setting)
- *  - Group: "Search Engine Optimization"
- *  - Sort order: 65
- */
 class AddMetaRobotsAttributes implements DataPatchInterface
 {
     public function __construct(
@@ -36,7 +24,6 @@ class AddMetaRobotsAttributes implements DataPatchInterface
     {
         $this->moduleDataSetup->startSetup();
 
-        /** @var EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
 
         $commonConfig = [
@@ -54,7 +41,6 @@ class AddMetaRobotsAttributes implements DataPatchInterface
             'note'                    => 'Leave empty to use the setting from templates or rules.',
         ];
 
-        // -- Product attribute --
         if (!$eavSetup->getAttributeId(Product::ENTITY, 'meta_robots')) {
             $eavSetup->addAttribute(
                 Product::ENTITY,
@@ -73,10 +59,8 @@ class AddMetaRobotsAttributes implements DataPatchInterface
             );
         }
 
-        // Add product meta_robots to ALL product attribute sets
         $this->addProductAttributeToAllSets($eavSetup, 'meta_robots');
 
-        // -- Category attribute --
         if (!$eavSetup->getAttributeId(Category::ENTITY, 'meta_robots')) {
             $eavSetup->addAttribute(
                 Category::ENTITY,
@@ -85,7 +69,6 @@ class AddMetaRobotsAttributes implements DataPatchInterface
             );
         }
 
-        // Add category meta_robots to ALL category attribute sets
         $this->addCategoryAttributeToAllSets($eavSetup, 'meta_robots');
 
         $this->moduleDataSetup->endSetup();
@@ -93,10 +76,6 @@ class AddMetaRobotsAttributes implements DataPatchInterface
         return $this;
     }
 
-    /**
-     * Assign a product attribute to ALL existing attribute sets under the
-     * "Search Engine Optimization" group (falls back to the default group).
-     */
     private function addProductAttributeToAllSets(EavSetup $eavSetup, string $attributeCode): void
     {
         $entityTypeId   = $eavSetup->getEntityTypeId(Product::ENTITY);
@@ -116,10 +95,6 @@ class AddMetaRobotsAttributes implements DataPatchInterface
         }
     }
 
-    /**
-     * Assign a category attribute to ALL existing attribute sets under the
-     * "Search Engine Optimization" group (falls back to the default group).
-     */
     private function addCategoryAttributeToAllSets(EavSetup $eavSetup, string $attributeCode): void
     {
         $entityTypeId   = $eavSetup->getEntityTypeId(Category::ENTITY);
@@ -139,17 +114,11 @@ class AddMetaRobotsAttributes implements DataPatchInterface
         }
     }
 
-    /**
-     * @inheritdoc
-     */
     public static function getDependencies(): array
     {
         return [];
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getAliases(): array
     {
         return [];

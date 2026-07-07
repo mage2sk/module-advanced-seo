@@ -6,9 +6,6 @@ namespace Panth\AdvancedSEO\Model\Meta\Token;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Framework\DataObject;
 
-/**
- * {{attribute:color}} — fetches attribute value (admin label) from product.
- */
 class AttributeToken implements TokenInterface
 {
     public function getValue(mixed $entity, array $context, ?string $argument = null): string
@@ -31,7 +28,7 @@ class AttributeToken implements TokenInterface
             if ($raw === null || $raw === '') {
                 return '';
             }
-            // Resolve option label when possible.
+
             if (method_exists($entity, 'getResource')) {
                 try {
                     $resource = $entity->getResource();
@@ -48,7 +45,6 @@ class AttributeToken implements TokenInterface
                         }
                     }
                 } catch (\Throwable) {
-                    // fall through
                 }
             }
             return is_scalar($raw) ? (string) $raw : '';

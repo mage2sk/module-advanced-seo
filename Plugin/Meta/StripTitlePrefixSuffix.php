@@ -9,13 +9,6 @@ use Magento\Framework\View\Page\Title;
 use Magento\Store\Model\ScopeInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 
-/**
- * Plugin on Magento\Framework\View\Page\Title::get().
- *
- * When `panth_seo/meta/strip_title_prefix_suffix` is enabled, strips the
- * store-configured title prefix and suffix from the rendered page title.
- * Only fires on frontend area to avoid interfering with admin panels.
- */
 class StripTitlePrefixSuffix
 {
     private const XML_STRIP_ENABLED = 'panth_seo/meta/strip_title_prefix_suffix';
@@ -29,9 +22,6 @@ class StripTitlePrefixSuffix
     ) {
     }
 
-    /**
-     * After-plugin on Title::get().
-     */
     public function afterGet(Title $subject, string $result): string
     {
         if (!$this->seoConfig->isEnabled()) {

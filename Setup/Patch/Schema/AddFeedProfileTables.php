@@ -7,10 +7,6 @@ use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\Patch\SchemaPatchInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 
-/**
- * Creates panth_seo_feed_profile and panth_seo_feed_field tables
- * for the configurable product feed system.
- */
 class AddFeedProfileTables implements SchemaPatchInterface
 {
     public const TABLE_PROFILE = 'panth_seo_feed_profile';
@@ -36,7 +32,6 @@ class AddFeedProfileTables implements SchemaPatchInterface
         $this->schemaSetup->startSetup();
         $conn = $this->schemaSetup->getConnection();
 
-        // ── panth_seo_feed_profile ──
         $profileTable = $this->schemaSetup->getTable(self::TABLE_PROFILE);
         if (!$conn->isTableExists($profileTable)) {
             $definition = $conn->newTable($profileTable)
@@ -147,7 +142,6 @@ class AddFeedProfileTables implements SchemaPatchInterface
             $conn->createTable($definition);
         }
 
-        // ── panth_seo_feed_field ──
         $fieldTable = $this->schemaSetup->getTable(self::TABLE_FIELD);
         if (!$conn->isTableExists($fieldTable)) {
             $definition = $conn->newTable($fieldTable)

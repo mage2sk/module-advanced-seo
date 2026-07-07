@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Panth\AdvancedSEO\Plugin\Admin;
@@ -10,14 +9,6 @@ use Magento\Framework\App\ResourceConnection;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Psr\Log\LoggerInterface;
 
-/**
- * Injects an SEO score widget into the product edit form.
- *
- * The widget displays a letter grade (A-F), numeric score (0-100), and a
- * breakdown of detected issues. It reads pre-computed data from the
- * `panth_seo_score` table and renders as an htmlContent UI component inside
- * the "search-engine-optimization" fieldset.
- */
 class SeoScoreWidgetPlugin
 {
     public function __construct(
@@ -28,11 +19,6 @@ class SeoScoreWidgetPlugin
     ) {
     }
 
-    /**
-     * @param ProductDataProvider   $subject
-     * @param array<string, mixed>  $result
-     * @return array<string, mixed>
-     */
     public function afterGetMeta(ProductDataProvider $subject, array $result): array
     {
         if (!$this->seoConfig->isEnabled()) {
@@ -61,9 +47,6 @@ class SeoScoreWidgetPlugin
         return $result;
     }
 
-    /**
-     * Build the full HTML block for the SEO score widget.
-     */
     private function buildScoreHtml(int $entityId, int $storeId, string $entityType): string
     {
         if ($entityId === 0) {
@@ -83,11 +66,6 @@ class SeoScoreWidgetPlugin
         return $this->renderScoreHtml($grade, $score, $issues);
     }
 
-    /**
-     * Fetch the most recent score row for the given entity.
-     *
-     * @return array<string, mixed>|null
-     */
     private function fetchScore(int $entityId, int $storeId, string $entityType): ?array
     {
         try {
@@ -113,11 +91,6 @@ class SeoScoreWidgetPlugin
         }
     }
 
-    /**
-     * Decode the JSON issues column into a string list.
-     *
-     * @return list<string>
-     */
     private function decodeIssues(string $json): array
     {
         if ($json === '') {
@@ -132,9 +105,6 @@ class SeoScoreWidgetPlugin
         }
     }
 
-    /**
-     * Map a letter grade to its display colour.
-     */
     private function gradeColor(string $grade): string
     {
         return match (strtoupper($grade)) {
@@ -146,9 +116,6 @@ class SeoScoreWidgetPlugin
         };
     }
 
-    /**
-     * Render the "not scored yet" placeholder.
-     */
     private function renderNotScoredHtml(): string
     {
         return '<div style="'
@@ -167,11 +134,6 @@ class SeoScoreWidgetPlugin
             . '</div>';
     }
 
-    /**
-     * Render the full score widget with grade circle, numeric score, and issue list.
-     *
-     * @param list<string> $issues
-     */
     private function renderScoreHtml(string $grade, int $score, array $issues): string
     {
         $color       = $this->gradeColor($grade);
@@ -241,11 +203,6 @@ class SeoScoreWidgetPlugin
             . '</div>';
     }
 
-    /**
-     * Render the issues list, or nothing when the list is empty.
-     *
-     * @param list<string> $issues
-     */
     private function renderIssueList(array $issues): string
     {
         if ($issues === []) {

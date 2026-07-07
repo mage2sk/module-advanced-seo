@@ -10,12 +10,6 @@ use Panth\AdvancedSEO\Model\Feed\GoogleMerchantFeedBuilder;
 use Panth\AdvancedSEO\Model\Feed\ProfileBasedFeedBuilder;
 use Psr\Log\LoggerInterface;
 
-/**
- * Daily cron job to regenerate product feeds.
- *
- * First generates all active feed profiles with cron_enabled = 1,
- * then falls back to legacy Google Merchant feed for stores without profiles.
- */
 class GenerateGoogleFeed
 {
     public function __construct(
@@ -32,7 +26,6 @@ class GenerateGoogleFeed
     {
         $generatedStoreIds = [];
 
-        // Phase 1: Generate all active cron-enabled feed profiles
         $results = $this->profileFeedBuilder->generateAllActive(null, true);
 
         foreach ($results as $feedId => $result) {
@@ -51,7 +44,6 @@ class GenerateGoogleFeed
                     $result['generation_time'] ?? 0
                 ));
 
-                // Track which stores were handled by profiles
                 $profile = $this->profileFeedBuilder->loadProfile($feedId);
                 if ($profile !== null) {
                     $generatedStoreIds[] = (int) $profile['store_id'];
@@ -59,7 +51,6 @@ class GenerateGoogleFeed
             }
         }
 
-        // Phase 2: Legacy feed for stores not covered by profiles
         $mediaDir = $this->directoryList->getPath(DirectoryList::MEDIA);
         $feedDir = $mediaDir . '/panth_seo';
 
@@ -69,7 +60,6 @@ class GenerateGoogleFeed
                 continue;
             }
 
-            // Skip if a profile-based feed was already generated for this store
             if (in_array($storeId, $generatedStoreIds, true)) {
                 continue;
             }

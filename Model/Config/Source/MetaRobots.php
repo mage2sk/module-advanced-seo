@@ -5,25 +5,13 @@ namespace Panth\AdvancedSEO\Model\Config\Source;
 
 use Magento\Eav\Model\Entity\Attribute\Source\AbstractSource;
 
-/**
- * Provides meta robots directives for product, category, and CMS page
- * edit forms. Extends AbstractSource so it works as an EAV attribute source
- * (has setAttribute/getAttribute methods required by Magento EAV system).
- * An empty value means "inherit from template/rules".
- */
 class MetaRobots extends AbstractSource
 {
-    /**
-     * @return array<int, array{value: string, label: \Magento\Framework\Phrase|string}>
-     */
     public function toOptionArray(): array
     {
         return $this->getAllOptions();
     }
 
-    /**
-     * @return array<int, array{value: string, label: \Magento\Framework\Phrase|string}>
-     */
     public function getAllOptions(): array
     {
         if ($this->_options === null) {

@@ -13,21 +13,8 @@ use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Panth\AdvancedSEO\Model\SearchConsole\IndexingClient;
 use Psr\Log\LoggerInterface;
 
-/**
- * On product/category/CMS save_after, submits the changed entity URL to the
- * Google Indexing API if enabled.
- *
- * Uses the same shutdown-function batching pattern as the IndexNow observer:
- * URLs are accumulated in a static array and flushed once at shutdown to
- * avoid blocking the admin save action.
- */
 class EntityChangeObserver implements ObserverInterface
 {
-    /**
-     * Accumulated URLs. Flushed once via register_shutdown_function.
-     *
-     * @var string[]
-     */
     private static array $pendingUrls = [];
 
     private static bool $shutdownRegistered = false;
@@ -59,13 +46,11 @@ class EntityChangeObserver implements ObserverInterface
         $url = null;
 
         if ($product = $event->getData('product')) {
-            /** @var Product $product */
             if (!$product->getId()) {
                 return;
             }
             $url = $this->getProductUrl($product);
         } elseif ($category = $event->getData('category')) {
-            /** @var Category $category */
             if (!$category->getId()) {
                 return;
             }
@@ -89,10 +74,6 @@ class EntityChangeObserver implements ObserverInterface
         }
     }
 
-    /**
-     * Flush all collected URLs to the Google Indexing API.
-     * Called automatically via register_shutdown_function.
-     */
     public static function flushPendingUrls(): void
     {
         if (self::$clientRef === null) {

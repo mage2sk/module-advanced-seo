@@ -9,19 +9,6 @@ use Magento\Framework\HTTP\Client\CurlFactory;
 use Magento\Store\Model\ScopeInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * Service to call the Google Indexing API for URL submission.
- *
- * Uses a Google Cloud service account JSON key (stored encrypted in config)
- * to obtain an OAuth 2.0 access token, then posts URL notifications to
- * https://indexing.googleapis.com/v3/urlNotifications:publish
- *
- * Rate limited to 200 submissions per day (tracked via a static counter
- * within the request lifecycle; persistent daily tracking should be done
- * via cron/database for production use with high volume).
- *
- * @see https://developers.google.com/search/apis/indexing-api/v3/using-api
- */
 class IndexingClient
 {
     private const ENDPOINT      = 'https://indexing.googleapis.com/v3/urlNotifications:publish';
@@ -33,14 +20,8 @@ class IndexingClient
     public const XML_INDEXING_ENABLED     = 'panth_seo/search_console/indexing_api_enabled';
     public const XML_SERVICE_ACCOUNT_JSON = 'panth_seo/search_console/service_account_json';
 
-    /**
-     * In-request submission counter to guard against runaway loops.
-     */
     private static int $dailyCount = 0;
 
-    /**
-     * Cached access token for this request lifecycle.
-     */
     private ?string $accessToken = null;
 
     public function __construct(
@@ -51,9 +32,6 @@ class IndexingClient
     ) {
     }
 
-    /**
-     * Whether the Indexing API integration is enabled.
-     */
     public function isEnabled(?int $storeId = null): bool
     {
         return $this->scopeConfig->isSetFlag(
@@ -63,14 +41,6 @@ class IndexingClient
         );
     }
 
-    /**
-     * Submit a URL to the Google Indexing API.
-     *
-     * @param string $url  Fully-qualified URL to notify Google about.
-     * @param string $type 'URL_UPDATED' or 'URL_DELETED'.
-     *
-     * @return bool True on success (HTTP 200), false otherwise.
-     */
     public function submitUrl(string $url, string $type = 'URL_UPDATED'): bool
     {
         if (self::$dailyCount >= self::MAX_DAILY) {
@@ -126,9 +96,6 @@ class IndexingClient
         }
     }
 
-    /**
-     * Obtain an OAuth 2.0 access token using the service account JWT assertion flow.
-     */
     private function getAccessToken(): ?string
     {
         if ($this->accessToken !== null) {
@@ -182,11 +149,6 @@ class IndexingClient
         }
     }
 
-    /**
-     * Create a signed JWT for the Google OAuth 2.0 service account flow.
-     *
-     * @param array<string, mixed> $sa Decoded service account JSON.
-     */
     private function createJwt(array $sa): ?string
     {
         $privateKey = (string) ($sa['private_key'] ?? '');
@@ -228,11 +190,6 @@ class IndexingClient
         return $signingInput . '.' . $this->base64UrlEncode($signature);
     }
 
-    /**
-     * Decode and return the service account JSON from encrypted config.
-     *
-     * @return array<string, mixed>|null
-     */
     private function getServiceAccountJson(): ?array
     {
         $encrypted = (string) ($this->scopeConfig->getValue(
@@ -258,9 +215,6 @@ class IndexingClient
         return is_array($parsed) ? $parsed : null;
     }
 
-    /**
-     * Base64 URL-safe encoding (no padding).
-     */
     private function base64UrlEncode(string $data): string
     {
         return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');

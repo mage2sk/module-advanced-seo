@@ -8,16 +8,6 @@ use Magento\Framework\App\ResourceConnection;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Panth\AdvancedSEO\Model\Config\Source\MetaRobots;
 
-/**
- * Adds meta_robots (select), custom_canonical_url (text), and
- * exclude_from_sitemap (toggle) fields to the product edit form's
- * "search-engine-optimization" fieldset.
- *
- * - meta_robots and in_xml_sitemap are EAV attributes, so Magento
- *   persists them automatically on save.
- * - custom_canonical_url is loaded from panth_seo_custom_canonical;
- *   saving is handled by {@see ProductSeoFieldsSavePlugin}.
- */
 class ProductSeoFieldsPlugin
 {
     private const CANONICAL_TABLE = 'panth_seo_custom_canonical';
@@ -30,20 +20,12 @@ class ProductSeoFieldsPlugin
     ) {
     }
 
-    /**
-     * Inject SEO fields into the product form meta.
-     *
-     * @param ProductDataProvider   $subject
-     * @param array<string, mixed>  $result
-     * @return array<string, mixed>
-     */
     public function afterGetMeta(ProductDataProvider $subject, array $result): array
     {
         if (!$this->seoConfig->isEnabled()) {
             return $result;
         }
 
-        // -- Meta Robots select --
         $result['search-engine-optimization']['children']['meta_robots'] = [
             'arguments' => [
                 'data' => [
@@ -60,7 +42,6 @@ class ProductSeoFieldsPlugin
             ],
         ];
 
-        // -- Custom Canonical URL text --
         $result['search-engine-optimization']['children']['custom_canonical_url'] = [
             'arguments' => [
                 'data' => [
@@ -80,7 +61,6 @@ class ProductSeoFieldsPlugin
             ],
         ];
 
-        // -- OG Title --
         $result['search-engine-optimization']['children']['og_title'] = [
             'arguments' => [
                 'data' => [
@@ -97,7 +77,6 @@ class ProductSeoFieldsPlugin
             ],
         ];
 
-        // -- OG Description --
         $result['search-engine-optimization']['children']['og_description'] = [
             'arguments' => [
                 'data' => [
@@ -114,7 +93,6 @@ class ProductSeoFieldsPlugin
             ],
         ];
 
-        // -- OG Image URL --
         $result['search-engine-optimization']['children']['og_image'] = [
             'arguments' => [
                 'data' => [
@@ -131,7 +109,6 @@ class ProductSeoFieldsPlugin
             ],
         ];
 
-        // -- Exclude from Sitemap toggle --
         $result['search-engine-optimization']['children']['exclude_from_sitemap'] = [
             'arguments' => [
                 'data' => [
@@ -160,13 +137,6 @@ class ProductSeoFieldsPlugin
         return $result;
     }
 
-    /**
-     * Pre-fill custom_canonical_url from the database.
-     *
-     * @param ProductDataProvider   $subject
-     * @param array<string, mixed>  $result
-     * @return array<string, mixed>
-     */
     public function afterGetData(ProductDataProvider $subject, array $result): array
     {
         if (!$this->seoConfig->isEnabled()) {
@@ -194,9 +164,6 @@ class ProductSeoFieldsPlugin
         return $result;
     }
 
-    /**
-     * Load the custom canonical URL from panth_seo_custom_canonical.
-     */
     private function loadCanonicalUrl(string $entityType, int $entityId, int $storeId): ?string
     {
         $connection = $this->resource->getConnection();

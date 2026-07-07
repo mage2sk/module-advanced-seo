@@ -9,12 +9,6 @@ use Magento\Framework\App\ResourceConnection;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Psr\Log\LoggerInterface;
 
-/**
- * After the CMS page save controller completes, persist meta_robots and
- * hreflang_identifier values to the panth_seo_override table.
- *
- * CMS pages do not use EAV, so these values must be stored manually.
- */
 class CmsPageSeoFieldsSavePlugin
 {
     private const TABLE       = 'panth_seo_override';
@@ -28,11 +22,6 @@ class CmsPageSeoFieldsSavePlugin
     ) {
     }
 
-    /**
-     * @param CmsPageSaveController $subject
-     * @param mixed                 $result
-     * @return mixed
-     */
     public function afterExecute(CmsPageSaveController $subject, mixed $result): mixed
     {
         if (!$this->seoConfig->isEnabled()) {
@@ -60,11 +49,6 @@ class CmsPageSeoFieldsSavePlugin
         return $result;
     }
 
-    /**
-     * Resolve the store ID from post data.
-     *
-     * @param array<string, mixed> $postData
-     */
     private function resolveStoreId(array $postData): int
     {
         if (isset($postData['store_id'])) {
@@ -75,9 +59,6 @@ class CmsPageSeoFieldsSavePlugin
         return (int) $this->request->getParam('store', 0);
     }
 
-    /**
-     * Upsert or delete the override row for this CMS page.
-     */
     private function persistOverride(
         int $pageId,
         int $storeId,
@@ -88,16 +69,12 @@ class CmsPageSeoFieldsSavePlugin
         $table      = $this->resource->getTableName(self::TABLE);
         $existingId = $this->findExistingId($pageId, $storeId);
 
-        // If both fields are empty, remove the override row entirely.
         if ($metaRobots === '' && $hreflangIdentifier === '') {
             if ($existingId !== null) {
-                // Only delete if other columns are also empty to avoid removing
-                // overrides set by other subsystems (e.g. meta_title, canonical).
                 $row = $this->loadFullRow($existingId);
                 if ($row !== null && $this->isRowEmptyExceptSeoFields($row)) {
                     $connection->delete($table, ['override_id = ?' => $existingId]);
                 } else {
-                    // Clear just our fields.
                     $connection->update($table, [
                         'robots'              => null,
                         'hreflang_identifier' => null,
@@ -122,9 +99,6 @@ class CmsPageSeoFieldsSavePlugin
         }
     }
 
-    /**
-     * Find an existing override_id for the entity + store combination.
-     */
     private function findExistingId(int $entityId, int $storeId): ?int
     {
         $connection = $this->resource->getConnection();
@@ -142,11 +116,6 @@ class CmsPageSeoFieldsSavePlugin
         return $id !== false ? (int) $id : null;
     }
 
-    /**
-     * Load the full override row to check whether it can be safely deleted.
-     *
-     * @return array<string, mixed>|null
-     */
     private function loadFullRow(int $overrideId): ?array
     {
         $connection = $this->resource->getConnection();
@@ -159,12 +128,6 @@ class CmsPageSeoFieldsSavePlugin
         return $row !== false ? $row : null;
     }
 
-    /**
-     * Check whether the row has no meaningful data beyond our SEO fields,
-     * entity_type, entity_id, and store_id.
-     *
-     * @param array<string, mixed> $row
-     */
     private function isRowEmptyExceptSeoFields(array $row): bool
     {
         $ignoredKeys = [

@@ -11,10 +11,6 @@ use Panth\AdvancedSEO\Model\Audit\Crawler;
 use Panth\AdvancedSEO\Model\Audit\IssueDetector;
 use Psr\Log\LoggerInterface;
 
-/**
- * Nightly cron: crawl every active store and persist results into
- * panth_seo_crawl_result for admin review.
- */
 class CrawlAudit
 {
     private const BATCH_INSERT_SIZE = 100;
@@ -55,9 +51,6 @@ class CrawlAudit
         }
     }
 
-    /**
-     * Crawl a single store and persist results.
-     */
     private function runForStore(int $storeId, int $maxPages): void
     {
         $this->logger->info(sprintf('Panth SEO CrawlAudit: starting crawl for store %d (max %d pages)', $storeId, $maxPages));
@@ -65,7 +58,6 @@ class CrawlAudit
         $rawResults = $this->crawler->crawl($storeId, $maxPages);
         $analysis   = $this->issueDetector->analyse($rawResults);
 
-        /** @var \Panth\AdvancedSEO\Model\Audit\CrawlResult[] $results */
         $results = $analysis['results'];
         $summary = $analysis['summary'];
 
@@ -80,11 +72,6 @@ class CrawlAudit
         ));
     }
 
-    /**
-     * Delete previous crawl results for the store and insert new ones.
-     *
-     * @param \Panth\AdvancedSEO\Model\Audit\CrawlResult[] $results
-     */
     private function persistResults(int $storeId, array $results): void
     {
         $connection = $this->resource->getConnection();
@@ -95,7 +82,6 @@ class CrawlAudit
             return;
         }
 
-        // Remove stale results for this store
         $connection->delete($table, ['store_id = ?' => $storeId]);
 
         $now    = $this->dateTime->gmtDate();

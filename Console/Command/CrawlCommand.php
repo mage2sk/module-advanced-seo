@@ -14,11 +14,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * CLI command: `bin/magento panth:seo:crawl [--store=] [--limit=100]`
- *
- * Runs the internal SEO crawler and outputs results to the console.
- */
 class CrawlCommand extends Command
 {
     private const OPT_STORE = 'store';
@@ -46,7 +41,6 @@ class CrawlCommand extends Command
         try {
             $this->appState->setAreaCode(Area::AREA_ADMINHTML);
         } catch (\Throwable) {
-            // already set
         }
 
         $storeArg = $input->getOption(self::OPT_STORE);
@@ -67,7 +61,6 @@ class CrawlCommand extends Command
                 $rawResults = $this->crawler->crawl($storeId, $limit);
                 $analysis   = $this->issueDetector->analyse($rawResults);
 
-                /** @var CrawlResult[] $results */
                 $results = $analysis['results'];
                 $summary = $analysis['summary'];
 
@@ -84,9 +77,6 @@ class CrawlCommand extends Command
         return $exitCode;
     }
 
-    /**
-     * @return \Magento\Store\Api\Data\StoreInterface[]|null
-     */
     private function resolveStores(mixed $storeArg, OutputInterface $output): ?array
     {
         if ($storeArg !== null && $storeArg !== '') {
@@ -117,9 +107,6 @@ class CrawlCommand extends Command
         return $stores;
     }
 
-    /**
-     * @param CrawlResult[] $results
-     */
     private function outputResults(OutputInterface $output, array $results): void
     {
         foreach ($results as $result) {
@@ -144,9 +131,6 @@ class CrawlCommand extends Command
         }
     }
 
-    /**
-     * @param array<string, int> $summary
-     */
     private function outputSummary(OutputInterface $output, array $summary, int $totalPages): void
     {
         $totalIssues = (int) array_sum($summary);

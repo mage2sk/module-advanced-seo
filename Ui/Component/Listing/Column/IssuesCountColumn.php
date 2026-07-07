@@ -7,14 +7,6 @@ use Magento\Framework\View\Element\UiComponent\ContextInterface;
 use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Ui\Component\Listing\Columns\Column;
 
-/**
- * Custom column that parses the issues_json field and shows the count of issues
- * with colour indication:
- *
- * 0 issues   => green
- * 1-3 issues => yellow / amber
- * >3 issues  => red
- */
 class IssuesCountColumn extends Column
 {
     public function __construct(
@@ -26,9 +18,6 @@ class IssuesCountColumn extends Column
         parent::__construct($context, $uiComponentFactory, $components, $data);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function prepareDataSource(array $dataSource): array
     {
         if (!isset($dataSource['data']['items'])) {
@@ -73,19 +62,16 @@ class IssuesCountColumn extends Column
     private function resolveColor(int $count): string
     {
         if ($count === 0) {
-            return '#185b00'; // green
+            return '#185b00';
         }
 
         if ($count <= 3) {
-            return '#b8860b'; // dark-goldenrod (yellow/amber)
+            return '#b8860b';
         }
 
-        return '#e22626'; // red
+        return '#e22626';
     }
 
-    /**
-     * Build a tooltip string listing the individual issues.
-     */
     private function buildTooltip(string $json): string
     {
         if ($json === '' || $json === '[]' || $json === 'null') {

@@ -12,13 +12,6 @@ use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Panth\AdvancedSEO\Model\Meta\TemplateRenderer;
 use Psr\Log\LoggerInterface;
 
-/**
- * Auto-generates a URL key from a configurable template when a product is
- * created (or when the "apply to existing" flag is set and the product is
- * saved without a manually entered url_key).
- *
- * Listens to `catalog_product_save_before`.
- */
 class AutoUrlKey implements ObserverInterface
 {
     public function __construct(
@@ -33,7 +26,6 @@ class AutoUrlKey implements ObserverInterface
     public function execute(Observer $observer): void
     {
         try {
-            /** @var Product|null $product */
             $product = $observer->getEvent()->getProduct();
             if ($product === null) {
                 return;
@@ -53,15 +45,15 @@ class AutoUrlKey implements ObserverInterface
             $hasManualKey = $this->hasManualUrlKey($product);
 
             if ($isNew && $hasManualKey) {
-                return; // Merchant typed a url_key explicitly — respect it.
+                return;
             }
 
             if (!$isNew && $hasManualKey && !$this->config->isAutoUrlKeyForExisting($storeId)) {
-                return; // Existing product with a key, and "apply to existing" is off.
+                return;
             }
 
             if (!$isNew && !$this->config->isAutoUrlKeyForExisting($storeId)) {
-                return; // Existing product but feature not enabled for existing.
+                return;
             }
 
             $template = $this->config->getUrlKeyTemplate($storeId);
@@ -73,10 +65,9 @@ class AutoUrlKey implements ObserverInterface
             $slug = $this->slugify($rendered);
 
             if ($slug === '') {
-                return; // Template resolved to nothing useful — do not overwrite.
+                return;
             }
 
-            // Ensure uniqueness against existing url_rewrites for this store.
             $slug = $this->ensureUniqueSlug($slug, $product, $storeId);
 
             $product->setUrlKey($slug);
@@ -87,16 +78,6 @@ class AutoUrlKey implements ObserverInterface
         }
     }
 
-    /**
-     * Determine whether the product already carries a manually set url_key.
-     *
-     * Because `Magento\CatalogUrlRewrite\Observer\ProductUrlKeyAutogeneratorObserver`
-     * runs on the same `catalog_product_save_before` event and pre-populates
-     * `url_key` from the product name, a non-empty `url_key` is NOT a reliable
-     * signal of a merchant-typed value. We compare the current url_key to the
-     * slug that would have been generated from the product name — if they
-     * match, the merchant did not type anything manually.
-     */
     private function hasManualUrlKey(Product $product): bool
     {
         $key = (string) $product->getData('url_key');
@@ -109,8 +90,6 @@ class AutoUrlKey implements ObserverInterface
             return false;
         }
 
-        // For existing products: if the stored url_key equals the name-slug,
-        // Magento may have just re-derived it from name; treat as non-manual.
         $origKey = (string) $product->getOrigData('url_key');
         if ($origKey !== '' && $origKey !== $key && $key === $nameSlug) {
             return false;
@@ -119,12 +98,6 @@ class AutoUrlKey implements ObserverInterface
         return true;
     }
 
-    /**
-     * Ensure the target slug does not collide with an existing product's
-     * url_key. If it collides, append `-1`, `-2`, ... until unique. Mirrors
-     * Magento's native collision handling for merchant-typed url_keys which
-     * otherwise throws "URL key for specified store already exists".
-     */
     private function ensureUniqueSlug(string $slug, Product $product, int $storeId): string
     {
         try {
@@ -164,15 +137,8 @@ class AutoUrlKey implements ObserverInterface
         }
     }
 
-    /**
-     * Convert an arbitrary string into a URL-safe slug.
-     *
-     * Steps: transliterate -> lowercase -> replace non-alphanumeric with
-     * hyphens -> collapse consecutive hyphens -> trim leading/trailing hyphens.
-     */
     private function slugify(string $text): string
     {
-        // Transliterate to ASCII when possible.
         if (function_exists('transliterator_transliterate')) {
             $text = transliterator_transliterate(
                 'Any-Latin; Latin-ASCII; Lower()',
@@ -182,10 +148,8 @@ class AutoUrlKey implements ObserverInterface
 
         $text = mb_strtolower($text, 'UTF-8');
 
-        // Replace any character that is not a-z, 0-9, or hyphen with a hyphen.
         $text = (string) preg_replace('/[^a-z0-9\-]+/', '-', $text);
 
-        // Collapse consecutive hyphens.
         $text = (string) preg_replace('/-{2,}/', '-', $text);
 
         return trim($text, '-');

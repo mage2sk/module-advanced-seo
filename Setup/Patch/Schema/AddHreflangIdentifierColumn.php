@@ -7,13 +7,6 @@ use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\Patch\SchemaPatchInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 
-/**
- * Adds the `hreflang_identifier` column to the `panth_seo_override` table.
- *
- * This column stores a human-readable identifier used to link CMS pages
- * across store views for hreflang tag generation (e.g. "about-us" shared
- * across EN/DE/FR stores).
- */
 class AddHreflangIdentifierColumn implements SchemaPatchInterface
 {
     public function __construct(
@@ -47,17 +40,11 @@ class AddHreflangIdentifierColumn implements SchemaPatchInterface
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
     public static function getDependencies(): array
     {
         return [];
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getAliases(): array
     {
         return [];

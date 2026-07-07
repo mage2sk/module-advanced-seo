@@ -15,12 +15,6 @@ use Panth\AdvancedSEO\Model\Meta\Template\ConditionEvaluator;
 use Panth\AdvancedSEO\Model\Meta\TemplateRenderer;
 use Psr\Log\LoggerInterface;
 
-/**
- * Preview what a template will produce for the first 20 matching entities.
- *
- * Returns JSON:
- *   { success: true, items: [ {entity_id, name, current_title, preview_title, current_desc, preview_desc}, ... ] }
- */
 class Preview extends AbstractAction implements HttpGetActionInterface
 {
     public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::templates';
@@ -63,7 +57,6 @@ class Preview extends AbstractAction implements HttpGetActionInterface
             $titlePattern = (string) ($template['meta_title'] ?? '');
             $descPattern  = (string) ($template['meta_description'] ?? '');
 
-            /** @var list<array{entity_id: int, name: string, current_title: string, preview_title: string, current_desc: string, preview_desc: string}> $items */
             $items = [];
 
             $collectMatches = function (iterable $entities) use (
@@ -119,9 +112,6 @@ class Preview extends AbstractAction implements HttpGetActionInterface
         }
     }
 
-    /**
-     * @return array<string,mixed>|null
-     */
     private function loadTemplate(int $templateId): ?array
     {
         $connection = $this->resource->getConnection();
@@ -134,10 +124,6 @@ class Preview extends AbstractAction implements HttpGetActionInterface
         return is_array($row) && $row !== [] ? $row : null;
     }
 
-    /**
-     * @param array<string,mixed> $template
-     * @return array<string,mixed>
-     */
     private function decodeConditions(array $template): array
     {
         $raw = $template['conditions_serialized'] ?? null;
@@ -153,12 +139,6 @@ class Preview extends AbstractAction implements HttpGetActionInterface
         }
     }
 
-    /**
-     * Iterate products in pages until we have enough preview items.
-     *
-     * @param callable(iterable): void $callback
-     * @param list<array<string,mixed>> $items Collected items (checked for early termination)
-     */
     private function iterateProducts(int $storeId, callable $callback, array &$items): void
     {
         $page = 1;
@@ -184,12 +164,6 @@ class Preview extends AbstractAction implements HttpGetActionInterface
         } while ($page <= $lastPage && count($items) < self::PREVIEW_LIMIT);
     }
 
-    /**
-     * Iterate categories in pages until we have enough preview items.
-     *
-     * @param callable(iterable): void $callback
-     * @param list<array<string,mixed>> $items Collected items (checked for early termination)
-     */
     private function iterateCategories(int $storeId, callable $callback, array &$items): void
     {
         $page = 1;

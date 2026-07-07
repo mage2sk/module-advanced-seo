@@ -42,19 +42,14 @@ class SaveAfter implements ObserverInterface
 
             $this->cache->invalidateEntity(MetaResolverInterface::ENTITY_PRODUCT, $productId);
 
-            // Honor the MView toggle: only queue changelog rows when enabled.
             if ($this->config->isMviewEnabled($storeId)) {
                 $indexer = $this->indexerRegistry->get(ResolvedMetaIndexer::INDEXER_ID);
                 if ($indexer->isScheduled()) {
-                    // mview auto-captures via db changelog; nothing further needed.
                 } else {
                     $indexer->reindexRow($productId);
                 }
             }
 
-            // Honor the Async Indexing toggle. When enabled, publish to the
-            // message queue for non-blocking processing. When disabled, score
-            // synchronously so SEO data is up-to-date immediately on save.
             if ($this->config->isAsyncIndexing($storeId)) {
                 $this->publisher->publish(
                     'panth_seo.score_entity',

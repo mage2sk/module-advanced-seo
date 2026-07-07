@@ -5,17 +5,6 @@ namespace Panth\AdvancedSEO\Model\Rule\Condition;
 
 use Magento\CatalogInventory\Api\StockRegistryInterface;
 
-/**
- * Stock condition: matches in-stock / out-of-stock / qty thresholds.
- *
- * Node:
- * [
- *   'type' => 'stock',
- *   'check' => 'is_in_stock'|'qty',
- *   'operator' => '=='|'>'|'<'|...  (for qty only)
- *   'value' => bool|int,
- * ]
- */
 class Stock
 {
     public function __construct(
@@ -23,10 +12,6 @@ class Stock
     ) {
     }
 
-    /**
-     * @param array<string,mixed> $node
-     * @param array<string,mixed> $context
-     */
     public function evaluate(array $node, array $context): bool
     {
         $sku = null;

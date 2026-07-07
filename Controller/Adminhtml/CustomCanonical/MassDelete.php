@@ -10,9 +10,6 @@ use Panth\AdvancedSEO\Controller\Adminhtml\AbstractAction;
 use Panth\AdvancedSEO\Model\Canonical\CustomCanonicalRepository;
 use Panth\AdvancedSEO\Model\ResourceModel\CustomCanonical\CollectionFactory;
 
-/**
- * Mass-delete controller for custom canonical URL overrides.
- */
 class MassDelete extends AbstractAction implements HttpPostActionInterface
 {
     public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::custom_canonical';

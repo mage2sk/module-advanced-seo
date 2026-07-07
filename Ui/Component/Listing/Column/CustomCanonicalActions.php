@@ -8,9 +8,6 @@ use Magento\Framework\View\Element\UiComponent\ContextInterface;
 use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Ui\Component\Listing\Columns\Column;
 
-/**
- * Actions column for the custom canonical URL admin grid.
- */
 class CustomCanonicalActions extends Column
 {
     public const URL_PATH_EDIT   = 'panth_seo/customcanonical/edit';

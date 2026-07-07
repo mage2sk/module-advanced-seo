@@ -9,16 +9,6 @@ use Magento\Framework\App\State;
 use Magento\Framework\View\Page\Config as PageConfig;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 
-/**
- * Plugin on Magento\Framework\View\Page\Config.
- *
- * When the current request is paginated (`?p=N`, N > 1) and the admin
- * configuration `panth_seo/meta/pagination_position` is not "none",
- * appends or prepends a page-number indicator to the meta title and
- * enriches the meta description with "Page N" information.
- *
- * Only fires on the frontend area.
- */
 class PaginationMetaPlugin
 {
     private const XML_PAGINATION_POSITION = 'panth_seo/meta/pagination_position';
@@ -36,18 +26,6 @@ class PaginationMetaPlugin
     ) {
     }
 
-    /**
-     * After-plugin on PageConfig::getTitle().
-     *
-     * Decorates the Title value object so that subsequent calls to
-     * Title::get() already carry the pagination indicator. We modify
-     * the underlying value via Title::set() and return the same object.
-     *
-     * @param PageConfig                              $subject
-     * @param \Magento\Framework\View\Page\Title $result
-     *
-     * @return \Magento\Framework\View\Page\Title
-     */
     public function afterGetTitle(PageConfig $subject, \Magento\Framework\View\Page\Title $result): \Magento\Framework\View\Page\Title
     {
         if (!$this->shouldProcess()) {
@@ -65,11 +43,6 @@ class PaginationMetaPlugin
             return $result;
         }
 
-        // Idempotency guard: if the label is already present in the title,
-        // don't splice it in a second time. This matters because `getTitle()`
-        // is invoked multiple times per request (HeadPlugin::beforePublicBuild
-        // calls `->set()` which triggers another afterGet), and without this
-        // guard the plugin produced "Tops | Page 2 | Page 2".
         if ($labelKey !== '' && str_contains((string) $currentTitle, $labelKey)) {
             return $result;
         }
@@ -80,7 +53,6 @@ class PaginationMetaPlugin
 
         $result->set($newTitle);
 
-        // Also enrich meta description with page indicator
         $description = $subject->getDescription();
         if ($description !== '' && $description !== null) {
             $pageIndicator = sprintf(' - Page %d', $page);
@@ -90,9 +62,6 @@ class PaginationMetaPlugin
         return $result;
     }
 
-    /**
-     * Determine whether this plugin should execute.
-     */
     private function shouldProcess(): bool
     {
         if (!$this->seoConfig->isEnabled()) {
@@ -117,9 +86,6 @@ class PaginationMetaPlugin
 
     private function getPosition(): string
     {
-        // Prefer the helper so we share the same default fallback with the
-        // rest of the module and allow per-store overrides to be honoured
-        // without duplicating XML path constants.
         $value = $this->seoConfig->getPaginationPosition();
         return $value !== '' ? $value : self::POSITION_SUFFIX;
     }

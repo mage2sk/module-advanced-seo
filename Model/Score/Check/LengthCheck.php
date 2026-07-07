@@ -5,16 +5,8 @@ namespace Panth\AdvancedSEO\Model\Score\Check;
 
 use Panth\AdvancedSEO\Model\Score\CheckInterface;
 
-/**
- * Length check: title pixel width (approx) and description char length.
- *
- * Target ranges (SERP):
- *   title pixel width       : 200..580px   (optimum 380..560)
- *   description characters  : 120..160     (optimum 140..156)
- */
 class LengthCheck implements CheckInterface
 {
-    // Per-character pixel width approximations (Arial 16px).
     private const AVG_CHAR_PX = 7.2;
     private const WIDE_CHARS = 'mwMW';
     private const NARROW_CHARS = 'ilItjf.,:;\'';
@@ -24,10 +16,6 @@ class LengthCheck implements CheckInterface
         return 'length';
     }
 
-    /**
-     * @param array<string,mixed> $context
-     * @return array{score:float, max:float, message:string, details?:array<string,mixed>}
-     */
     public function run(array $context): array
     {
         $title = (string)($context['meta']['title'] ?? '');
@@ -82,10 +70,6 @@ class LengthCheck implements CheckInterface
         return $width;
     }
 
-    /**
-     * Piecewise scoring: 100 inside [optMin..optMax], linearly decaying
-     * to 0 at hardMin / hardMax, 0 outside.
-     */
     private function rangeScore(float $value, float $optMin, float $optMax, float $hardMin, float $hardMax): float
     {
         if ($value >= $optMin && $value <= $optMax) {

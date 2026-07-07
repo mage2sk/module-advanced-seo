@@ -11,10 +11,6 @@ use Magento\Store\Model\StoreManagerInterface;
 use Magento\UrlRewrite\Model\UrlPersistInterface;
 use Magento\UrlRewrite\Service\V1\Data\UrlRewrite;
 
-/**
- * Service class that deletes existing URL rewrites and regenerates them
- * for products and/or categories via Magento's native generators.
- */
 class RewriteRegenerator
 {
     private const BATCH_SIZE = 500;
@@ -29,13 +25,6 @@ class RewriteRegenerator
     ) {
     }
 
-    /**
-     * Regenerate URL rewrites for products.
-     *
-     * @param int   $storeId Store ID to regenerate for
-     * @param int[] $ids     Specific product IDs; empty = all products
-     * @return int  Number of URL rewrites generated
-     */
     public function regenerateProducts(int $storeId, array $ids = []): int
     {
         $stores = $this->resolveStoreIds($storeId);
@@ -82,13 +71,6 @@ class RewriteRegenerator
         return $totalGenerated;
     }
 
-    /**
-     * Regenerate URL rewrites for categories.
-     *
-     * @param int   $storeId Store ID to regenerate for
-     * @param int[] $ids     Specific category IDs; empty = all categories
-     * @return int  Number of URL rewrites generated
-     */
     public function regenerateCategories(int $storeId, array $ids = []): int
     {
         $stores = $this->resolveStoreIds($storeId);
@@ -100,7 +82,7 @@ class RewriteRegenerator
             $collection = $this->categoryCollectionFactory->create();
             $collection->setStoreId($resolvedStoreId);
             $collection->addAttributeToSelect(['url_key', 'url_path']);
-            // Exclude root categories (level 0 and 1)
+
             $collection->addAttributeToFilter('level', ['gt' => 1]);
 
             if (!empty($ids)) {
@@ -136,12 +118,6 @@ class RewriteRegenerator
         return $totalGenerated;
     }
 
-    /**
-     * Resolve a store ID into a list of store IDs.
-     * If 0 is passed, all non-admin stores are returned.
-     *
-     * @return int[]
-     */
     private function resolveStoreIds(int $storeId): array
     {
         if ($storeId > 0) {

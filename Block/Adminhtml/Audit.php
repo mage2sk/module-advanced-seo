@@ -21,17 +21,11 @@ class Audit extends Template
         parent::__construct($context, $data);
     }
 
-    /**
-     * Return the CSRF form key for POST forms.
-     */
     public function getFormKey(): string
     {
         return $this->formKeyModel->getFormKey();
     }
 
-    /**
-     * @return array<int,array<string,mixed>>
-     */
     public function getLowScoringEntities(int $limit = 50): array
     {
         $connection = $this->resource->getConnection();
@@ -48,9 +42,6 @@ class Audit extends Template
         );
     }
 
-    /**
-     * @return array<int,array<string,mixed>>
-     */
     public function getDuplicates(int $limit = 50): array
     {
         $connection = $this->resource->getConnection();
@@ -66,11 +57,6 @@ class Audit extends Template
         );
     }
 
-    /**
-     * Aggregate summary stats from the last crawl stored in panth_seo_crawl_result.
-     *
-     * @return array<string, mixed>|null  null when no results exist
-     */
     public function getLastCrawlSummary(): ?array
     {
         $connection = $this->resource->getConnection();

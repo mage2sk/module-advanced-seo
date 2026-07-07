@@ -29,7 +29,6 @@ class NewField extends AbstractAction implements HttpGetActionInterface
             return $this->resultRedirectFactory->create()->setPath('*/*/index');
         }
 
-        // Store feed_id in session for the form data provider
         $this->backendSession->setData('panth_seo_feed_field_feed_id', $feedId);
 
         $fieldId = (int) $this->getRequest()->getParam('field_id');

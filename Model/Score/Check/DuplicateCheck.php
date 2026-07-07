@@ -6,10 +6,6 @@ namespace Panth\AdvancedSEO\Model\Score\Check;
 use Panth\AdvancedSEO\Model\Score\CheckInterface;
 use Panth\AdvancedSEO\Model\Score\EmbeddingIndex;
 
-/**
- * Detects duplicate or near-duplicate meta content using cosine similarity
- * over vectors stored in panth_seo_meta_embedding.
- */
 class DuplicateCheck implements CheckInterface
 {
     public function __construct(
@@ -22,10 +18,6 @@ class DuplicateCheck implements CheckInterface
         return 'duplicate';
     }
 
-    /**
-     * @param array<string,mixed> $context
-     * @return array{score:float, max:float, message:string, details?:array<string,mixed>}
-     */
     public function run(array $context): array
     {
         $entityType = (string)($context['entity_type'] ?? '');
@@ -59,7 +51,6 @@ class DuplicateCheck implements CheckInterface
             }
         }
 
-        // Score = (1 - topSim) * 100, clamped.
         $score = max(0.0, min(100.0, (1.0 - $topSim) * 100.0));
 
         $message = $dupes === []

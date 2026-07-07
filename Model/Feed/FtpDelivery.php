@@ -8,9 +8,6 @@ use Magento\Framework\Filesystem\Io\Ftp;
 use Magento\Framework\Filesystem\Io\Sftp;
 use Psr\Log\LoggerInterface;
 
-/**
- * Handles uploading generated feed files to FTP/SFTP servers.
- */
 class FtpDelivery
 {
     public function __construct(
@@ -19,13 +16,6 @@ class FtpDelivery
     ) {
     }
 
-    /**
-     * Deliver a feed file to remote FTP/SFTP server.
-     *
-     * @param array  $profile       Feed profile data
-     * @param string $localFilePath Absolute path to the generated feed file
-     * @throws \RuntimeException on connection or upload failure
-     */
     public function deliver(array $profile, string $localFilePath): void
     {
         $type = ($profile['delivery_type'] ?? 'ftp');
@@ -39,16 +29,13 @@ class FtpDelivery
             throw new \RuntimeException('FTP/SFTP delivery host and user are required.');
         }
 
-        // Validate host is not an internal/loopback address (SSRF prevention)
         $this->validateHostNotInternal($host);
 
-        // Decrypt password
         $decryptedPassword = $this->encryptor->decrypt($password);
         if ($decryptedPassword === '') {
-            $decryptedPassword = $password; // fallback if not encrypted
+            $decryptedPassword = $password;
         }
 
-        // Parse host:port
         $port = null;
         if (str_contains($host, ':')) {
             [$host, $portStr] = explode(':', $host, 2);
@@ -65,22 +52,14 @@ class FtpDelivery
         }
     }
 
-    /**
-     * Test FTP/SFTP connection without uploading.
-     *
-     * @return string Success message
-     * @throws \RuntimeException on failure
-     */
     public function testConnection(string $type, string $host, string $user, string $password, string $path): string
     {
-        // Validate host before connecting (SSRF prevention)
         $cleanHost = $host;
         if (str_contains($cleanHost, ':')) {
             [$cleanHost] = explode(':', $cleanHost, 2);
         }
         $this->validateHostNotInternal($cleanHost);
 
-        // Parse host:port
         $port = null;
         if (str_contains($host, ':')) {
             [$host, $portStr] = explode(':', $host, 2);
@@ -95,7 +74,7 @@ class FtpDelivery
                 'username' => $user,
                 'password' => $password,
             ]);
-            // Try to change directory
+
             $sftp->cd($path ?: '/');
             $sftp->close();
         } else {
@@ -114,14 +93,8 @@ class FtpDelivery
         return 'Connection successful.';
     }
 
-    /**
-     * Prevent SSRF by blocking connections to internal/loopback/private addresses.
-     *
-     * @throws \RuntimeException if the host resolves to an internal address
-     */
     private function validateHostNotInternal(string $host): void
     {
-        // Block obvious internal hostnames
         $blockedPatterns = ['localhost', '127.0.0.1', '::1', '0.0.0.0', 'metadata.google', '169.254.169.254'];
         foreach ($blockedPatterns as $blocked) {
             if (strcasecmp($host, $blocked) === 0) {
@@ -129,10 +102,9 @@ class FtpDelivery
             }
         }
 
-        // Resolve hostname and check if IP is in private/reserved ranges
         $ips = gethostbynamel($host);
         if ($ips === false) {
-            return; // DNS resolution failed; let the actual connection fail naturally
+            return;
         }
         foreach ($ips as $ip) {
             if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {

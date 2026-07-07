@@ -7,11 +7,6 @@ use Magento\Catalog\Ui\DataProvider\Product\Form\ProductDataProvider;
 use Magento\Framework\App\ResourceConnection;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 
-/**
- * Adds a "SEO Canonical" fieldset with a custom_canonical_url text input to
- * the product edit form and pre-fills it from the panth_seo_custom_canonical
- * table when an override already exists.
- */
 class ProductFormPlugin
 {
     private const TABLE = 'panth_seo_custom_canonical';
@@ -23,13 +18,6 @@ class ProductFormPlugin
     ) {
     }
 
-    /**
-     * Inject the SEO Canonical fieldset into the product form meta.
-     *
-     * @param ProductDataProvider          $subject
-     * @param array<string, mixed>         $result
-     * @return array<string, mixed>
-     */
     public function afterGetMeta(ProductDataProvider $subject, array $result): array
     {
         if (!$this->seoConfig->isEnabled()) {
@@ -72,13 +60,6 @@ class ProductFormPlugin
         return $result;
     }
 
-    /**
-     * Pre-fill the custom canonical URL field from the database.
-     *
-     * @param ProductDataProvider    $subject
-     * @param array<string, mixed>  $result
-     * @return array<string, mixed>
-     */
     public function afterGetData(ProductDataProvider $subject, array $result): array
     {
         if (empty($result)) {

@@ -7,11 +7,6 @@ use Magento\Catalog\Model\Category\DataProvider as CategoryDataProvider;
 use Magento\Framework\App\ResourceConnection;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 
-/**
- * Adds a "SEO Canonical" fieldset with a custom_canonical_url text input to
- * the category edit form and pre-fills it from the panth_seo_custom_canonical
- * table when an override already exists.
- */
 class CategoryFormPlugin
 {
     private const TABLE = 'panth_seo_custom_canonical';
@@ -23,13 +18,6 @@ class CategoryFormPlugin
     ) {
     }
 
-    /**
-     * Inject the SEO Canonical fieldset into the category form meta.
-     *
-     * @param CategoryDataProvider        $subject
-     * @param array<string, mixed>        $result
-     * @return array<string, mixed>
-     */
     public function afterGetMeta(CategoryDataProvider $subject, array $result): array
     {
         if (!$this->seoConfig->isEnabled()) {
@@ -72,13 +60,6 @@ class CategoryFormPlugin
         return $result;
     }
 
-    /**
-     * Pre-fill the custom canonical URL field from the database.
-     *
-     * @param CategoryDataProvider   $subject
-     * @param array<string, mixed>  $result
-     * @return array<string, mixed>
-     */
     public function afterGetData(CategoryDataProvider $subject, array $result): array
     {
         if (empty($result)) {

@@ -16,15 +16,6 @@ use Panth\AdvancedSEO\Model\Meta\TemplateRenderer;
 use Panth\AdvancedSEO\Model\ResourceModel\Template\CollectionFactory as TemplateCollectionFactory;
 use Psr\Log\LoggerInterface;
 
-/**
- * Cron job: applies all active SEO templates in bulk.
- *
- * For each store, loads templates ordered by priority DESC, evaluates their
- * conditions against every matching entity, renders the template output and
- * upserts the result into `panth_seo_resolved`.
- *
- * Processes entities in batches of 500 to keep memory bounded on large catalogs.
- */
 class BulkTemplateApply
 {
     private const BATCH_SIZE = 500;
@@ -51,7 +42,7 @@ class BulkTemplateApply
         foreach ($stores as $store) {
             $storeId = (int) $store->getId();
             if ($storeId === 0) {
-                continue; // skip admin store
+                continue;
             }
 
             try {
@@ -84,9 +75,6 @@ class BulkTemplateApply
         }
     }
 
-    /**
-     * @return MetaTemplateInterface[]
-     */
     private function loadActiveTemplates(int $storeId): array
     {
         $collection = $this->templateCollectionFactory->create();
@@ -137,11 +125,6 @@ class BulkTemplateApply
         }
     }
 
-    /**
-     * Iterate all products for a store in batches.
-     *
-     * @param callable(iterable): void $callback
-     */
     private function iterateProducts(int $storeId, callable $callback): void
     {
         $page = 1;
@@ -168,11 +151,6 @@ class BulkTemplateApply
         } while ($page <= $lastPage);
     }
 
-    /**
-     * Iterate all categories for a store in batches.
-     *
-     * @param callable(iterable): void $callback
-     */
     private function iterateCategories(int $storeId, callable $callback): void
     {
         $page = 1;
@@ -196,11 +174,6 @@ class BulkTemplateApply
         } while ($page <= $lastPage);
     }
 
-    /**
-     * Iterate all CMS pages for a store in batches.
-     *
-     * @param callable(iterable): void $callback
-     */
     private function iterateCmsPages(int $storeId, callable $callback): void
     {
         $page = 1;
@@ -225,9 +198,6 @@ class BulkTemplateApply
         } while ($page <= $lastPage);
     }
 
-    /**
-     * Render template fields and upsert into panth_seo_resolved.
-     */
     private function renderAndSave(
         MetaTemplateInterface $template,
         mixed $entity,
@@ -306,9 +276,6 @@ class BulkTemplateApply
         return 0;
     }
 
-    /**
-     * Update last_applied_at and increment apply_count on the template row.
-     */
     private function stampTemplateApplied(MetaTemplateInterface $template): void
     {
         $templateId = $template->getTemplateId();
@@ -329,11 +296,6 @@ class BulkTemplateApply
         );
     }
 
-    /**
-     * Decode the conditions_serialized column into an array.
-     *
-     * @return array<string,mixed>
-     */
     private function decodeConditions(MetaTemplateInterface $template): array
     {
         if (!method_exists($template, 'getData')) {

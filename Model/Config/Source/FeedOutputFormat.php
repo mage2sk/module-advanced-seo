@@ -5,9 +5,6 @@ namespace Panth\AdvancedSEO\Model\Config\Source;
 
 use Magento\Framework\Data\OptionSourceInterface;
 
-/**
- * Source model for feed output formats.
- */
 class FeedOutputFormat implements OptionSourceInterface
 {
     public function toOptionArray(): array

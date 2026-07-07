@@ -6,11 +6,6 @@ namespace Panth\AdvancedSEO\Model\Queue;
 use Panth\AdvancedSEO\Api\SeoScorerInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * Queue consumer for topic `panth_seo.score_entity`.
- *
- * Message payload: JSON { "entity_type":..., "entity_id":..., "store_id":... }
- */
 class ScoreConsumer
 {
     public function __construct(

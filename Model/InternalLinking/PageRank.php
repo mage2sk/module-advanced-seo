@@ -3,11 +3,6 @@ declare(strict_types=1);
 
 namespace Panth\AdvancedSEO\Model\InternalLinking;
 
-/**
- * Iterative PageRank over the entity graph.
- *   PR(v) = (1-d)/N + d * sum( PR(u) * w(u,v) / W(u) )
- * max iterations = 30, damping d = 0.85, convergence threshold 1e-4.
- */
 class PageRank
 {
     private const MAX_ITERATIONS = 30;
@@ -19,9 +14,6 @@ class PageRank
     ) {
     }
 
-    /**
-     * @return array<string,float>
-     */
     public function compute(int $storeId): array
     {
         $adjacency = $this->graph->build($storeId);
@@ -29,7 +21,6 @@ class PageRank
             return [];
         }
 
-        // Collect all node ids
         $nodes = [];
         foreach ($adjacency as $src => $targets) {
             $nodes[$src] = true;
@@ -46,7 +37,6 @@ class PageRank
         $base = 1.0 / $n;
         $rank = array_fill_keys($nodeIds, $base);
 
-        // Pre-compute outgoing weight sums
         $outSum = [];
         foreach ($adjacency as $src => $targets) {
             $sum = 0.0;

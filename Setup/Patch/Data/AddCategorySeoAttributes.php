@@ -10,15 +10,6 @@ use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 
-/**
- * Creates one EAV attribute on the `catalog_category` entity:
- *
- * 1. `seo_name`                – SEO-friendly category name that can differ
- *                                 from the visible category name.
- *
- * The attribute is store-scoped and placed in the
- * "Search Engine Optimization" attribute group.
- */
 class AddCategorySeoAttributes implements DataPatchInterface
 {
     public function __construct(
@@ -31,10 +22,8 @@ class AddCategorySeoAttributes implements DataPatchInterface
     {
         $this->moduleDataSetup->startSetup();
 
-        /** @var EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
 
-        // ── seo_name ───────────────────────────────────────────────────
         if (!$eavSetup->getAttributeId(Category::ENTITY, 'seo_name')) {
             $eavSetup->addAttribute(
                 Category::ENTITY,
@@ -54,7 +43,6 @@ class AddCategorySeoAttributes implements DataPatchInterface
             );
         }
 
-        // Add category seo_name to ALL category attribute sets
         $this->addCategoryAttributeToAllSets($eavSetup, 'seo_name');
 
         $this->moduleDataSetup->endSetup();
@@ -62,10 +50,6 @@ class AddCategorySeoAttributes implements DataPatchInterface
         return $this;
     }
 
-    /**
-     * Assign a category attribute to ALL existing attribute sets under the
-     * "Search Engine Optimization" group (falls back to the default group).
-     */
     private function addCategoryAttributeToAllSets(EavSetup $eavSetup, string $attributeCode): void
     {
         $entityTypeId   = $eavSetup->getEntityTypeId(Category::ENTITY);
@@ -85,17 +69,11 @@ class AddCategorySeoAttributes implements DataPatchInterface
         }
     }
 
-    /**
-     * @inheritdoc
-     */
     public static function getDependencies(): array
     {
         return [];
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getAliases(): array
     {
         return [];

@@ -46,7 +46,6 @@ class FeedFileLink extends Column
                 $item[$name] = '<a href="' . htmlspecialchars($feedUrl) . '" target="_blank" style="color:#1979c3;text-decoration:underline;">'
                     . htmlspecialchars($filename) . '</a>';
             } catch (\Throwable) {
-                // Keep filename as plain text
             }
         }
 

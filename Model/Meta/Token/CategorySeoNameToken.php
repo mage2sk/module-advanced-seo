@@ -6,15 +6,6 @@ namespace Panth\AdvancedSEO\Model\Meta\Token;
 use Magento\Catalog\Api\Data\CategoryInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 
-/**
- * Token: {{category_seo_name}}
- *
- * Resolves the `seo_name` EAV attribute of a category entity. When the
- * attribute is empty or the entity is not a category, the token falls back
- * to {@see CategoryInterface::getName()}. Honours the global
- * `panth_seo/meta/seo_name_enabled` flag: when it is off, the dedicated
- * attribute is ignored entirely.
- */
 class CategorySeoNameToken implements TokenInterface
 {
     public function __construct(
@@ -41,7 +32,6 @@ class CategorySeoNameToken implements TokenInterface
 
     private function resolveSeoName(CategoryInterface $entity): string
     {
-        /** @var \Magento\Catalog\Model\Category $entity */
         if (!method_exists($entity, 'getData')) {
             return '';
         }

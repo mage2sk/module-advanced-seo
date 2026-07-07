@@ -7,9 +7,6 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 use Panth\AdvancedSEO\Controller\Adminhtml\AbstractAction;
 
-/**
- * Admin controller for the Crawl Audit Results grid.
- */
 class CrawlResults extends AbstractAction
 {
     public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::crawl_audit';
@@ -21,9 +18,6 @@ class CrawlResults extends AbstractAction
         parent::__construct($context);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function execute()
     {
         $page = $this->pageFactory->create();

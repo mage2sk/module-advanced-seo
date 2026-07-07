@@ -9,17 +9,6 @@ use Magento\Framework\App\RequestInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Panth\AdvancedSEO\Model\Brand\BrandDetector;
 
-/**
- * {{brand}} -- resolves to the brand / manufacturer name.
- *
- * Resolution strategy (in order of priority):
- *  1. Category page with an active brand filter: returns the filtered brand name.
- *  2. Product entity: reads the configured brand attribute value from the product.
- *  3. Context key `brand_name`: allows callers to inject the brand externally.
- *
- * The brand attribute code is read from `panth_seo/structured_data/brand_attribute`
- * (defaults to "manufacturer").
- */
 class BrandToken implements TokenInterface
 {
     public function __construct(
@@ -31,7 +20,6 @@ class BrandToken implements TokenInterface
 
     public function getValue(mixed $entity, array $context, ?string $argument = null): string
     {
-        // 1. Category context with brand filter active -- highest priority.
         if ($entity instanceof CategoryInterface) {
             $brandName = $this->brandDetector->getCurrentBrand($this->request);
             if ($brandName !== null && $brandName !== '') {
@@ -39,7 +27,6 @@ class BrandToken implements TokenInterface
             }
         }
 
-        // 2. Product context -- read the brand attribute directly.
         if ($entity instanceof ProductInterface) {
             $value = $this->resolveFromProduct($entity);
             if ($value !== '') {
@@ -47,12 +34,10 @@ class BrandToken implements TokenInterface
             }
         }
 
-        // 3. Externally injected brand name via render context.
         if (isset($context['brand_name']) && is_string($context['brand_name']) && $context['brand_name'] !== '') {
             return $context['brand_name'];
         }
 
-        // 4. Last resort: check brand filter on any page type.
         $brandName = $this->brandDetector->getCurrentBrand($this->request);
         if ($brandName !== null && $brandName !== '') {
             return $brandName;
@@ -61,9 +46,6 @@ class BrandToken implements TokenInterface
         return '';
     }
 
-    /**
-     * Read the configured brand attribute value from a product entity.
-     */
     private function resolveFromProduct(ProductInterface $product): string
     {
         $attributeCode = $this->seoConfig->getBrandAttribute();
@@ -84,7 +66,6 @@ class BrandToken implements TokenInterface
             return '';
         }
 
-        // Resolve option label for select/multiselect attributes.
         if (method_exists($product, 'getResource')) {
             try {
                 $resource = $product->getResource();
@@ -101,7 +82,6 @@ class BrandToken implements TokenInterface
                     }
                 }
             } catch (\Throwable) {
-                // fall through to raw value
             }
         }
 

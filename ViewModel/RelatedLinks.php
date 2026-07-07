@@ -9,9 +9,6 @@ use Magento\Store\Model\StoreManagerInterface;
 use Panth\AdvancedSEO\Model\InternalLinking\Suggester;
 use Psr\Log\LoggerInterface;
 
-/**
- * Hyva-safe ViewModel exposing internal-linking suggestions to templates.
- */
 class RelatedLinks implements ArgumentInterface
 {
     public function __construct(
@@ -22,9 +19,6 @@ class RelatedLinks implements ArgumentInterface
     ) {
     }
 
-    /**
-     * @return array<int,array{label:string,url:string,score:float}>
-     */
     public function getSuggestions(string $entityType, int $entityId, int $limit = 5): array
     {
         try {
@@ -40,10 +34,6 @@ class RelatedLinks implements ArgumentInterface
         }
     }
 
-    /**
-     * @param array<int,array{type:string,id:int,score:float}> $raw
-     * @return array<int,array{label:string,url:string,score:float}>
-     */
     private function hydrate(array $raw, int $storeId): array
     {
         if (empty($raw)) {

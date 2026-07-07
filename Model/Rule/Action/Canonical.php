@@ -5,10 +5,6 @@ namespace Panth\AdvancedSEO\Model\Rule\Action;
 
 use Magento\Store\Model\StoreManagerInterface;
 
-/**
- * Applies a canonical URL to the outgoing meta context.
- * Supports absolute URLs or paths relative to the current store base URL.
- */
 class Canonical
 {
     public function __construct(
@@ -16,11 +12,6 @@ class Canonical
     ) {
     }
 
-    /**
-     * @param array<string,mixed> $params
-     * @param array<string,mixed> $output
-     * @return array<string,mixed>
-     */
     public function apply(array $params, array $output): array
     {
         $url = trim((string)($params['canonical'] ?? ''));
@@ -33,7 +24,6 @@ class Canonical
                 $base = rtrim($this->storeManager->getStore()->getBaseUrl(), '/');
                 $url = $base . '/' . ltrim($url, '/');
             } catch (\Throwable $e) {
-                // leave as-is
             }
         }
 

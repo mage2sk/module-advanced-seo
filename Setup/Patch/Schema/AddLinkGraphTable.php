@@ -7,11 +7,6 @@ use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\Patch\SchemaPatchInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 
-/**
- * Adds panth_seo_related table for persisted internal-link suggestions.
- * (We intentionally do NOT persist the full link graph — it is computed
- * in-memory and cached. Only the top suggestions are written here.)
- */
 class AddLinkGraphTable implements SchemaPatchInterface
 {
     public const TABLE = 'panth_seo_related';

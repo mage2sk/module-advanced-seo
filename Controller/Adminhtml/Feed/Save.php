@@ -32,7 +32,6 @@ class Save extends AbstractAction implements HttpPostActionInterface
 
         $id = (int) ($data['feed_id'] ?? 0);
 
-        // Handle multiselect values (arrays to comma-separated strings)
         $categoryFilter = $data['category_filter'] ?? '';
         if (is_array($categoryFilter)) {
             $categoryFilter = implode(',', $categoryFilter);
@@ -42,7 +41,6 @@ class Save extends AbstractAction implements HttpPostActionInterface
             $attrSetFilter = implode(',', $attrSetFilter);
         }
 
-        // Encrypt password if provided
         $deliveryPassword = (string) ($data['delivery_password'] ?? '');
         if ($deliveryPassword !== '') {
             $deliveryPassword = $this->encryptor->encrypt($deliveryPassword);

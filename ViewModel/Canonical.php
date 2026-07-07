@@ -15,7 +15,6 @@ use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 
 class Canonical implements ArgumentInterface
 {
-    /** @var string[]|null */
     private ?array $filterableAttributeCodes = null;
 
     public function __construct(
@@ -50,8 +49,6 @@ class Canonical implements ArgumentInterface
             $storeId = (int) $store->getId();
             $page    = (int) $this->request->getParam('p', 0);
 
-            // Gather request-scoped context that the resolver uses for
-            // `canonical_ignore_pages` and `disable_canonical_for_noindex`.
             $requestUri = (string) $this->request->getRequestUri();
             $currentPath = parse_url($requestUri, PHP_URL_PATH) ?? '/';
             $robots = '';
@@ -69,11 +66,6 @@ class Canonical implements ArgumentInterface
                 $params['p'] = $page;
             }
 
-            // Filter-aware self-canonical: when a layered-nav filter is
-            // active (pretty FilterRouter URL or legacy ?attr=optid), the
-            // canonical URL must point to THIS page — not the bare parent
-            // category. Use the request URI as the source of truth so the
-            // pretty path-based slug from FilterRouter is preserved verbatim.
             if ($type === MetaResolverInterface::ENTITY_CATEGORY && $this->hasActiveFilter()) {
                 $absolute = rtrim((string) $store->getBaseUrl(), '/') . $currentPath;
                 if (!$this->config->canonicalPaginatedToFirst($storeId) && $page > 1) {
@@ -91,8 +83,6 @@ class Canonical implements ArgumentInterface
                 );
             }
 
-            // Non-entity fallback: short-circuit ignore pages and noindex here
-            // too so settings apply uniformly to homepage / search / custom pages.
             if ($this->config->isCanonicalDisabledForNoindex($storeId)
                 && $robots !== '' && stripos($robots, 'noindex') !== false
             ) {
@@ -102,9 +92,6 @@ class Canonical implements ArgumentInterface
                 return '';
             }
 
-            // Build the fallback URL, then hand it to the resolver's
-            // normalizer so trailing_slash_homepage / lowercase_host /
-            // strip_query / strip_params all apply consistently.
             $baseUrl = rtrim((string) $store->getBaseUrl(), '/');
             $path    = $currentPath;
 
@@ -120,10 +107,6 @@ class Canonical implements ArgumentInterface
         }
     }
 
-    /**
-     * Mirror of Resolver::isIgnoredPage so the non-entity fallback also
-     * respects the `canonical_ignore_pages` setting.
-     */
     private function isIgnoredRequestPath(string $currentPath, int $storeId): bool
     {
         try {
@@ -151,14 +134,6 @@ class Canonical implements ArgumentInterface
         return false;
     }
 
-    /**
-     * Build the query-string suffix for non-entity canonical fallbacks.
-     *
-     * Currently only the catalog search result controller preserves a
-     * whitelisted parameter (`q`) so that `/catalogsearch/result/?q=jacket`
-     * and `/catalogsearch/result/?q=shoes` each emit distinct canonicals
-     * instead of collapsing to the bare result URL.
-     */
     private function buildFallbackQuery(): string
     {
         $fullAction = '';
@@ -171,8 +146,6 @@ class Canonical implements ArgumentInterface
             }
         }
 
-        // Fall back to assembling the full action name from parts when the
-        // concrete request doesn't expose getFullActionName().
         if ($fullAction === ''
             && method_exists($request, 'getModuleName')
             && method_exists($request, 'getControllerName')
@@ -200,10 +173,6 @@ class Canonical implements ArgumentInterface
         return '';
     }
 
-    /**
-     * Check whether a canonical URL has already been registered via
-     * PageConfig::addRemotePageAsset() by an earlier metadata plugin.
-     */
     private function hasCanonicalInPageConfig(): bool
     {
         try {
@@ -214,16 +183,10 @@ class Canonical implements ArgumentInterface
                 }
             }
         } catch (\Throwable) {
-            // PageConfig may not be initialized; assume no canonical present.
         }
         return false;
     }
 
-    /**
-     * Mirror of MetadataPlugin::hasActiveFilter — getParams() includes both
-     * user-supplied $_GET filters and FilterRouter setParam'd codes on
-     * pretty URLs, which together define "filter active" for the canonical.
-     */
     private function hasActiveFilter(): bool
     {
         $params = $this->request->getParams();
@@ -235,9 +198,6 @@ class Canonical implements ArgumentInterface
         return false;
     }
 
-    /**
-     * @return string[]
-     */
     private function getFilterableAttributeCodes(): array
     {
         if ($this->filterableAttributeCodes !== null) {
@@ -252,14 +212,10 @@ class Canonical implements ArgumentInterface
                 $codes[] = (string) $attr->getAttributeCode();
             }
         } catch (\Throwable) {
-            // empty list — treat as no active filter
         }
         return $this->filterableAttributeCodes = $codes;
     }
 
-    /**
-     * @return array{0:?string,1:int}
-     */
     private function detectEntity(): array
     {
         $product = $this->registry->registry('current_product');

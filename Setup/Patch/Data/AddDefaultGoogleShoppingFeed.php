@@ -7,9 +7,6 @@ use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 
-/**
- * Inserts a default Google Shopping feed profile with standard field mappings.
- */
 class AddDefaultGoogleShoppingFeed implements DataPatchInterface
 {
     public function __construct(
@@ -36,7 +33,6 @@ class AddDefaultGoogleShoppingFeed implements DataPatchInterface
         $profileTable = $this->resource->getTableName('panth_seo_feed_profile');
         $fieldTable = $this->resource->getTableName('panth_seo_feed_field');
 
-        // Check if a profile already exists
         $existing = $conn->fetchOne(
             $conn->select()->from($profileTable, ['feed_id'])->limit(1)
         );

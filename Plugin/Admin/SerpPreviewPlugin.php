@@ -7,13 +7,6 @@ use Magento\Catalog\Ui\DataProvider\Product\Form\ProductDataProvider;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 
-/**
- * Injects a live Google SERP preview fieldset into the product edit form.
- *
- * The preview sits inside the "search-engine-optimization" group so the admin
- * sees exactly what the title/description/URL will look like in search results
- * while editing SEO fields.
- */
 class SerpPreviewPlugin
 {
     public function __construct(
@@ -22,11 +15,6 @@ class SerpPreviewPlugin
     ) {
     }
 
-    /**
-     * @param ProductDataProvider $subject
-     * @param array<string, mixed> $result
-     * @return array<string, mixed>
-     */
     public function afterGetMeta(ProductDataProvider $subject, array $result): array
     {
         if (!$this->seoConfig->isEnabled()) {

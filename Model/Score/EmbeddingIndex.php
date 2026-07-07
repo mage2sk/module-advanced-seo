@@ -7,23 +7,10 @@ use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Psr\Log\LoggerInterface;
 
-/**
- * Manages meta-content embeddings in panth_seo_meta_embedding (BLOB column).
- *
- * We avoid external ML dependencies. Instead we build a deterministic hashed
- * bag-of-ngrams vector: tokens → 1024 dims via fnv1a32 modulo. For meta text
- * of a few hundred characters this yields cosine similarity values that are
- * stable and effective at catching near-duplicates.
- */
 class EmbeddingIndex
 {
     public const DIMS = 1024;
 
-    /**
-     * The schema keys embeddings per (store, entity, field) so multiple meta
-     * fields can be indexed independently. DuplicateCheck stores one combined
-     * title+description vector per entity, so we use a single stable field key.
-     */
     private const FIELD = 'meta';
 
     public function __construct(
@@ -33,9 +20,6 @@ class EmbeddingIndex
     ) {
     }
 
-    /**
-     * @return array<int,float>
-     */
     public function vectorize(string $text): array
     {
         $vec = array_fill(0, self::DIMS, 0.0);
@@ -44,7 +28,7 @@ class EmbeddingIndex
             return $vec;
         }
         $tokens = preg_split('/[^\p{L}\p{N}]+/u', $text, -1, PREG_SPLIT_NO_EMPTY) ?: [];
-        // unigrams + bigrams
+
         $ngrams = $tokens;
         $n = count($tokens);
         for ($i = 0; $i < $n - 1; $i++) {
@@ -55,7 +39,7 @@ class EmbeddingIndex
             $idx = hexdec($h) % self::DIMS;
             $vec[$idx] += 1.0;
         }
-        // L2 normalise
+
         $norm = 0.0;
         foreach ($vec as $v) {
             $norm += $v * $v;
@@ -69,9 +53,6 @@ class EmbeddingIndex
         return $vec;
     }
 
-    /**
-     * @param array<int,float> $vector
-     */
     public function store(string $entityType, int $entityId, int $storeId, array $vector): void
     {
         $connection = $this->resource->getConnection();
@@ -96,9 +77,6 @@ class EmbeddingIndex
         }
     }
 
-    /**
-     * @return array<int,float>|null
-     */
     public function load(string $entityType, int $entityId, int $storeId): ?array
     {
         $connection = $this->resource->getConnection();
@@ -116,12 +94,6 @@ class EmbeddingIndex
         return $this->unpack((string)$row['vector']);
     }
 
-    /**
-     * Find top-k most similar embeddings to $vector within same entity_type+store.
-     *
-     * @param array<int,float> $vector
-     * @return array<int,array{entity_type:string,entity_id:int,store_id:int,similarity:float}>
-     */
     public function findSimilar(
         string $entityType,
         int $storeId,
@@ -138,7 +110,7 @@ class EmbeddingIndex
         if ($excludeId > 0) {
             $select->where('entity_id <> ?', $excludeId);
         }
-        // Hard cap to avoid loading millions of rows; duplicate scan cron handles full sweeps.
+
         $select->limit(2000);
 
         $results = [];
@@ -157,10 +129,6 @@ class EmbeddingIndex
         return array_slice($results, 0, $limit);
     }
 
-    /**
-     * @param array<int,float> $a
-     * @param array<int,float> $b
-     */
     public function cosine(array $a, array $b): float
     {
         $len = min(count($a), count($b));
@@ -181,17 +149,11 @@ class EmbeddingIndex
         return $dot / (sqrt($na) * sqrt($nb));
     }
 
-    /**
-     * @param array<int,float> $vector
-     */
     private function pack(array $vector): string
     {
         return pack('g*', ...$vector);
     }
 
-    /**
-     * @return array<int,float>
-     */
     private function unpack(string $blob): array
     {
         if ($blob === '') {

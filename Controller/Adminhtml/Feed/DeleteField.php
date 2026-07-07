@@ -31,7 +31,6 @@ class DeleteField extends AbstractAction implements HttpGetActionInterface, Http
                 $connection = $this->resource->getConnection();
                 $table = $this->resource->getTableName('panth_seo_feed_field');
 
-                // Get feed_id before deleting (for redirect)
                 if ($feedId <= 0) {
                     $feedId = (int) $connection->fetchOne(
                         $connection->select()->from($table, ['feed_id'])->where('field_id = ?', $fieldId)

@@ -7,14 +7,6 @@ use Magento\Framework\View\Element\UiComponent\ContextInterface;
 use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Ui\Component\Listing\Columns\Column;
 
-/**
- * Custom column renderer that colour-codes HTTP status codes.
- *
- * 200       => green
- * 301 / 302 => yellow / orange
- * 404       => red
- * 5xx       => red
- */
 class StatusCodeColumn extends Column
 {
     public function __construct(
@@ -26,9 +18,6 @@ class StatusCodeColumn extends Column
         parent::__construct($context, $uiComponentFactory, $components, $data);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function prepareDataSource(array $dataSource): array
     {
         if (!isset($dataSource['data']['items'])) {
@@ -45,7 +34,7 @@ class StatusCodeColumn extends Column
                 $color,
                 $code
             );
-            // Overwrite the field so the HTML body template renders it.
+
             $item[$fieldName] = $item[$fieldName . '_html'];
         }
 
@@ -55,21 +44,21 @@ class StatusCodeColumn extends Column
     private function resolveColor(int $code): string
     {
         if ($code >= 200 && $code < 300) {
-            return '#185b00'; // green
+            return '#185b00';
         }
 
         if ($code >= 300 && $code < 400) {
-            return '#b8860b'; // dark-goldenrod (yellow/amber)
+            return '#b8860b';
         }
 
         if ($code >= 400 && $code < 500) {
-            return '#e22626'; // red
+            return '#e22626';
         }
 
         if ($code >= 500) {
-            return '#e22626'; // red
+            return '#e22626';
         }
 
-        return '#333333'; // fallback (unknown)
+        return '#333333';
     }
 }

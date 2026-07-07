@@ -7,9 +7,6 @@ use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 use Panth\AdvancedSEO\Controller\Adminhtml\AbstractAction;
 
-/**
- * Admin grid controller for custom canonical URL overrides.
- */
 class Index extends AbstractAction
 {
     public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::custom_canonical';

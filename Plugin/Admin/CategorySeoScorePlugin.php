@@ -1,5 +1,4 @@
 <?php
-
 declare(strict_types=1);
 
 namespace Panth\AdvancedSEO\Plugin\Admin;
@@ -10,13 +9,6 @@ use Magento\Framework\App\ResourceConnection;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Psr\Log\LoggerInterface;
 
-/**
- * Injects an SEO score widget into the category edit form.
- *
- * Mirrors {@see SeoScoreWidgetPlugin} but targets the category data provider
- * and the category form's "search_engine_optimization" fieldset (note the
- * underscore naming convention that Magento uses for category forms).
- */
 class CategorySeoScorePlugin
 {
     public function __construct(
@@ -27,11 +19,6 @@ class CategorySeoScorePlugin
     ) {
     }
 
-    /**
-     * @param CategoryDataProvider  $subject
-     * @param array<string, mixed>  $result
-     * @return array<string, mixed>
-     */
     public function afterGetMeta(CategoryDataProvider $subject, array $result): array
     {
         if (!$this->seoConfig->isEnabled()) {
@@ -43,11 +30,6 @@ class CategorySeoScorePlugin
 
         $html = $this->buildScoreHtml($categoryId, $storeId, 'category');
 
-        /*
-         * Magento category form uses "search_engine_optimization" (underscores)
-         * while the product form uses "search-engine-optimization" (hyphens).
-         * We inject into whichever key exists, falling back to the underscore variant.
-         */
         $seoGroupKey = 'search_engine_optimization';
         if (!isset($result[$seoGroupKey])) {
             $seoGroupKey = 'search-engine-optimization';
@@ -70,9 +52,6 @@ class CategorySeoScorePlugin
         return $result;
     }
 
-    /**
-     * Build the full HTML block for the SEO score widget.
-     */
     private function buildScoreHtml(int $entityId, int $storeId, string $entityType): string
     {
         if ($entityId === 0) {
@@ -92,11 +71,6 @@ class CategorySeoScorePlugin
         return $this->renderScoreHtml($grade, $score, $issues);
     }
 
-    /**
-     * Fetch the most recent score row for the given entity.
-     *
-     * @return array<string, mixed>|null
-     */
     private function fetchScore(int $entityId, int $storeId, string $entityType): ?array
     {
         try {
@@ -122,11 +96,6 @@ class CategorySeoScorePlugin
         }
     }
 
-    /**
-     * Decode the JSON issues column into a string list.
-     *
-     * @return list<string>
-     */
     private function decodeIssues(string $json): array
     {
         if ($json === '') {
@@ -141,9 +110,6 @@ class CategorySeoScorePlugin
         }
     }
 
-    /**
-     * Map a letter grade to its display colour.
-     */
     private function gradeColor(string $grade): string
     {
         return match (strtoupper($grade)) {
@@ -155,9 +121,6 @@ class CategorySeoScorePlugin
         };
     }
 
-    /**
-     * Render the "not scored yet" placeholder.
-     */
     private function renderNotScoredHtml(): string
     {
         return '<div style="'
@@ -176,11 +139,6 @@ class CategorySeoScorePlugin
             . '</div>';
     }
 
-    /**
-     * Render the full score widget with grade circle, numeric score, and issue list.
-     *
-     * @param list<string> $issues
-     */
     private function renderScoreHtml(string $grade, int $score, array $issues): string
     {
         $color       = $this->gradeColor($grade);
@@ -250,11 +208,6 @@ class CategorySeoScorePlugin
             . '</div>';
     }
 
-    /**
-     * Render the issues list, or nothing when the list is empty.
-     *
-     * @param list<string> $issues
-     */
     private function renderIssueList(array $issues): string
     {
         if ($issues === []) {

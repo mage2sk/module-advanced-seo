@@ -48,7 +48,6 @@ class SaveAfter implements ObserverInterface
                 }
             }
 
-            // Honor the Async Indexing toggle (queue vs synchronous scoring).
             if ($this->config->isAsyncIndexing($storeId)) {
                 $this->publisher->publish(
                     'panth_seo.score_entity',

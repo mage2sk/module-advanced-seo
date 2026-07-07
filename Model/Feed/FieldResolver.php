@@ -11,11 +11,6 @@ use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * Resolves a single field value for a product based on feed field configuration.
- *
- * Supports source types: attribute, static, template, parent_attribute.
- */
 class FieldResolver
 {
     private const DESCRIPTION_MAX_LENGTH = 5000;
@@ -29,15 +24,6 @@ class FieldResolver
     ) {
     }
 
-    /**
-     * Resolve a field value for a product based on field configuration.
-     *
-     * @param array $fieldConfig Field mapping row with keys: source_type, source_value, default_value
-     * @param ProductInterface&Product $product The product to resolve from
-     * @param int $storeId Store context
-     * @param (ProductInterface&Product)|null $parent Parent product for parent_attribute resolution
-     * @return string Resolved value
-     */
     public function resolve(
         array $fieldConfig,
         ProductInterface $product,
@@ -67,7 +53,6 @@ class FieldResolver
             ));
         }
 
-        // Apply default value if resolved is empty
         if ($resolved === '' && $defaultValue !== '' && $defaultValue !== null) {
             $resolved = $defaultValue;
         }
@@ -75,9 +60,6 @@ class FieldResolver
         return $resolved;
     }
 
-    /**
-     * Resolve a product attribute value, handling select/multiselect option labels.
-     */
     private function resolveAttribute(Product $product, string $attributeCode): string
     {
         if ($attributeCode === '') {
@@ -89,12 +71,10 @@ class FieldResolver
             return '';
         }
 
-        // For description fields, strip HTML
         if (in_array($attributeCode, ['description', 'short_description'], true)) {
             return $this->stripHtml((string) $value);
         }
 
-        // Resolve select/multiselect to text labels
         try {
             $textValue = $product->getAttributeText($attributeCode);
             if (is_string($textValue) && $textValue !== '') {
@@ -107,15 +87,11 @@ class FieldResolver
                 }
             }
         } catch (\Throwable) {
-            // Not a select attribute, use raw value
         }
 
         return (string) $value;
     }
 
-    /**
-     * Resolve a template token to a computed value.
-     */
     private function resolveTemplate(string $token, Product $product, int $storeId): string
     {
         return match ($token) {
@@ -130,9 +106,6 @@ class FieldResolver
         };
     }
 
-    /**
-     * Resolve from parent product if available, otherwise fall back to product itself.
-     */
     private function resolveParentAttribute(
         string $attributeCode,
         Product $product,
@@ -144,13 +117,10 @@ class FieldResolver
                 return $value;
             }
         }
-        // Fallback to the product itself
+
         return $this->resolveAttribute($product, $attributeCode);
     }
 
-    /**
-     * Get canonical product URL.
-     */
     private function getProductUrl(Product $product): string
     {
         try {
@@ -161,9 +131,6 @@ class FieldResolver
         }
     }
 
-    /**
-     * Get full media URL for the product's main image.
-     */
     private function getProductImageUrl(Product $product, int $storeId): string
     {
         $image = $product->getData('image');
@@ -183,9 +150,6 @@ class FieldResolver
         }
     }
 
-    /**
-     * Get formatted price with currency, e.g. "34.00 USD".
-     */
     private function getProductPrice(Product $product, int $storeId): string
     {
         try {
@@ -198,9 +162,6 @@ class FieldResolver
         }
     }
 
-    /**
-     * Get formatted special/sale price if active, e.g. "29.99 USD".
-     */
     private function getProductSpecialPrice(Product $product, int $storeId): string
     {
         try {
@@ -232,9 +193,6 @@ class FieldResolver
         }
     }
 
-    /**
-     * Get stock status: "in_stock" or "out_of_stock".
-     */
     private function getStockStatus(Product $product): string
     {
         try {
@@ -245,9 +203,6 @@ class FieldResolver
         }
     }
 
-    /**
-     * Get deepest category path, e.g. "Root > Gear > Bags".
-     */
     private function getCategoryPath(Product $product, int $storeId): string
     {
         $categoryIds = $product->getCategoryIds();
@@ -294,9 +249,6 @@ class FieldResolver
         return $deepestPath;
     }
 
-    /**
-     * Get product weight with unit.
-     */
     private function getProductWeight(Product $product): string
     {
         $weight = $product->getData('weight');
@@ -307,9 +259,6 @@ class FieldResolver
         return number_format((float) $weight, 2, '.', '') . ' lbs';
     }
 
-    /**
-     * Strip HTML tags and normalize whitespace from text.
-     */
     private function stripHtml(string $text): string
     {
         if ($text === '') {

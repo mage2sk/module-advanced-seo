@@ -11,11 +11,6 @@ use Panth\AdvancedSEO\Api\MetaResolverInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Psr\Log\LoggerInterface;
 
-/**
- * Injects resolved meta (title/description/keywords/canonical/robots) into
- * the page config when rendering a product view block. Works in both Luma
- * and Hyva because it targets PageConfig which every theme consumes.
- */
 class MetadataPlugin
 {
     public function __construct(
@@ -33,9 +28,6 @@ class MetadataPlugin
         return $result;
     }
 
-    /**
-     * Hook _prepareLayout via a wrapping around: apply meta after parent layout prep.
-     */
     public function aroundSetLayout(
         ProductView $subject,
         callable $proceed,
@@ -75,9 +67,6 @@ class MetadataPlugin
             if ($resolved->getRobots() !== null && $resolved->getRobots() !== '') {
                 $this->pageConfig->setRobots($resolved->getRobots());
             }
-            // Canonical is handled by Block\Head\Canonical (via ViewModel\Canonical)
-            // which is pagination-aware.  Adding it here via addRemotePageAsset
-            // would create a duplicate <link rel="canonical"> tag.
         } catch (\Throwable $e) {
             $this->logger->warning('Panth SEO product metadata plugin failed', ['error' => $e->getMessage()]);
         }

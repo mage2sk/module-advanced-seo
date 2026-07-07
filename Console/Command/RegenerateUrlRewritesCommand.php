@@ -13,12 +13,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * `bin/magento panth:seo:regenerate-urls`
- *
- * Deletes existing catalog URL rewrites and regenerates them
- * in batches using Magento's native rewrite generators.
- */
 class RegenerateUrlRewritesCommand extends Command
 {
     private const OPT_ENTITY   = 'entity';
@@ -75,7 +69,6 @@ class RegenerateUrlRewritesCommand extends Command
         try {
             $this->appState->setAreaCode(Area::AREA_ADMINHTML);
         } catch (\Throwable) {
-            // already set
         }
 
         $entity = (string) $input->getOption(self::OPT_ENTITY);
@@ -138,19 +131,12 @@ class RegenerateUrlRewritesCommand extends Command
         return Command::SUCCESS;
     }
 
-    /**
-     * Resolve store option into a numeric store ID.
-     * Accepts a numeric ID or a store code.
-     *
-     * @throws \InvalidArgumentException
-     */
     private function resolveStoreId(string $storeOption): int
     {
         if (is_numeric($storeOption)) {
             return (int) $storeOption;
         }
 
-        // Treat as store code
         try {
             $store = $this->storeRepository->get($storeOption);
             return (int) $store->getId();
@@ -161,12 +147,6 @@ class RegenerateUrlRewritesCommand extends Command
         }
     }
 
-    /**
-     * Resolve --ids and --id-range options into an array of entity IDs.
-     *
-     * @return int[]
-     * @throws \InvalidArgumentException
-     */
     private function resolveIds(InputInterface $input): array
     {
         $idsOption = $input->getOption(self::OPT_IDS);

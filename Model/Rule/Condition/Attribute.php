@@ -3,23 +3,8 @@ declare(strict_types=1);
 
 namespace Panth\AdvancedSEO\Model\Rule\Condition;
 
-/**
- * Evaluates attribute conditions against a product/category context.
- *
- * Node:
- * [
- *   'type' => 'attribute',
- *   'attribute' => 'sku'|'price'|'category_ids'|'custom',
- *   'operator' => '=='|'!='|'>'|'>='|'<'|'<='|'contains'|'ncontains'|'in'|'nin'|'empty'|'nempty'|'regex',
- *   'value' => mixed,
- * ]
- */
 class Attribute
 {
-    /**
-     * @param array<string,mixed> $node
-     * @param array<string,mixed> $context
-     */
     public function evaluate(array $node, array $context): bool
     {
         $attribute = (string)($node['attribute'] ?? '');
@@ -30,10 +15,8 @@ class Attribute
             return false;
         }
 
-        // Resolve entity from context: try 'entity', 'product', 'category', 'page'
         $entity = $context['entity'] ?? $context['product'] ?? $context['category'] ?? $context['page'] ?? null;
 
-        // Special handling for category_ids on products
         if ($attribute === 'category_ids' && is_object($entity) && method_exists($entity, 'getCategoryIds')) {
             $actual = $entity->getCategoryIds();
         } elseif (is_object($entity) && method_exists($entity, 'getData')) {

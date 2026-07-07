@@ -68,9 +68,6 @@ class FeedFormDataProvider extends AbstractDataProvider
         return $this->loadedData;
     }
 
-    /**
-     * Convert comma-separated multiselect values to arrays for the form.
-     */
     private function convertMultiselectFields(array &$data): void
     {
         foreach (['category_ids', 'attribute_set_ids'] as $field) {
@@ -81,9 +78,6 @@ class FeedFormDataProvider extends AbstractDataProvider
         }
     }
 
-    /**
-     * Compute the feed file URL from filename and store.
-     */
     private function computeFeedUrl(array &$data): void
     {
         $filename = trim((string) ($data['filename'] ?? ''));
@@ -100,7 +94,6 @@ class FeedFormDataProvider extends AbstractDataProvider
             $mediaUrl = rtrim((string) $store->getBaseUrl(UrlInterface::URL_TYPE_MEDIA), '/');
             $data['feed_file_url'] = $mediaUrl . '/panth_seo/feeds/' . $filename;
         } catch (\Throwable) {
-            // ignore
         }
     }
 
@@ -111,7 +104,6 @@ class FeedFormDataProvider extends AbstractDataProvider
             if ($raw !== '' && $raw !== '{}' && $raw !== '[]') {
                 try {
                     $this->serializer->unserialize($raw);
-                    // Keep the raw JSON string for the form; it will be re-encoded on save
                 } catch (\Throwable) {
                     $data[$jsonField] = '';
                 }

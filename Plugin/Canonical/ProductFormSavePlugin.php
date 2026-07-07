@@ -10,10 +10,6 @@ use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Panth\AdvancedSEO\Model\Canonical\CustomCanonicalRepository;
 use Psr\Log\LoggerInterface;
 
-/**
- * After the admin product save controller completes, persist any
- * custom_canonical_url value from the form to panth_seo_custom_canonical.
- */
 class ProductFormSavePlugin
 {
     private const ENTITY_TYPE = 'product';
@@ -27,11 +23,6 @@ class ProductFormSavePlugin
     ) {
     }
 
-    /**
-     * @param ProductSaveController $subject
-     * @param mixed                 $result
-     * @return mixed
-     */
     public function afterExecute(ProductSaveController $subject, mixed $result): mixed
     {
         if (!$this->seoConfig->isEnabled()) {
@@ -59,9 +50,6 @@ class ProductFormSavePlugin
         return $result;
     }
 
-    /**
-     * Upsert or delete the custom canonical row.
-     */
     private function persistCanonical(
         string $entityType,
         int $entityId,
@@ -71,7 +59,6 @@ class ProductFormSavePlugin
         $existingId = $this->findExistingId($entityType, $entityId, $storeId);
 
         if ($canonicalUrl === '') {
-            // Remove override when the field is cleared.
             if ($existingId !== null) {
                 $this->repository->deleteById($existingId);
             }
@@ -93,9 +80,6 @@ class ProductFormSavePlugin
         $this->repository->save($data);
     }
 
-    /**
-     * Look up an existing canonical_id for the entity + store combination.
-     */
     private function findExistingId(string $entityType, int $entityId, int $storeId): ?int
     {
         $connection = $this->resource->getConnection();

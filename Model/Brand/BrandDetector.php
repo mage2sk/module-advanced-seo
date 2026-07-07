@@ -9,17 +9,10 @@ use Magento\Framework\App\RequestInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Psr\Log\LoggerInterface;
 
-/**
- * Detects whether the current request represents a brand-filtered category page
- * and resolves the active brand name from the layered navigation state or
- * request parameters.
- */
 class BrandDetector
 {
-    /** @var array<string, bool> */
     private array $brandPageCache = [];
 
-    /** @var array<string, ?string> */
     private array $brandNameCache = [];
 
     public function __construct(
@@ -30,9 +23,6 @@ class BrandDetector
     ) {
     }
 
-    /**
-     * Check whether the given request carries a filter for the configured brand attribute.
-     */
     public function isBrandPage(RequestInterface $request): bool
     {
         $cacheKey = $this->buildCacheKey($request);
@@ -51,12 +41,6 @@ class BrandDetector
         return $this->brandPageCache[$cacheKey];
     }
 
-    /**
-     * Resolve the human-readable brand name from the active filter state or
-     * request parameter for the configured brand attribute.
-     *
-     * Returns null when no brand filter is active or when resolution fails.
-     */
     public function getCurrentBrand(RequestInterface $request): ?string
     {
         $cacheKey = $this->buildCacheKey($request);
@@ -71,14 +55,12 @@ class BrandDetector
 
         $brandAttribute = $this->getBrandAttributeCode();
 
-        // 1. Try the layered navigation state (most reliable: gives the label).
         $label = $this->resolveFromLayerState($brandAttribute);
         if ($label !== null) {
             $this->brandNameCache[$cacheKey] = $label;
             return $label;
         }
 
-        // 2. Fall back to resolving the option label from the raw request value.
         $rawValue = (string) $request->getParam($brandAttribute, '');
         if ($rawValue !== '') {
             $label = $this->resolveOptionLabel($brandAttribute, $rawValue);
@@ -92,18 +74,11 @@ class BrandDetector
         return null;
     }
 
-    /**
-     * Return the configured brand attribute code (e.g. "manufacturer").
-     */
     private function getBrandAttributeCode(): string
     {
         return $this->seoConfig->getBrandAttribute();
     }
 
-    /**
-     * Walk the active layered-nav filter items and find the one matching the
-     * brand attribute. Returns its display label or null.
-     */
     private function resolveFromLayerState(string $attributeCode): ?string
     {
         try {
@@ -120,16 +95,11 @@ class BrandDetector
                 }
             }
         } catch (\Throwable) {
-            // Layer not initialised or no active state -- fall through
         }
 
         return null;
     }
 
-    /**
-     * Resolve the option text for a raw attribute value (option ID) via the
-     * EAV attribute source model. Handles comma-separated multi-select values.
-     */
     private function resolveOptionLabel(string $attributeCode, string $rawValue): ?string
     {
         try {
@@ -169,9 +139,6 @@ class BrandDetector
         }
     }
 
-    /**
-     * Build a per-request cache key from the brand attribute param value.
-     */
     private function buildCacheKey(RequestInterface $request): string
     {
         $brandAttribute = $this->getBrandAttributeCode();

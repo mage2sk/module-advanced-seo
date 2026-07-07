@@ -15,14 +15,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * CLI command: panth:seo:feed [--store=<code|id>] [--feed=<profile_id>]
- *
- * Generates product feeds:
- *   --feed=<id>    Generates a specific feed profile
- *   --store=<id>   Generates all active feed profiles for that store
- *   No options:    Generates all active feed profiles; falls back to legacy Google feed if none exist
- */
 class GenerateFeedCommand extends Command
 {
     public function __construct(
@@ -49,29 +41,22 @@ class GenerateFeedCommand extends Command
         try {
             $this->appState->setAreaCode(Area::AREA_FRONTEND);
         } catch (\Throwable) {
-            // area already set
         }
 
         $feedId = $input->getOption('feed');
         $storeArg = $input->getOption('store');
 
-        // Mode 1: Generate a specific feed profile
         if ($feedId !== null && $feedId !== '') {
             return $this->generateSingleProfile((int) $feedId, $output);
         }
 
-        // Mode 2: Generate all active profiles for a store
         if ($storeArg !== null && $storeArg !== '') {
             return $this->generateProfilesForStore($storeArg, $output);
         }
 
-        // Mode 3: Generate all active profiles; fall back to legacy if none exist
         return $this->generateAllProfiles($output);
     }
 
-    /**
-     * Generate a single feed profile by ID.
-     */
     private function generateSingleProfile(int $feedId, OutputInterface $output): int
     {
         $output->writeln(sprintf('<info>Generating feed profile #%d...</info>', $feedId));
@@ -86,9 +71,6 @@ class GenerateFeedCommand extends Command
         }
     }
 
-    /**
-     * Generate all active profiles for a specific store.
-     */
     private function generateProfilesForStore(string $storeArg, OutputInterface $output): int
     {
         try {
@@ -107,13 +89,9 @@ class GenerateFeedCommand extends Command
             return $this->runProfileGeneration($profiles, $output);
         }
 
-        // Fall back to legacy feed
         return $this->generateLegacyFeed([$store], $output);
     }
 
-    /**
-     * Generate all active profiles across all stores.
-     */
     private function generateAllProfiles(OutputInterface $output): int
     {
         $profiles = $this->profileFeedBuilder->loadActiveProfiles();
@@ -122,7 +100,6 @@ class GenerateFeedCommand extends Command
             return $this->runProfileGeneration($profiles, $output);
         }
 
-        // Fall back to legacy feed for all stores
         $output->writeln('<comment>No feed profiles found. Falling back to legacy Google Merchant feed.</comment>');
         $stores = [];
         foreach ($this->storeRepository->getList() as $store) {
@@ -135,9 +112,6 @@ class GenerateFeedCommand extends Command
         return $this->generateLegacyFeed($stores, $output);
     }
 
-    /**
-     * Run profile-based feed generation for a list of profiles.
-     */
     private function runProfileGeneration(array $profiles, OutputInterface $output): int
     {
         $exitCode = Command::SUCCESS;
@@ -166,9 +140,6 @@ class GenerateFeedCommand extends Command
         return $exitCode;
     }
 
-    /**
-     * Generate legacy (non-profile) Google Merchant feed for given stores.
-     */
     private function generateLegacyFeed(array $stores, OutputInterface $output): int
     {
         $mediaDir = $this->directoryList->getPath(DirectoryList::MEDIA);
@@ -208,9 +179,6 @@ class GenerateFeedCommand extends Command
         return $exitCode;
     }
 
-    /**
-     * Print generation statistics.
-     */
     private function printStats(OutputInterface $output, array $stats): void
     {
         if (isset($stats['error'])) {
@@ -227,9 +195,6 @@ class GenerateFeedCommand extends Command
         ));
     }
 
-    /**
-     * Format file size for human-readable output.
-     */
     private function formatFileSize(int $bytes): string
     {
         if ($bytes < 1024) {

@@ -28,10 +28,8 @@ class BulkEditorDataProvider extends AbstractDataProvider
         array $meta = [],
         array $data = []
     ) {
-        // Read type from request first (direct URL param), then session, then referer
         $type = (string) $this->request->getParam('type', '');
         if (!in_array($type, ['product', 'category', 'cms'], true)) {
-            // Try parsing from HTTP referer (for AJAX grid reload)
             $referer = (string) ($this->request->getServer('HTTP_REFERER') ?? '');
             if (preg_match('#/type/(product|category|cms)(?:/|$)#', $referer, $m)) {
                 $type = $m[1];
@@ -88,11 +86,6 @@ class BulkEditorDataProvider extends AbstractDataProvider
 
         $items = [];
         foreach ($this->getCollection() as $entity) {
-            // Unify data keys to match the UI component's visible columns
-            // ("sku" column is labelled "SKU / URL Key / Identifier",
-            //  "name" column is labelled "Name / Title"). The data provider
-            // aliases the per-entity-type source fields to these keys so the
-            // same columns render for all three tabs.
             switch ($this->entityType) {
                 case 'category':
                     $items[] = [

@@ -3,18 +3,8 @@ declare(strict_types=1);
 
 namespace Panth\AdvancedSEO\Model\Rule\Action;
 
-/**
- * Applies title/description/og templates with variable substitution.
- * Variables: {{name}}, {{sku}}, {{price}}, {{brand}}, {{category}}, {{store_name}} etc.
- */
 class Template
 {
-    /**
-     * @param array<string,mixed> $params
-     * @param array<string,mixed> $context
-     * @param array<string,mixed> $output
-     * @return array<string,mixed>
-     */
     public function apply(array $params, array $context, array $output): array
     {
         $map = [
@@ -34,9 +24,6 @@ class Template
         return $output;
     }
 
-    /**
-     * @param array<string,mixed> $context
-     */
     public function render(string $template, array $context): string
     {
         $vars = $this->flatten($context);
@@ -50,10 +37,6 @@ class Template
         );
     }
 
-    /**
-     * @param array<string,mixed> $data
-     * @return array<string,scalar>
-     */
     private function flatten(array $data, string $prefix = ''): array
     {
         $out = [];

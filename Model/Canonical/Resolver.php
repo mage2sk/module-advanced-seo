@@ -25,18 +25,6 @@ use Panth\AdvancedSEO\Model\Config\Source\ProductCanonicalType;
 use Panth\AdvancedSEO\Model\Config\Source\TrailingSlashHomepage;
 use Psr\Log\LoggerInterface;
 
-/**
- * Canonical URL resolver.
- *
- *  - Cross-category products always canonicalize to the bare product URL
- *    without any `?category=…` suffix (stops duplicates when the same product
- *    is linked from multiple categories).
- *  - Pagination policy is governed by `panth_seo/canonical/paginated_canonical_to_first`.
- *    When true, `?p=N` pages canonicalize to the page-1 URL; when false the
- *    current paginated URL remains self-canonical.
- *  - Normalization lowercases host, forces HTTPS (when base URL already is),
- *    strips configured query parameters and optionally removes the trailing slash.
- */
 class Resolver implements CanonicalResolverInterface
 {
     private const XML_STRIP_PARAMS = 'panth_seo/canonical/strip_params';
@@ -58,12 +46,6 @@ class Resolver implements CanonicalResolverInterface
     ) {
     }
 
-    /**
-     * Emit a structured debug line to var/log/panth_seo.log when the admin
-     * "Debug Logging" toggle is on. No-op otherwise — keeps production quiet.
-     *
-     * @param array<string,mixed> $context
-     */
     private function debug(string $message, array $context = []): void
     {
         if ($this->seoDebugLogger === null) {
@@ -81,7 +63,6 @@ class Resolver implements CanonicalResolverInterface
         int $storeId,
         array $params = []
     ): string {
-        // Disable canonical for NOINDEX pages if configured.
         $robots = $params['robots'] ?? '';
         if ($robots !== '' && $this->config->isCanonicalDisabledForNoindex($storeId)
             && stripos($robots, 'noindex') !== false
@@ -89,13 +70,11 @@ class Resolver implements CanonicalResolverInterface
             return '';
         }
 
-        // Ignore-pages check: skip canonical for configured URL paths.
         $currentPath = $params['current_path'] ?? '';
         if ($currentPath !== '' && $this->isIgnoredPage($currentPath, $storeId)) {
             return '';
         }
 
-        // Check custom canonical FIRST (highest priority).
         try {
             $customUrl = $this->customCanonicalRepository->find($entityType, $entityId, $storeId);
             if ($customUrl !== null && $customUrl !== '') {
@@ -125,7 +104,6 @@ class Resolver implements CanonicalResolverInterface
             return '';
         }
 
-        // Cross-domain canonical resolution: point to a specific store's URL.
         $crossDomainStore = $this->config->getCrossDomainCanonicalStore($storeId);
         if ($crossDomainStore > 0 && $crossDomainStore !== $storeId) {
             try {
@@ -143,21 +121,17 @@ class Resolver implements CanonicalResolverInterface
             }
         }
 
-        // Pagination policy.
         $page = isset($params[self::PAGINATION_PARAM]) ? (int) $params[self::PAGINATION_PARAM] : 0;
         if ($page > 1 && !$this->config->canonicalPaginatedToFirst($storeId)) {
             $url = $this->appendQuery($url, [self::PAGINATION_PARAM => (string) $page]);
         }
 
-        // Per-attribute layered navigation canonical override.
-        // When filter attributes are active, check each for a non-global override.
         $activeFilterAttributes = $params['active_filter_attributes'] ?? [];
         if ($activeFilterAttributes !== [] && $entityType === MetaResolverInterface::ENTITY_CATEGORY) {
             $attributeOverride = $this->resolveLayeredNavCanonicalOverride($activeFilterAttributes);
 
             if ($attributeOverride !== null && $attributeOverride !== LayeredNavCanonical::USE_GLOBAL) {
                 if ($attributeOverride === LayeredNavCanonical::NOINDEX) {
-                    // Signal caller to set NOINDEX instead of emitting a canonical.
                     $this->debug('panth_seo: canonical.resolved', [
                         'entity_type' => $entityType,
                         'entity_id' => $entityId,
@@ -168,12 +142,9 @@ class Resolver implements CanonicalResolverInterface
                     return '';
                 }
                 if ($attributeOverride === LayeredNavCanonical::CATEGORY) {
-                    // Canonical to the unfiltered base category URL (already in $url
-                    // before any filter query params were appended).
                     return $this->normalize($url, $storeId);
                 }
                 if ($attributeOverride === LayeredNavCanonical::FILTERED) {
-                    // Canonical to the filtered page URL: append active filters.
                     $filterParams = $params['active_filter_params'] ?? [];
                     if ($filterParams !== []) {
                         $url = $this->appendQuery($url, $filterParams);
@@ -248,7 +219,6 @@ class Resolver implements CanonicalResolverInterface
             return '';
         }
 
-        // Associated product canonical: point simple children to their parent configurable.
         if ($this->config->isAssociatedProductCanonical($storeId) && $this->configurableResource !== null) {
             $typeId = $product->getTypeId();
             if ($typeId === 'simple' || $typeId === 'virtual') {
@@ -259,7 +229,6 @@ class Resolver implements CanonicalResolverInterface
                         $url = $parent->getUrlModel()->getUrl($parent, ['_ignore_category' => true, '_scope' => $storeId]);
                         return $this->rehostToStore((string) $url, $storeId);
                     } catch (NoSuchEntityException) {
-                        // Fall through to own URL.
                     }
                 }
             }
@@ -272,30 +241,19 @@ class Resolver implements CanonicalResolverInterface
             return $this->rehostToStore((string) $url, $storeId);
         }
 
-        // Resolve the category with the shortest or longest (deepest) path.
         $category = $this->resolveCanonicalCategory($product, $storeId, $canonicalType);
 
         if ($category === null) {
-            // No assigned categories found; fall back to bare product URL.
             $url = $product->getUrlModel()->getUrl($product, ['_ignore_category' => true, '_scope' => $storeId]);
             return $this->rehostToStore((string) $url, $storeId);
         }
 
-        // Set the category on the product so Magento's URL model includes the category path.
         $product->setData('category_id', $category->getId());
         $url = $product->getUrlModel()->getUrl($product, ['_ignore_category' => false, '_scope' => $storeId]);
 
         return $this->rehostToStore((string) $url, $storeId);
     }
 
-    /**
-     * Ensure the given URL is hosted on the target store's base URL.
-     *
-     * Magento's URL model may return a URL that reflects the request-scoped
-     * singleton rather than the requested $storeId (e.g. when a cached
-     * instance is reused). Re-hosting against the explicit store base URL
-     * guarantees the canonical points at the correct store domain.
-     */
     private function rehostToStore(string $url, int $storeId): string
     {
         if ($url === '') {
@@ -323,11 +281,6 @@ class Resolver implements CanonicalResolverInterface
         return $baseUrl . '/' . ltrim($path, '/') . $query . $fragment;
     }
 
-    /**
-     * Resolve the assigned category with the shallowest or deepest path for a product.
-     *
-     * Depth is determined by the category level (number of ancestors).
-     */
     private function resolveCanonicalCategory(
         ProductInterface $product,
         int $storeId,
@@ -349,13 +302,11 @@ class Resolver implements CanonicalResolverInterface
                 continue;
             }
 
-            // Skip the root category (level 0) and the default-category anchor (level 1).
             $level = (int) $category->getLevel();
             if ($level < 2) {
                 continue;
             }
 
-            // Ensure the category is active.
             if (!$category->getIsActive()) {
                 continue;
             }
@@ -386,11 +337,6 @@ class Resolver implements CanonicalResolverInterface
             return '';
         }
 
-        // Build the category URL explicitly against the target store so it
-        // never leaks the current request's store base URL (fixes bug where
-        // a luma.test request emitted hyva.test canonicals because
-        // $category->getUrl() uses the framework URL singleton bound to the
-        // request scope rather than the target $storeId).
         try {
             $store = $this->storeManager->getStore($storeId);
         } catch (\Throwable) {
@@ -410,9 +356,6 @@ class Resolver implements CanonicalResolverInterface
             }
         }
 
-        // Fallback: take the path from the category's own URL (which may be
-        // scoped to the current request) but re-host it against the target
-        // store's base URL so the domain is always correct.
         $rawUrl = (string) $category->getUrl();
         if ($rawUrl === '') {
             return '';
@@ -442,29 +385,20 @@ class Resolver implements CanonicalResolverInterface
         return rtrim((string) $store->getBaseUrl(UrlInterface::URL_TYPE_WEB), '/') . '/' . ltrim($identifier, '/');
     }
 
-    /**
-     * Check whether the current request path matches any of the "ignore" page patterns.
-     *
-     * Supports exact matches and wildcard patterns using `*` (e.g. `/checkout/*`).
-     */
     private function isIgnoredPage(string $currentPath, int $storeId): bool
     {
         $raw = $this->config->getCanonicalIgnorePages($storeId);
         if ($raw === '') {
             return false;
         }
-        // Accept CR, LF, and CRLF line endings.
+
         $tokens = preg_split('/\r\n|\r|\n/', $raw) ?: [];
         $patterns = array_filter(array_map('trim', $tokens), static fn ($v) => $v !== '');
-        // Drop the query/fragment and collapse "..", "." and duplicate slashes
-        // so inputs like "/about-us/../admin" can't bypass the match.
+
         $pathOnly = parse_url($currentPath, PHP_URL_PATH) ?? $currentPath;
         $normalized = '/' . ltrim($pathOnly, '/');
         $normalized = preg_replace('#/+#', '/', $normalized) ?? $normalized;
         foreach ($patterns as $pattern) {
-            // Only allow printable ASCII path characters + `*` wildcard; this
-            // rejects regex metacharacters that could trigger catastrophic
-            // backtracking inside fnmatch on certain libc implementations.
             if (preg_match('#^[A-Za-z0-9_./*\-]{1,255}$#', $pattern) !== 1) {
                 continue;
             }
@@ -479,14 +413,6 @@ class Resolver implements CanonicalResolverInterface
         return false;
     }
 
-    /**
-     * Check active filter attributes for a per-attribute canonical override.
-     *
-     * Returns the first non-"use_global" value found, or null if all attributes
-     * defer to the global setting.
-     *
-     * @param string[] $attributeCodes Active filter attribute codes.
-     */
     private function resolveLayeredNavCanonicalOverride(array $attributeCodes): ?string
     {
         foreach ($attributeCodes as $code) {
@@ -505,9 +431,6 @@ class Resolver implements CanonicalResolverInterface
         return null;
     }
 
-    /**
-     * @param array<string,string> $extra
-     */
     private function appendQuery(string $url, array $extra): string
     {
         if ($extra === []) {
@@ -517,12 +440,6 @@ class Resolver implements CanonicalResolverInterface
         return $url . $glue . http_build_query($extra);
     }
 
-    /**
-     * Apply trailing slash policy depending on whether the path is the homepage.
-     *
-     * Homepage trailing slash is governed by `trailing_slash_homepage` (add/remove/none).
-     * All other pages use the existing `remove_trailing_slash` boolean.
-     */
     private function applyTrailingSlashPolicy(string $path, int $storeId): string
     {
         if ($this->isHomepagePath($path)) {
@@ -532,15 +449,12 @@ class Resolver implements CanonicalResolverInterface
                 return str_ends_with($path, '/') ? $path : $path . '/';
             }
             if ($homepagePolicy === TrailingSlashHomepage::REMOVE) {
-                // For the root URL, strip the trailing slash entirely so the
-                // canonical becomes "https://host" rather than "https://host/".
                 return ($path === '/' || $path === '') ? '' : rtrim($path, '/');
             }
-            // "none" -- return as-is.
+
             return $path;
         }
 
-        // Non-homepage pages: use the global remove_trailing_slash setting.
         if ($this->config->canonicalRemoveTrailingSlash($storeId) && $path !== '/' && str_ends_with($path, '/')) {
             return rtrim($path, '/');
         }
@@ -548,11 +462,6 @@ class Resolver implements CanonicalResolverInterface
         return $path;
     }
 
-    /**
-     * Determine if a URL path represents the homepage.
-     *
-     * Matches "/", "", "/index.php", and "/index.php/".
-     */
     private function isHomepagePath(string $path): bool
     {
         $normalized = rtrim($path, '/');
@@ -569,21 +478,16 @@ class Resolver implements CanonicalResolverInterface
         }
     }
 
-    /**
-     * @return string[]
-     */
     private function stripList(int $storeId): array
     {
         $raw = (string) $this->scopeConfig->getValue(self::XML_STRIP_PARAMS, ScopeInterface::SCOPE_STORE, $storeId);
         if ($raw === '') {
             return ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'gclid', 'fbclid'];
         }
-        // Accept newline- or comma-separated lists so admins can paste either
-        // `utm_source,utm_medium` or one parameter per line.
+
         $tokens = preg_split('/[\r\n,]+/', $raw) ?: [];
         $parts  = array_map('trim', $tokens);
-        // Only allow safe token characters in parameter names to avoid ReDoS
-        // or pattern-injection via the admin textarea.
+
         $safe = array_filter($parts, static fn ($v) =>
             $v !== '' && preg_match('/^[A-Za-z0-9_.\-\[\]]{1,64}$/', $v) === 1);
         return array_values($safe);

@@ -10,13 +10,6 @@ use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 
-/**
- * Creates the `seo_name` EAV attribute on catalog_product.
- *
- * This attribute provides a dedicated SEO-friendly name that can differ from
- * the regular product name. Tokens like {{seo_name}} resolve this value with
- * a fallback to the standard product name.
- */
 class AddSeoNameAttribute implements DataPatchInterface
 {
     public function __construct(
@@ -29,7 +22,6 @@ class AddSeoNameAttribute implements DataPatchInterface
     {
         $this->moduleDataSetup->startSetup();
 
-        /** @var EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
 
         if (!$eavSetup->getAttributeId(Product::ENTITY, 'seo_name')) {
@@ -57,7 +49,6 @@ class AddSeoNameAttribute implements DataPatchInterface
             );
         }
 
-        // Add seo_name to ALL product attribute sets
         $this->addProductAttributeToAllSets($eavSetup, 'seo_name');
 
         $this->moduleDataSetup->endSetup();
@@ -65,10 +56,6 @@ class AddSeoNameAttribute implements DataPatchInterface
         return $this;
     }
 
-    /**
-     * Assign a product attribute to ALL existing attribute sets under the
-     * "Search Engine Optimization" group (falls back to the default group).
-     */
     private function addProductAttributeToAllSets(EavSetup $eavSetup, string $attributeCode): void
     {
         $entityTypeId   = $eavSetup->getEntityTypeId(Product::ENTITY);

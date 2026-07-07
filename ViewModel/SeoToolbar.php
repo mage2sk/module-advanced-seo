@@ -15,18 +15,6 @@ use Panth\AdvancedSEO\Api\CanonicalResolverInterface;
 use Panth\AdvancedSEO\Api\MetaResolverInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 
-/**
- * Collects SEO signals for the current page and exposes them to the
- * frontend toolbar. Hyva-safe: no jQuery, no RequireJS.
- *
- * After the module split the toolbar shows only signals owned by
- * Panth_AdvancedSEO itself (canonical, meta, identity, score) and the
- * generic HTTP/cookie diagnostics. Cross-module diagnostics (OG, Twitter,
- * Hreflang, JSON-LD) previously read via the standalone SocialMeta /
- * Hreflang / StructuredData modules have been removed from the toolbar
- * so AdvancedSEO has zero cross-Panth dependencies; those tags can be
- * inspected directly in the rendered DOM.
- */
 class SeoToolbar implements ArgumentInterface
 {
     public function __construct(
@@ -42,27 +30,6 @@ class SeoToolbar implements ArgumentInterface
     ) {
     }
 
-    /**
-     * Check whether the toolbar should be rendered for the current visitor.
-     *
-     * Because the toolbar plugin emits `setNoCacheHeaders()` whenever it
-     * fires (so visitors don't see the toolbar served from FPC), an empty
-     * allow-list combined with toolbar-on used to disable FPC for every
-     * visitor. The allow-list is now MANDATORY — empty means "deny except
-     * developer mode" so an admin who toggles the feature on without
-     * adding their IP doesn't accidentally tank FPC site-wide.
-     *
-     * Rules:
-     *  - Module disabled OR toolbar disabled → deny.
-     *  - Empty allow-list:
-     *      - allow only when MAGE_MODE=developer.
-     *      - production / default mode → deny (prevents site-wide FPC kill).
-     *  - Non-empty allow-list:
-     *      - allow when client IP matches a literal entry, OR
-     *      - falls inside a CIDR range, OR
-     *      - the entry is the wildcard `*` (explicit "allow all" opt-in).
-     *  - Invalid/malformed entries are ignored.
-     */
     public function isAllowed(): bool
     {
         try {
@@ -73,9 +40,6 @@ class SeoToolbar implements ArgumentInterface
             $allowedIps = trim($this->config->getSeoToolbarAllowedIps());
 
             if ($allowedIps === '') {
-                // Empty allow-list now means "developer mode only" — see rule
-                // block above. This prevents the historical footgun where
-                // turning on the toolbar killed FPC for every visitor.
                 try {
                     return $this->appState->getMode() === AppState::MODE_DEVELOPER;
                 } catch (\Throwable) {
@@ -90,9 +54,6 @@ class SeoToolbar implements ArgumentInterface
                 static fn (string $e): bool => $e !== ''
             );
 
-            // Explicit "allow all" opt-in — admin must type `*` deliberately
-            // because it's the same FPC-killing behaviour the empty default
-            // used to have, just spelled out in config.
             if (in_array('*', $entries, true)) {
                 return true;
             }
@@ -115,14 +76,6 @@ class SeoToolbar implements ArgumentInterface
         }
     }
 
-    /**
-     * Check whether $clientIp matches $entry, where $entry is either an IP
-     * literal (IPv4/IPv6) or a CIDR block such as "10.0.0.0/8" or "::1/128".
-     *
-     * Safe against malformed input: returns false on any parse failure and
-     * clamps prefix lengths to their legal maxima (32 for IPv4, 128 for IPv6)
-     * so "0.0.0.0/0" simply matches every IPv4 address without recursion.
-     */
     private function ipMatches(string $clientIp, string $entry): bool
     {
         try {
@@ -134,7 +87,6 @@ class SeoToolbar implements ArgumentInterface
             return false;
         }
 
-        // Literal IP compare (normalised via inet_pton so 127.0.0.1 == 127.000.000.001)
         if (!str_contains($entry, '/')) {
             try {
                 $entryPacked = inet_pton($entry);
@@ -159,7 +111,6 @@ class SeoToolbar implements ArgumentInterface
             return false;
         }
 
-        // Address families must match (v4-in-v4, v6-in-v6)
         if (strlen($subnetPacked) !== strlen($clientPacked)) {
             return false;
         }
@@ -169,7 +120,7 @@ class SeoToolbar implements ArgumentInterface
             return false;
         }
         if ($prefixLen > $bits) {
-            $prefixLen = $bits; // clamp
+            $prefixLen = $bits;
         }
 
         if ($prefixLen === 0) {
@@ -195,11 +146,6 @@ class SeoToolbar implements ArgumentInterface
         return true;
     }
 
-    /**
-     * Aggregate every SEO signal for the current page.
-     *
-     * @return array<string, mixed>
-     */
     public function getData(): array
     {
         $title       = $this->getTitle();
@@ -219,7 +165,7 @@ class SeoToolbar implements ArgumentInterface
         $detectedType = $entityType ?? $this->detectRouteType();
 
         return [
-            // --- Section 1: Page Identity ---
+
             'identity' => [
                 'entity_type'    => $detectedType,
                 'entity_id'      => $entityId,
@@ -232,7 +178,6 @@ class SeoToolbar implements ArgumentInterface
                 'module_name'    => (string) $this->request->getModuleName(),
             ],
 
-            // --- Section 2: Meta tags ---
             'meta' => [
                 'title'            => $title,
                 'title_length'     => mb_strlen($title),
@@ -243,39 +188,23 @@ class SeoToolbar implements ArgumentInterface
                 'base_url'         => $baseUrl,
             ],
 
-            // --- Section 3: Open Graph (owned by Panth_SocialMeta) ---
-            // Read client-side from rendered <meta property="og:..."> tags.
             'og_tags' => [],
 
-            // --- Section 4: Twitter Card (owned by Panth_SocialMeta) ---
-            // Read client-side from rendered <meta name="twitter:..."> tags.
             'twitter_tags' => [],
 
-            // --- Section 5: Hreflang (owned by Panth_Hreflang) ---
-            // Read client-side from rendered <link rel="alternate" hreflang="..."> tags.
             'hreflang' => [],
 
-            // --- Section 6: JSON-LD (owned by Panth_StructuredData) ---
-            // Read client-side from rendered <script type="application/ld+json"> blocks.
             'jsonld' => [],
 
-            // --- Section 11: Schema validation (collected client-side) ---
             'jsonld_warnings' => [],
 
-            // --- Section 13: HTTP Headers (sniffed) ---
             'headers' => $this->getResponseHeaders(),
 
-            // --- Section 14: Cookies ---
             'cookies' => $this->getCookieNames(),
 
-            // --- Section 15: SEO Score ---
             'score' => $this->getSeoScore($detectedType, $entityId, $storeId),
         ];
     }
-
-    // ------------------------------------------------------------------
-    // Individual data collectors
-    // ------------------------------------------------------------------
 
     private function getTitle(): string
     {
@@ -318,14 +247,6 @@ class SeoToolbar implements ArgumentInterface
         }
     }
 
-    /**
-     * Sniff headers that would be sent on the current response. Because the
-     * plugin runs BEFORE the response is flushed to the client, the headers
-     * array is already populated by upstream plugins (XRobotsTag, Canonical,
-     * LastModified) at that point.
-     *
-     * @return array<string, string>
-     */
     private function getResponseHeaders(): array
     {
         $interesting = [
@@ -352,8 +273,6 @@ class SeoToolbar implements ArgumentInterface
     private function readHeader(string $name): string
     {
         try {
-            // Try the request's headers first (present on MAGE_MODE=developer
-            // with rewrite capture).
             $fromServer = $this->request->getServer('HTTP_' . strtoupper(str_replace('-', '_', $name)));
             if (is_string($fromServer) && $fromServer !== '') {
                 return $fromServer;
@@ -361,8 +280,6 @@ class SeoToolbar implements ArgumentInterface
         } catch (\Throwable) {
         }
 
-        // headers_list() is the authoritative source because every plugin in
-        // the chain writes directly to PHP's SAPI headers.
         if (function_exists('headers_list')) {
             foreach (headers_list() as $line) {
                 if (stripos($line, $name . ':') === 0) {
@@ -373,9 +290,6 @@ class SeoToolbar implements ArgumentInterface
         return '';
     }
 
-    /**
-     * @return list<string>
-     */
     private function getCookieNames(): array
     {
         try {
@@ -390,11 +304,6 @@ class SeoToolbar implements ArgumentInterface
         }
     }
 
-    /**
-     * Load a SEO score row from panth_seo_score if one exists.
-     *
-     * @return array{score: int, grade: string, breakdown: array<int,mixed>, issues: list<string>}|null
-     */
     private function getSeoScore(string $entityType, int $entityId, int $storeId): ?array
     {
         if ($entityType === '' || $entityType === 'unknown' || $entityId <= 0) {
@@ -440,13 +349,6 @@ class SeoToolbar implements ArgumentInterface
         }
     }
 
-    // ------------------------------------------------------------------
-    // Helpers
-    // ------------------------------------------------------------------
-
-    /**
-     * @return array{0: ?string, 1: int}
-     */
     private function detectEntity(): array
     {
         $product = $this->registry->registry('current_product');
@@ -464,9 +366,6 @@ class SeoToolbar implements ArgumentInterface
         return [null, 0];
     }
 
-    /**
-     * Best-effort detection of the non-entity route (home, search, 404, ...).
-     */
     private function detectRouteType(): string
     {
         try {

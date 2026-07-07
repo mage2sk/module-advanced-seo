@@ -6,11 +6,6 @@ namespace Panth\AdvancedSEO\Model\Meta\Token;
 use Magento\Catalog\Api\Data\CategoryInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
 
-/**
- * Token: {{url_key}}
- *
- * Returns the URL key of a product or category entity.
- */
 class UrlKeyToken implements TokenInterface
 {
     public function getValue(mixed $entity, array $context, ?string $argument = null): string

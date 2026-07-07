@@ -5,17 +5,10 @@ namespace Panth\AdvancedSEO\Model\Meta;
 
 use Panth\AdvancedSEO\Model\Meta\Token\TokenInterface;
 
-/**
- * Registry of token resolvers. Populated via DI `meta_tokens` type list.
- */
 class TokenRegistry
 {
-    /** @var array<string,TokenInterface> */
     private array $tokens;
 
-    /**
-     * @param array<string,TokenInterface> $tokens
-     */
     public function __construct(array $tokens = [])
     {
         $this->tokens = [];
@@ -36,7 +29,6 @@ class TokenRegistry
         return $this->tokens[strtolower($name)] ?? null;
     }
 
-    /** @return array<string,TokenInterface> */
     public function all(): array
     {
         return $this->tokens;

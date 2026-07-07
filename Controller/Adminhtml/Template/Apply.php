@@ -18,11 +18,6 @@ use Panth\AdvancedSEO\Model\Meta\Template\ConditionEvaluator;
 use Panth\AdvancedSEO\Model\Meta\TemplateRenderer;
 use Psr\Log\LoggerInterface;
 
-/**
- * Apply a template to matching entities — writes rendered meta to both:
- *   1. Native EAV attributes (meta_title, meta_description, meta_keyword)
- *   2. panth_seo_resolved table (for frontend resolver fast-path)
- */
 class Apply extends AbstractAction implements HttpGetActionInterface, HttpPostActionInterface
 {
     public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::templates';
@@ -65,8 +60,7 @@ class Apply extends AbstractAction implements HttpGetActionInterface, HttpPostAc
             $entityType   = (string) ($template['entity_type'] ?? 'product');
             $storeId      = (int) ($template['store_id'] ?? 0);
             $conditions   = $this->decodeConditions($template);
-            // For rendering context, use store 1 if template is global (0)
-            // so {{store.name}} resolves to actual store name, not "Admin"
+
             $renderStoreId = $storeId > 0 ? $storeId : 1;
             $context      = ['store_id' => $renderStoreId];
             $titlePattern   = (string) ($template['meta_title'] ?? '');
@@ -120,7 +114,6 @@ class Apply extends AbstractAction implements HttpGetActionInterface, HttpPostAc
                         ? $this->templateRenderer->render($seoNamePattern, $entity, $context)
                         : '';
 
-                    // Render OG values
                     $ogTitle = $ogTitlePat !== ''
                         ? $this->templateRenderer->render($ogTitlePat, $entity, $context)
                         : '';
@@ -131,7 +124,6 @@ class Apply extends AbstractAction implements HttpGetActionInterface, HttpPostAc
                         ? $this->templateRenderer->render($ogImage, $entity, $context)
                         : '';
 
-                    // Write to native EAV attributes (including OG and robots)
                     $this->saveToEav(
                         $entityType, $entityId, $storeId,
                         $metaTitle, $metaDesc, $metaKw, $seoName,
@@ -139,7 +131,6 @@ class Apply extends AbstractAction implements HttpGetActionInterface, HttpPostAc
                         (string) $robots
                     );
 
-                    // Build resolved row payload
                     $ogPayload = [];
                     if ($ogTitle !== '') {
                         $ogPayload['og:title'] = $ogTitle;
@@ -209,10 +200,6 @@ class Apply extends AbstractAction implements HttpGetActionInterface, HttpPostAc
         return $resultRedirect->setPath('*/*/');
     }
 
-    /**
-     * Write rendered meta to native EAV attributes on the entity.
-     * Always writes to store 0 (global) so values appear in admin grids.
-     */
     private function saveToEav(
         string $entityType,
         int $entityId,
@@ -253,7 +240,6 @@ class Apply extends AbstractAction implements HttpGetActionInterface, HttpPostAc
             return;
         }
 
-        // Write to store 0 (global) so admin grid always shows values
         $eavStoreId = 0;
 
         if ($entityType === 'product') {
@@ -293,7 +279,6 @@ class Apply extends AbstractAction implements HttpGetActionInterface, HttpPostAc
                 }
             }
         } elseif ($entityType === 'cms' || $entityType === 'cms_page') {
-            // CMS pages use flat table, not EAV
             $connection = $this->resource->getConnection();
             $cmsTable = $this->resource->getTableName('cms_page');
             $updateData = [];
@@ -312,11 +297,6 @@ class Apply extends AbstractAction implements HttpGetActionInterface, HttpPostAc
         }
     }
 
-    /**
-     * Bulk-insert rows into panth_seo_resolved.
-     *
-     * @param list<array<string,mixed>> $rows
-     */
     private function flushResolvedRows(array $rows): void
     {
         if ($rows === []) {
@@ -336,9 +316,6 @@ class Apply extends AbstractAction implements HttpGetActionInterface, HttpPostAc
         ]);
     }
 
-    /**
-     * @return array<string,mixed>|null
-     */
     private function loadTemplate(int $templateId): ?array
     {
         $connection = $this->resource->getConnection();
@@ -351,10 +328,6 @@ class Apply extends AbstractAction implements HttpGetActionInterface, HttpPostAc
         return is_array($row) && $row !== [] ? $row : null;
     }
 
-    /**
-     * @param array<string,mixed> $template
-     * @return array<string,mixed>
-     */
     private function decodeConditions(array $template): array
     {
         $raw = $template['conditions_serialized'] ?? null;
@@ -383,11 +356,6 @@ class Apply extends AbstractAction implements HttpGetActionInterface, HttpPostAc
         return 0;
     }
 
-    /**
-     * Iterate all products for a store in paginated batches.
-     *
-     * @param callable(iterable): void $callback
-     */
     private function iterateProducts(int $storeId, callable $callback): void
     {
         $page = 1;
@@ -414,11 +382,6 @@ class Apply extends AbstractAction implements HttpGetActionInterface, HttpPostAc
         } while ($page <= $lastPage);
     }
 
-    /**
-     * Iterate all categories for a store in paginated batches.
-     *
-     * @param callable(iterable): void $callback
-     */
     private function iterateCategories(int $storeId, callable $callback): void
     {
         $page = 1;
@@ -429,7 +392,7 @@ class Apply extends AbstractAction implements HttpGetActionInterface, HttpPostAc
                 'name', 'url_key', 'seo_name', 'meta_title', 'meta_description',
                 'og_title', 'og_description', 'og_image',
             ]);
-            // Skip root (level 0) and default category (level 1)
+
             $collection->addFieldToFilter('level', ['gteq' => 2]);
             $collection->setPageSize(self::BATCH_SIZE);
             $collection->setCurPage($page);
@@ -446,11 +409,6 @@ class Apply extends AbstractAction implements HttpGetActionInterface, HttpPostAc
         } while ($page <= $lastPage);
     }
 
-    /**
-     * Iterate all CMS pages for a store in paginated batches.
-     *
-     * @param callable(iterable): void $callback
-     */
     private function iterateCmsPages(int $storeId, callable $callback): void
     {
         $page = 1;

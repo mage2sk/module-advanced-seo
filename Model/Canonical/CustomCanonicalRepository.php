@@ -13,14 +13,6 @@ use Magento\Store\Model\StoreManagerInterface;
 use Panth\AdvancedSEO\Api\MetaResolverInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * Repository for custom canonical URL overrides.
- *
- * Queries the panth_seo_custom_canonical table for an active mapping that
- * matches the given entity.  If target_url is set it is returned directly;
- * otherwise the target_entity_type + target_entity_id pair is resolved to
- * a URL.  Store-specific rows take priority over store_id = 0 (global).
- */
 class CustomCanonicalRepository
 {
     private const TABLE = 'panth_seo_custom_canonical';
@@ -35,11 +27,6 @@ class CustomCanonicalRepository
     ) {
     }
 
-    /**
-     * Find a custom canonical URL for the given entity.
-     *
-     * @return string|null The resolved canonical URL, or null when no override exists.
-     */
     public function find(string $entityType, int $entityId, int $storeId): ?string
     {
         try {
@@ -69,11 +56,6 @@ class CustomCanonicalRepository
         return null;
     }
 
-    /**
-     * Save (insert or update) a custom canonical override.
-     *
-     * @param array<string, mixed> $data Row data keyed by column name.
-     */
     public function save(array $data): int
     {
         $connection = $this->resource->getConnection();
@@ -92,9 +74,6 @@ class CustomCanonicalRepository
         return $id;
     }
 
-    /**
-     * Delete a custom canonical row by its primary key.
-     */
     public function deleteById(int $canonicalId): void
     {
         $connection = $this->resource->getConnection();
@@ -102,11 +81,6 @@ class CustomCanonicalRepository
         $connection->delete($table, ['canonical_id = ?' => $canonicalId]);
     }
 
-    /**
-     * Find a row matching the entity for a given store, falling back to store 0.
-     *
-     * @return array<string, mixed>|null
-     */
     private function loadRow(string $entityType, int $entityId, int $storeId): ?array
     {
         $connection = $this->resource->getConnection();
@@ -118,7 +92,7 @@ class CustomCanonicalRepository
             ->where('source_entity_id = ?', $entityId)
             ->where('is_active = ?', 1)
             ->where('store_id IN (?)', [0, $storeId])
-            ->order('store_id DESC') // store-specific wins over global
+            ->order('store_id DESC')
             ->limit(1);
 
         $row = $connection->fetchRow($select);
@@ -126,9 +100,6 @@ class CustomCanonicalRepository
         return $row !== false ? $row : null;
     }
 
-    /**
-     * Resolve a target entity reference to its frontend URL.
-     */
     private function resolveEntityUrl(string $entityType, int $entityId, int $storeId): ?string
     {
         try {

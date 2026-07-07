@@ -16,7 +16,6 @@ use Psr\Log\LoggerInterface;
 
 class MetadataPlugin
 {
-    /** @var string[]|null */
     private ?array $filterableAttributeCodes = null;
 
     public function __construct(
@@ -45,10 +44,6 @@ class MetadataPlugin
                 return;
             }
 
-            // When a layered-nav filter is active in the URL, the filter-page
-            // meta override (Panth_FilterSeo / equivalents) is the source of
-            // truth. Defer so we don't clobber filter-specific title/desc
-            // with the parent category's plain meta.
             if ($this->hasActiveFilter()) {
                 return;
             }
@@ -76,21 +71,11 @@ class MetadataPlugin
             if ($resolved->getRobots()) {
                 $this->pageConfig->setRobots($resolved->getRobots());
             }
-            // Canonical is handled by Block\Head\Canonical (via ViewModel\Canonical)
-            // which is pagination-aware.  Adding it here via addRemotePageAsset
-            // would create a duplicate <link rel="canonical"> tag and ignore ?p=N.
         } catch (\Throwable $e) {
             $this->logger->warning('Panth SEO category metadata plugin failed', ['error' => $e->getMessage()]);
         }
     }
 
-    /**
-     * True when the page is a layered-nav filter result so we should defer
-     * to the filter-page meta override (Panth_FilterSeo). Reads getParams()
-     * deliberately — that bag includes both user-supplied $_GET filters AND
-     * the codes that FilterRouter::match() setParam'd on pretty URLs, which
-     * is exactly what "is filter active?" should mean here.
-     */
     private function hasActiveFilter(): bool
     {
         $params = $this->request->getParams();
@@ -102,9 +87,6 @@ class MetadataPlugin
         return false;
     }
 
-    /**
-     * @return string[]
-     */
     private function getFilterableAttributeCodes(): array
     {
         if ($this->filterableAttributeCodes !== null) {
@@ -119,7 +101,6 @@ class MetadataPlugin
                 $codes[] = (string) $attr->getAttributeCode();
             }
         } catch (\Throwable) {
-            // Empty list = treat as no active filter (safe default).
         }
         return $this->filterableAttributeCodes = $codes;
     }

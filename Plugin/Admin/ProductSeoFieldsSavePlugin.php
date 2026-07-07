@@ -9,14 +9,6 @@ use Magento\Framework\App\ResourceConnection;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Psr\Log\LoggerInterface;
 
-/**
- * After the admin product save controller completes, persist the
- * custom_canonical_url value from the form to panth_seo_custom_canonical.
- *
- * The meta_robots and in_xml_sitemap fields are EAV attributes, so
- * Magento saves those automatically. Only custom_canonical_url needs
- * manual persistence.
- */
 class ProductSeoFieldsSavePlugin
 {
     private const TABLE       = 'panth_seo_custom_canonical';
@@ -30,11 +22,6 @@ class ProductSeoFieldsSavePlugin
     ) {
     }
 
-    /**
-     * @param ProductSaveController $subject
-     * @param mixed                 $result
-     * @return mixed
-     */
     public function afterExecute(ProductSaveController $subject, mixed $result): mixed
     {
         if (!$this->seoConfig->isEnabled()) {
@@ -62,9 +49,6 @@ class ProductSeoFieldsSavePlugin
         return $result;
     }
 
-    /**
-     * Upsert or delete the custom canonical row.
-     */
     private function persistCanonical(int $entityId, int $storeId, string $canonicalUrl): void
     {
         $connection = $this->resource->getConnection();
@@ -93,9 +77,6 @@ class ProductSeoFieldsSavePlugin
         }
     }
 
-    /**
-     * Look up an existing canonical_id for the entity + store combination.
-     */
     private function findExistingId(int $entityId, int $storeId): ?int
     {
         $connection = $this->resource->getConnection();

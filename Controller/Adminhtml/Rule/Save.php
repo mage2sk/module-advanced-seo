@@ -39,7 +39,7 @@ class Save extends AbstractAction implements HttpPostActionInterface
             $this->messageManager->addErrorMessage(__('Invalid entity type.'));
             return $resultRedirect->setPath('*/*/edit', ['id' => $id]);
         }
-        // Build conditions JSON from user-friendly form fields
+
         $conditionAttribute = trim((string)($data['condition_attribute'] ?? ''));
         $conditionValue = trim((string)($data['condition_value'] ?? ''));
         if ($conditionAttribute !== '' && $conditionValue !== '') {
@@ -51,12 +51,10 @@ class Save extends AbstractAction implements HttpPostActionInterface
             ];
             $conditionsSerialized = $this->serializer->serialize($conditions);
         } else {
-            // Use raw JSON if provided (backward compat), or empty
             $raw = $data['conditions_serialized'] ?? '';
             $conditionsSerialized = is_string($raw) && $raw !== '' ? $raw : '{}';
         }
 
-        // Build actions JSON from user-friendly form fields
         $actions = [];
         if (!empty($data['action_noindex'])) {
             $actions['noindex'] = (string)$data['action_noindex'];

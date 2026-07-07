@@ -9,16 +9,6 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\ScopeInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 
-/**
- * When "Use Short Category URL" is enabled, replaces the full hierarchical
- * category URL path (e.g. "men/shoes") with just the category's own url_key
- * (e.g. "shoes").
- *
- * This produces shorter, flatter canonical URLs that many SEO strategies prefer,
- * especially when category names are already unique across the tree.
- *
- * Plugin target: Magento\CatalogUrlRewrite\Model\CategoryUrlPathGenerator::getUrlPath
- */
 class ShortCategoryUrlPlugin
 {
     private const XML_PATH_USE_SHORT_CATEGORY_URL = 'panth_seo/canonical/use_short_category_url';
@@ -29,11 +19,6 @@ class ShortCategoryUrlPlugin
     ) {
     }
 
-    /**
-     * Replace the full parent/child path with only the category's own url_key.
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
     public function aroundGetUrlPath(
         CategoryUrlPathGenerator $subject,
         callable $proceed,
@@ -43,8 +28,6 @@ class ShortCategoryUrlPlugin
             return $proceed($category);
         }
 
-        // Root category (level 0) and the default category (level 1) should
-        // never have a URL path -- defer to core behaviour.
         $level = (int) $category->getLevel();
         if ($level <= 1) {
             return $proceed($category);
@@ -52,7 +35,6 @@ class ShortCategoryUrlPlugin
 
         $urlKey = (string) $category->getUrlKey();
         if ($urlKey === '') {
-            // No url_key set; fall through so Magento can generate/fallback.
             return $proceed($category);
         }
 

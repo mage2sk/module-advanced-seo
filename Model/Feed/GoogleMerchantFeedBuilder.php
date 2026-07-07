@@ -21,12 +21,6 @@ use Magento\Store\Model\StoreManagerInterface;
 use Panth\AdvancedSEO\Helper\Config;
 use Psr\Log\LoggerInterface;
 
-/**
- * Generates a Google Merchant Center compatible XML product feed (RSS 2.0 with g: namespace).
- *
- * Uses streaming XMLWriter for memory efficiency. Products are loaded in batches
- * to keep memory footprint constant regardless of catalog size.
- */
 class GoogleMerchantFeedBuilder
 {
     private const GOOGLE_NS = 'http://base.google.com/ns/1.0';
@@ -49,11 +43,6 @@ class GoogleMerchantFeedBuilder
     ) {
     }
 
-    /**
-     * Build the complete Google Shopping XML feed for a given store.
-     *
-     * @return string The XML content
-     */
     public function build(int $storeId): string
     {
         $store = $this->storeManager->getStore($storeId);
@@ -96,18 +85,13 @@ class GoogleMerchantFeedBuilder
             $page++;
         } while (count($products) >= self::BATCH_SIZE);
 
-        $xml->endElement(); // channel
-        $xml->endElement(); // rss
+        $xml->endElement();
+        $xml->endElement();
         $xml->endDocument();
 
         return $xml->outputMemory();
     }
 
-    /**
-     * Build the feed and write directly to a file path for CLI/cron usage.
-     *
-     * @return string The file path written
-     */
     public function buildToFile(int $storeId, string $filePath): string
     {
         $store = $this->storeManager->getStore($storeId);
@@ -156,17 +140,14 @@ class GoogleMerchantFeedBuilder
             $page++;
         } while (count($products) >= self::BATCH_SIZE);
 
-        $xml->endElement(); // channel
-        $xml->endElement(); // rss
+        $xml->endElement();
+        $xml->endElement();
         $xml->endDocument();
         $xml->flush();
 
         return $filePath;
     }
 
-    /**
-     * Load a paged product collection with all required attributes.
-     */
     private function getProductCollection(int $storeId, int $page): \Magento\Catalog\Model\ResourceModel\Product\Collection
     {
         $collection = $this->productCollectionFactory->create();
@@ -191,25 +172,21 @@ class GoogleMerchantFeedBuilder
             'manufacturer',
         ]);
 
-        // Add brand attribute if configured differently
         $brandAttr = $this->config->getBrandAttribute($storeId);
         if ($brandAttr !== '' && $brandAttr !== 'manufacturer') {
             $collection->addAttributeToSelect($brandAttr);
         }
 
-        // Add GTIN attribute if configured
         $gtinAttr = $this->config->getGtinAttribute($storeId);
         if ($gtinAttr !== '') {
             $collection->addAttributeToSelect($gtinAttr);
         }
 
-        // Add MPN attribute if configured
         $mpnAttr = $this->config->getMpnAttribute($storeId);
         if ($mpnAttr !== '') {
             $collection->addAttributeToSelect($mpnAttr);
         }
 
-        // Add google product category attribute if configured
         $googleCatAttr = $this->config->getMerchantFeedGoogleCategoryAttribute($storeId);
         if ($googleCatAttr !== '') {
             $collection->addAttributeToSelect($googleCatAttr);
@@ -220,7 +197,6 @@ class GoogleMerchantFeedBuilder
         $collection->setPageSize(self::BATCH_SIZE);
         $collection->setCurPage($page);
 
-        // Exclude out-of-stock products unless config says include them
         if (!$this->config->isMerchantFeedIncludeOutOfStock($storeId)) {
             $collection->joinField(
                 'qty',
@@ -244,9 +220,6 @@ class GoogleMerchantFeedBuilder
         return $collection;
     }
 
-    /**
-     * Write a single <item> element for a product.
-     */
     private function writeProductItem(
         \XMLWriter $xml,
         Product $product,
@@ -257,69 +230,54 @@ class GoogleMerchantFeedBuilder
 
         $xml->startElement('item');
 
-        // g:id - SKU
         $this->writeGElement($xml, 'id', $product->getSku());
 
-        // g:title - product name
         $this->writeGElement($xml, 'title', (string) $product->getName());
 
-        // g:description - short_description stripped of HTML, max 5000 chars
         $description = $this->getCleanDescription($product);
         if ($description !== '') {
             $this->writeGElement($xml, 'description', $description);
         }
 
-        // g:link - product URL
         $productUrl = $product->getProductUrl();
         if ($productUrl) {
             $this->writeGElement($xml, 'link', $productUrl);
         }
 
-        // g:image_link - base image URL
         $imageUrl = $this->getProductImageUrl($product, $store);
         if ($imageUrl !== '') {
             $this->writeGElement($xml, 'image_link', $imageUrl);
         }
 
-        // g:additional_image_link - gallery images
         $this->writeAdditionalImages($xml, $product, $store);
 
-        // g:price - final price with currency
         $this->writePriceElements($xml, $product, $currencyCode, $storeId);
 
-        // g:availability
         $this->writeGElement($xml, 'availability', $this->getAvailability($product));
 
-        // g:brand
         $brand = $this->getBrand($product, $storeId);
         if ($brand !== '') {
             $this->writeGElement($xml, 'brand', $brand);
         }
 
-        // g:gtin
         $gtin = $this->getProductAttributeValue($product, $this->config->getGtinAttribute($storeId));
         if ($gtin !== '') {
             $this->writeGElement($xml, 'gtin', $gtin);
         }
 
-        // g:mpn
         $mpn = $this->getProductAttributeValue($product, $this->config->getMpnAttribute($storeId));
         if ($mpn !== '') {
             $this->writeGElement($xml, 'mpn', $mpn);
         }
 
-        // g:condition
         $condition = $this->config->getMerchantFeedDefaultCondition($storeId);
         $this->writeGElement($xml, 'condition', $condition);
 
-        // g:product_type - category breadcrumb path
         $productType = $this->getCategoryBreadcrumb($product, $storeId);
         if ($productType !== '') {
             $this->writeGElement($xml, 'product_type', $productType);
         }
 
-        // g:google_product_category — always emit something. Fall through to
-        // a safe default so the feed is never missing the field entirely.
         $googleCatAttr = $this->config->getMerchantFeedGoogleCategoryAttribute($storeId);
         $googleCat = '';
         if ($googleCatAttr !== '') {
@@ -330,27 +288,19 @@ class GoogleMerchantFeedBuilder
         }
         $this->writeGElement($xml, 'google_product_category', $googleCat);
 
-        // g:shipping
         $this->writeShippingElement($xml, $storeId, $currencyCode);
 
-        // g:item_group_id - parent SKU for configurable children
         $this->writeItemGroupId($xml, $product);
 
-        // g:identifier_exists — explicit true when at least one identifier is
-        // present, false when none are. Google recommends emitting it either
-        // way so the feed is unambiguous.
         if ($gtin === '' && $mpn === '' && $brand === '') {
             $this->writeGElement($xml, 'identifier_exists', 'false');
         } else {
             $this->writeGElement($xml, 'identifier_exists', 'true');
         }
 
-        $xml->endElement(); // item
+        $xml->endElement();
     }
 
-    /**
-     * Write a g: namespaced element.
-     */
     private function writeGElement(\XMLWriter $xml, string $name, string $value): void
     {
         $xml->startElementNs('g', $name, null);
@@ -358,9 +308,6 @@ class GoogleMerchantFeedBuilder
         $xml->endElement();
     }
 
-    /**
-     * Get clean description from short_description, fallback to description.
-     */
     private function getCleanDescription(Product $product): string
     {
         $text = (string) $product->getData('short_description');
@@ -371,15 +318,13 @@ class GoogleMerchantFeedBuilder
             return '';
         }
 
-        // Strip HTML tags
         $text = strip_tags($text);
-        // Decode HTML entities
+
         $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        // Normalize whitespace
+
         $text = preg_replace('/\s+/', ' ', $text);
         $text = trim($text);
 
-        // Truncate to max length
         if (mb_strlen($text) > self::DESCRIPTION_MAX_LENGTH) {
             $text = mb_substr($text, 0, self::DESCRIPTION_MAX_LENGTH - 3) . '...';
         }
@@ -387,9 +332,6 @@ class GoogleMerchantFeedBuilder
         return $text;
     }
 
-    /**
-     * Get the full URL for the product base image.
-     */
     private function getProductImageUrl(Product $product, StoreInterface $store): string
     {
         $image = $product->getData('image');
@@ -401,9 +343,6 @@ class GoogleMerchantFeedBuilder
         return $baseUrl . '/catalog/product' . $image;
     }
 
-    /**
-     * Write additional image link elements from product gallery.
-     */
     private function writeAdditionalImages(\XMLWriter $xml, Product $product, StoreInterface $store): void
     {
         try {
@@ -437,9 +376,6 @@ class GoogleMerchantFeedBuilder
         }
     }
 
-    /**
-     * Write price, sale_price, and sale_price_effective_date elements.
-     */
     private function writePriceElements(
         \XMLWriter $xml,
         Product $product,
@@ -468,12 +404,10 @@ class GoogleMerchantFeedBuilder
         }
 
         if ($hasActiveSpecialPrice) {
-            // g:price shows the regular price
             $this->writeGElement($xml, 'price', $this->formatPrice($regularPrice, $currencyCode));
-            // g:sale_price shows the special/final price
+
             $this->writeGElement($xml, 'sale_price', $this->formatPrice($finalPrice, $currencyCode));
 
-            // g:sale_price_effective_date in ISO 8601 format
             $specialFromDate = $product->getData('special_from_date');
             $specialToDate = $product->getData('special_to_date');
             $effectiveDate = $this->formatSalePriceEffectiveDate($specialFromDate, $specialToDate);
@@ -485,26 +419,17 @@ class GoogleMerchantFeedBuilder
         }
     }
 
-    /**
-     * Format a price value with currency code: "29.99 USD"
-     */
     private function formatPrice(float $price, string $currencyCode): string
     {
         return number_format($price, 2, '.', '') . ' ' . $currencyCode;
     }
 
-    /**
-     * Format sale_price_effective_date as ISO 8601 range.
-     */
     private function formatSalePriceEffectiveDate(?string $fromDate, ?string $toDate): string
     {
         if (($fromDate === null || $fromDate === '') && ($toDate === null || $toDate === '')) {
             return '';
         }
 
-        // Google's spec for sale_price_effective_date is ISO 8601 minute
-        // resolution (no seconds) and requires BOTH endpoints — partial ranges
-        // ("from/" or "/to") are rejected. Format `Y-m-d\TH:iO` matches.
         $from = ($fromDate !== null && $fromDate !== '')
             ? $this->timezone->date($fromDate, null, true)->format('Y-m-d\TH:iO')
             : '';
@@ -519,9 +444,6 @@ class GoogleMerchantFeedBuilder
         return '';
     }
 
-    /**
-     * Determine product availability for Google's enumeration.
-     */
     private function getAvailability(Product $product): string
     {
         try {
@@ -542,9 +464,6 @@ class GoogleMerchantFeedBuilder
         return 'in_stock';
     }
 
-    /**
-     * Get brand value from configured attribute.
-     */
     private function getBrand(Product $product, int $storeId): string
     {
         $brandAttr = $this->config->getBrandAttribute($storeId);
@@ -554,10 +473,6 @@ class GoogleMerchantFeedBuilder
 
         $brand = $this->getProductAttributeValue($product, $brandAttr);
 
-        // Fall back to panth_seo/structured_data/default_brand when the
-        // configured product attribute is empty, so feeds for stores with a
-        // single brand (typical for jewellery / single-brand boutiques) don't
-        // ship empty <g:brand> entries.
         if ($brand === '') {
             $brand = $this->config->getDefaultBrand($storeId);
         }
@@ -565,9 +480,6 @@ class GoogleMerchantFeedBuilder
         return $brand;
     }
 
-    /**
-     * Get a product attribute value, resolving select/multiselect to text.
-     */
     private function getProductAttributeValue(Product $product, string $attributeCode): string
     {
         if ($attributeCode === '') {
@@ -579,7 +491,6 @@ class GoogleMerchantFeedBuilder
             return '';
         }
 
-        // Try to get the text representation for select/multiselect
         try {
             $textValue = $product->getAttributeText($attributeCode);
             if (is_string($textValue) && $textValue !== '') {
@@ -592,15 +503,11 @@ class GoogleMerchantFeedBuilder
                 }
             }
         } catch (\Throwable) {
-            // Not a select attribute; fall through to raw value
         }
 
         return (string) $value;
     }
 
-    /**
-     * Build category breadcrumb path, e.g. "Apparel > Women > Dresses".
-     */
     private function getCategoryBreadcrumb(Product $product, int $storeId): string
     {
         $categoryIds = $product->getCategoryIds();
@@ -608,7 +515,6 @@ class GoogleMerchantFeedBuilder
             return '';
         }
 
-        // Pick the deepest category (highest number of path parts)
         $deepestPath = '';
         $deepestDepth = 0;
 
@@ -617,7 +523,6 @@ class GoogleMerchantFeedBuilder
                 $category = $this->categoryRepository->get((int) $categoryId, $storeId);
                 $pathIds = explode('/', (string) $category->getPath());
 
-                // Skip root categories (depth < 2 means it's the root or default)
                 if (count($pathIds) <= 2) {
                     continue;
                 }
@@ -625,7 +530,7 @@ class GoogleMerchantFeedBuilder
                 if (count($pathIds) > $deepestDepth) {
                     $deepestDepth = count($pathIds);
                     $names = [];
-                    // Skip the first two (root and default category)
+
                     $relevantIds = array_slice($pathIds, 2);
                     foreach ($relevantIds as $pathCatId) {
                         try {
@@ -650,9 +555,6 @@ class GoogleMerchantFeedBuilder
         return $deepestPath;
     }
 
-    /**
-     * Write shipping element if shipping country and price are configured.
-     */
     private function writeShippingElement(\XMLWriter $xml, int $storeId, string $currencyCode): void
     {
         $country = $this->config->getMerchantFeedShippingCountry($storeId);
@@ -672,12 +574,9 @@ class GoogleMerchantFeedBuilder
         $xml->text(number_format((float) $price, 2, '.', '') . ' ' . $currencyCode);
         $xml->endElement();
 
-        $xml->endElement(); // g:shipping
+        $xml->endElement();
     }
 
-    /**
-     * Write g:item_group_id for configurable product children.
-     */
     private function writeItemGroupId(\XMLWriter $xml, Product $product): void
     {
         if ($product->getTypeId() !== Type::DEFAULT_TYPE) {
@@ -698,7 +597,6 @@ class GoogleMerchantFeedBuilder
                 }
             }
         } catch (\Throwable) {
-            // Not a child of a configurable; skip
         }
     }
 }

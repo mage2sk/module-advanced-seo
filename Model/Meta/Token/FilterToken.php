@@ -5,11 +5,6 @@ namespace Panth\AdvancedSEO\Model\Meta\Token;
 
 use Magento\Catalog\Model\Layer\Resolver as LayerResolver;
 
-/**
- * {{filter:color}} -- resolves to the active layered-navigation value for the given attribute.
- *
- * If no filter is currently active for the requested attribute, returns an empty string.
- */
 class FilterToken implements TokenInterface
 {
     public function __construct(
@@ -42,7 +37,6 @@ class FilterToken implements TokenInterface
                 }
             }
         } catch (\Throwable) {
-            // Layer not initialised or no active state -- return empty
         }
 
         return '';

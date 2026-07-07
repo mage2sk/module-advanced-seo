@@ -9,15 +9,8 @@ use Magento\Cms\Api\PageRepositoryInterface;
 use Magento\Framework\App\ResourceConnection;
 use Psr\Log\LoggerInterface;
 
-/**
- * Builds the context array passed into SEO score checks.
- */
 class ContextBuilder
 {
-    /**
-     * Mapping of third-party entity types to their database table and columns.
-     * Used for safe context building without hard module dependencies.
-     */
     private const THIRD_PARTY_TABLE_MAP = [
         'faq' => [
             'table' => 'panth_faq_item',
@@ -63,9 +56,6 @@ class ContextBuilder
     ) {
     }
 
-    /**
-     * @return array<string,mixed>
-     */
     public function build(string $entityType, int $entityId, int $storeId): array
     {
         $ctx = [
@@ -116,7 +106,7 @@ class ContextBuilder
                     $ctx['entity'] = $page;
                     break;
                 default:
-                    // Third-party Panth module entities: load via direct DB query
+
                     $this->buildThirdPartyContext($ctx, $entityType, $entityId);
                     break;
             }
@@ -127,10 +117,6 @@ class ContextBuilder
         return $ctx;
     }
 
-    /**
-     * Build context for third-party Panth module entities using direct DB queries.
-     * This avoids hard dependencies on other Panth modules.
-     */
     private function buildThirdPartyContext(array &$ctx, string $entityType, int $entityId): void
     {
         $mapping = self::THIRD_PARTY_TABLE_MAP[$entityType] ?? null;
@@ -159,14 +145,12 @@ class ContextBuilder
             return;
         }
 
-        // Set name/content from mapped columns
         $name = (string)($row[$mapping['name_column']] ?? '');
         $content = (string)($row[$mapping['content_column']] ?? '');
 
         $ctx['content'] = $content;
         $ctx['attributes']['name'] = $name;
 
-        // Set meta fields if columns exist
         if (isset($mapping['meta_title_column']) && !empty($row[$mapping['meta_title_column']])) {
             $ctx['meta']['title'] = (string)$row[$mapping['meta_title_column']];
         }
@@ -177,7 +161,6 @@ class ContextBuilder
             $ctx['meta']['keywords'] = (string)$row[$mapping['meta_keywords_column']];
         }
 
-        // Add extra columns as attributes
         if (isset($mapping['extra_columns'])) {
             foreach ($mapping['extra_columns'] as $col) {
                 if (isset($row[$col])) {

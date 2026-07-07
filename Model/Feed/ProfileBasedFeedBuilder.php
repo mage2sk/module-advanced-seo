@@ -14,12 +14,6 @@ use Magento\Framework\Filesystem;
 use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * Profile-based feed generator that reads field mapping from panth_seo_feed_field
- * and generates XML or CSV product feeds.
- *
- * Products are loaded in batches of 500 for constant memory usage.
- */
 class ProfileBasedFeedBuilder
 {
     private const BATCH_SIZE = 500;
@@ -38,12 +32,6 @@ class ProfileBasedFeedBuilder
     ) {
     }
 
-    /**
-     * Generate a feed from a profile ID.
-     *
-     * @param int $feedId Feed profile ID
-     * @return array{product_count: int, file_size: int, generation_time: float, file_path: string}
-     */
     public function generateById(int $feedId): array
     {
         $profile = $this->loadProfile($feedId);
@@ -54,12 +42,6 @@ class ProfileBasedFeedBuilder
         return $this->generate($profile);
     }
 
-    /**
-     * Generate a feed from a profile array.
-     *
-     * @param array $profile Profile data row
-     * @return array{product_count: int, file_size: int, generation_time: float, file_path: string}
-     */
     public function generate(array $profile): array
     {
         $startTime = microtime(true);
@@ -69,22 +51,18 @@ class ProfileBasedFeedBuilder
         $format = $profile['output_format'] ?? 'xml';
         $filename = $profile['filename'] ?? ('feed_' . $feedId . '.' . $format);
 
-        // Load field mappings
         $fields = $this->loadFieldMappings($feedId);
         if (empty($fields)) {
             throw new \RuntimeException(sprintf('No field mappings found for feed profile #%d.', $feedId));
         }
 
-        // Determine output path
         $mediaDir = $this->filesystem->getDirectoryWrite(DirectoryList::MEDIA);
         $feedDir = 'panth_seo/feeds';
         $mediaDir->create($feedDir);
         $filePath = $mediaDir->getAbsolutePath($feedDir . '/' . $filename);
 
-        // Collect all attribute codes we need to load
         $attributeCodes = $this->collectAttributeCodes($fields);
 
-        // Open writer
         $store = $this->storeManager->getStore($storeId);
         $writer = ($format === 'csv') ? $this->csvFeedWriter : $this->xmlFeedWriter;
         $writer->open($filePath, $store);
@@ -92,7 +70,6 @@ class ProfileBasedFeedBuilder
         $productCount = 0;
         $page = 1;
 
-        // Build parent cache for configurable children
         $needsParent = $this->fieldsNeedParent($fields);
 
         do {
@@ -108,10 +85,8 @@ class ProfileBasedFeedBuilder
 
                     $resolvedFields = $this->resolveProductFields($fields, $product, $storeId, $parent);
 
-                    // Apply UTM parameters to URL fields
                     $resolvedFields = $this->applyUtmParameters($resolvedFields, $profile);
 
-                    // Check required fields - skip product if any required field is empty
                     if ($this->hasMissingRequiredFields($fields, $resolvedFields)) {
                         continue;
                     }
@@ -134,7 +109,6 @@ class ProfileBasedFeedBuilder
 
         $writer->close();
 
-        // Apply compression if configured
         $compress = trim((string) ($profile['compress'] ?? ''));
         if ($compress !== '' && file_exists($filePath)) {
             $filePath = $this->compressFile($filePath, $compress);
@@ -144,14 +118,11 @@ class ProfileBasedFeedBuilder
         $generationTime = round(microtime(true) - $startTime, 2);
         $fileSize = file_exists($filePath) ? (int) filesize($filePath) : 0;
 
-        // Build file URL
         $baseMediaUrl = rtrim($store->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA), '/');
         $fileUrl = $baseMediaUrl . '/' . $feedDir . '/' . $filename;
 
-        // Update profile stats
         $this->updateProfileStats($feedId, $productCount, $fileSize, $generationTime, $fileUrl);
 
-        // Deliver via FTP/SFTP if enabled
         if (!empty($profile['delivery_enabled']) && file_exists($filePath)) {
             try {
                 $this->ftpDelivery->deliver($profile, $filePath);
@@ -173,11 +144,6 @@ class ProfileBasedFeedBuilder
         ];
     }
 
-    /**
-     * Generate all active feed profiles (optionally filtered by store).
-     *
-     * @return array<int, array> Array of results keyed by feed_id
-     */
     public function generateAllActive(?int $storeId = null, bool $cronOnly = false): array
     {
         $profiles = $this->loadActiveProfiles($storeId, $cronOnly);
@@ -201,9 +167,6 @@ class ProfileBasedFeedBuilder
         return $results;
     }
 
-    /**
-     * Load a feed profile by ID from the database.
-     */
     public function loadProfile(int $feedId): ?array
     {
         $connection = $this->resourceConnection->getConnection();
@@ -221,9 +184,6 @@ class ProfileBasedFeedBuilder
         return $row ?: null;
     }
 
-    /**
-     * Load all active feed profiles.
-     */
     public function loadActiveProfiles(?int $storeId = null, bool $cronOnly = false): array
     {
         $connection = $this->resourceConnection->getConnection();
@@ -248,9 +208,6 @@ class ProfileBasedFeedBuilder
         return $connection->fetchAll($select);
     }
 
-    /**
-     * Load field mappings for a feed profile, ordered by sort_order.
-     */
     private function loadFieldMappings(int $feedId): array
     {
         $connection = $this->resourceConnection->getConnection();
@@ -268,9 +225,6 @@ class ProfileBasedFeedBuilder
         return $connection->fetchAll($select);
     }
 
-    /**
-     * Collect all product attribute codes needed from field mappings.
-     */
     private function collectAttributeCodes(array $fields): array
     {
         $codes = [
@@ -291,9 +245,6 @@ class ProfileBasedFeedBuilder
         return array_unique($codes);
     }
 
-    /**
-     * Check if any field mapping requires parent_attribute resolution.
-     */
     private function fieldsNeedParent(array $fields): bool
     {
         foreach ($fields as $field) {
@@ -304,9 +255,6 @@ class ProfileBasedFeedBuilder
         return false;
     }
 
-    /**
-     * Build a paged product collection with filters from the profile.
-     */
     private function buildProductCollection(
         array $profile,
         int $storeId,
@@ -317,12 +265,10 @@ class ProfileBasedFeedBuilder
         $collection->setStoreId($storeId);
         $collection->addStoreFilter($storeId);
 
-        // Status filter
         if (empty($profile['include_disabled'])) {
             $collection->addAttributeToFilter('status', Status::STATUS_ENABLED);
         }
 
-        // Visibility filter
         if (empty($profile['include_not_visible'])) {
             $collection->addAttributeToFilter('visibility', ['in' => [
                 Visibility::VISIBILITY_IN_CATALOG,
@@ -330,12 +276,10 @@ class ProfileBasedFeedBuilder
             ]]);
         }
 
-        // Add required attributes
         $collection->addAttributeToSelect($attributeCodes);
         $collection->addUrlRewrite();
         $collection->addFinalPrice();
 
-        // Category filter
         $categoryFilter = trim((string) ($profile['category_filter'] ?? ''));
         if ($categoryFilter !== '') {
             $categoryIds = array_filter(array_map('intval', explode(',', $categoryFilter)));
@@ -344,7 +288,6 @@ class ProfileBasedFeedBuilder
             }
         }
 
-        // Attribute set filter
         $attrSetFilter = trim((string) ($profile['attribute_set_filter'] ?? ''));
         if ($attrSetFilter !== '') {
             $attrSetIds = array_filter(array_map('intval', explode(',', $attrSetFilter)));
@@ -353,10 +296,6 @@ class ProfileBasedFeedBuilder
             }
         }
 
-        // Stock filter — joinField duplicates rows when a product has multiple
-        // stock entries (multi-source / shared catalog), which then trips
-        // collection's "Item with the same ID already exists" guard. Using a raw
-        // joinLeft on getSelect() keeps the collection's primary-key uniqueness.
         if (empty($profile['include_out_of_stock'])) {
             $collection->getSelect()->joinLeft(
                 ['_stock_filter' => $collection->getTable('cataloginventory_stock_item')],
@@ -371,9 +310,6 @@ class ProfileBasedFeedBuilder
         return $collection;
     }
 
-    /**
-     * Load the configurable parent product for a simple child.
-     */
     private function loadParentProduct(Product $product, int $storeId, array $attributeCodes): ?Product
     {
         if ($product->getTypeId() !== \Magento\Catalog\Model\Product\Type::DEFAULT_TYPE) {
@@ -401,11 +337,6 @@ class ProfileBasedFeedBuilder
         }
     }
 
-    /**
-     * Resolve all field values for a single product.
-     *
-     * @return array<string, string> feed_field => resolved_value
-     */
     private function resolveProductFields(
         array $fields,
         Product $product,
@@ -427,9 +358,6 @@ class ProfileBasedFeedBuilder
         return $resolved;
     }
 
-    /**
-     * Check if any required field is empty in the resolved output.
-     */
     private function hasMissingRequiredFields(array $fields, array $resolved): bool
     {
         foreach ($fields as $fieldConfig) {
@@ -444,9 +372,6 @@ class ProfileBasedFeedBuilder
         return false;
     }
 
-    /**
-     * Update profile record with generation stats.
-     */
     private function updateProfileStats(
         int $feedId,
         int $productCount,
@@ -478,9 +403,6 @@ class ProfileBasedFeedBuilder
         }
     }
 
-    /**
-     * Apply UTM parameters to URL fields in resolved data.
-     */
     private function applyUtmParameters(array $resolvedFields, array $profile): array
     {
         $utmSource = trim((string) ($profile['utm_source'] ?? ''));
@@ -500,7 +422,6 @@ class ProfileBasedFeedBuilder
 
         $queryString = http_build_query($utmParams);
 
-        // Apply to common URL field names
         $urlFields = ['link', 'g:link', 'url', 'product_url', 'canonical_link'];
         foreach ($urlFields as $urlField) {
             if (isset($resolvedFields[$urlField]) && $resolvedFields[$urlField] !== '') {
@@ -512,11 +433,6 @@ class ProfileBasedFeedBuilder
         return $resolvedFields;
     }
 
-    /**
-     * Compress a feed file using the specified method.
-     *
-     * @return string Path to the compressed file
-     */
     private function compressFile(string $filePath, string $method): string
     {
         if ($method === 'gzip') {

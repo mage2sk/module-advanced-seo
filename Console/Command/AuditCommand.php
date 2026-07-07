@@ -10,13 +10,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * `bin/magento panth:seo:audit`
- *
- * CI-friendly JSON audit: counts missing titles, missing descriptions,
- * duplicate meta, low scores, failed jobs. Exits non-zero on any regression
- * against --threshold-* flags.
- */
 class AuditCommand extends Command
 {
     private const OPT_STORE             = 'store';
@@ -46,7 +39,6 @@ class AuditCommand extends Command
         try {
             $this->appState->setAreaCode(\Magento\Framework\App\Area::AREA_ADMINHTML);
         } catch (\Throwable) {
-            // ignored
         }
 
         $storeId = (int) $input->getOption(self::OPT_STORE);
@@ -110,9 +102,6 @@ class AuditCommand extends Command
         return Command::SUCCESS;
     }
 
-    /**
-     * @param array<int,array{column:string,value:mixed}> $where
-     */
     private function count(\Magento\Framework\DB\Adapter\AdapterInterface $connection, string $table, array $where): int
     {
         $select = $connection->select()->from($table, ['c' => 'COUNT(*)']);

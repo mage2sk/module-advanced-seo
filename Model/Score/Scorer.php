@@ -11,22 +11,12 @@ use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Psr\Log\LoggerInterface;
 
-/**
- * Runs all configured score checks and produces a weighted 0..100 score,
- * persisting the result (plus per-check breakdown) to panth_seo_score.
- */
 class Scorer implements SeoScorerInterface
 {
-    /** @var array<string,CheckInterface> */
     private array $checks;
 
-    /** @var array<string,float> */
     private array $weights;
 
-    /**
-     * @param array<string,CheckInterface> $checks       code => check instance
-     * @param array<string,float>          $weights      code => weight
-     */
     public function __construct(
         private readonly ContextBuilder $contextBuilder,
         private readonly ScoreResource $scoreResource,
@@ -85,7 +75,6 @@ class Scorer implements SeoScorerInterface
 
         $this->persist($entityType, $entityId, $storeId, $overall, $grade, $breakdown);
 
-        /** @var SeoScore $dto */
         $dto = $this->seoScoreFactory->create();
         $dto->setEntityType($entityType)
             ->setEntityId($entityId)
@@ -97,9 +86,6 @@ class Scorer implements SeoScorerInterface
         return $dto;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function scoreBatch(string $entityType, array $entityIds, int $storeId): array
     {
         $out = [];
@@ -122,9 +108,6 @@ class Scorer implements SeoScorerInterface
         };
     }
 
-    /**
-     * @param array<string,array<string,mixed>> $breakdown
-     */
     private function persist(
         string $entityType,
         int $entityId,

@@ -7,11 +7,6 @@ use Magento\Cms\Model\Page\DataProvider as CmsPageDataProvider;
 use Magento\Framework\App\ResourceConnection;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 
-/**
- * Adds a "SEO Canonical" fieldset with a custom_canonical_url text input to
- * the CMS page edit form and pre-fills it from the panth_seo_custom_canonical
- * table when an override already exists.
- */
 class CmsPageFormPlugin
 {
     private const TABLE = 'panth_seo_custom_canonical';
@@ -23,13 +18,6 @@ class CmsPageFormPlugin
     ) {
     }
 
-    /**
-     * Inject the SEO Canonical fieldset into the CMS page form meta.
-     *
-     * @param CmsPageDataProvider        $subject
-     * @param array<string, mixed>       $result
-     * @return array<string, mixed>
-     */
     public function afterGetMeta(CmsPageDataProvider $subject, array $result): array
     {
         if (!$this->seoConfig->isEnabled()) {
@@ -72,13 +60,6 @@ class CmsPageFormPlugin
         return $result;
     }
 
-    /**
-     * Pre-fill the custom canonical URL field from the database.
-     *
-     * @param CmsPageDataProvider    $subject
-     * @param array<string, mixed>  $result
-     * @return array<string, mixed>
-     */
     public function afterGetData(CmsPageDataProvider $subject, array $result): array
     {
         if (empty($result)) {

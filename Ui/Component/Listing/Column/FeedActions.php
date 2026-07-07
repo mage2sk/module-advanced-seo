@@ -53,7 +53,7 @@ class FeedActions extends Column
                     'message' => (string) __('Are you sure you want to generate this feed now? This may take a few minutes for large catalogs.'),
                 ],
             ];
-            // Download link (only if file_url exists)
+
             $fileUrl = $item['file_url'] ?? '';
             if ($fileUrl !== '') {
                 $item[$name]['download'] = [

@@ -7,10 +7,6 @@ use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Serialize\SerializerInterface;
 use Panth\AdvancedSEO\Api\Data\ResolvedMetaInterface;
 
-/**
- * Read/write access to `panth_seo_resolved`. Used by the resolver for the
- * fast path (single-row lookup) and by the indexer for bulk writes.
- */
 class ResolvedRepository
 {
     private const TABLE = 'panth_seo_resolved';
@@ -39,10 +35,6 @@ class ResolvedRepository
         return $this->hydrate($row);
     }
 
-    /**
-     * @param int[] $entityIds
-     * @return array<int,ResolvedMetaInterface>
-     */
     public function findMany(string $entityType, array $entityIds, int $storeId): array
     {
         if ($entityIds === []) {
@@ -100,12 +92,8 @@ class ResolvedRepository
         $connection->delete($this->resource->getTableName(self::TABLE), $where);
     }
 
-    /**
-     * @param array<string,mixed> $row
-     */
     private function hydrate(array $row): ResolvedMetaInterface
     {
-        /** @var ResolvedMetaInterface $dto */
         $dto = $this->resolvedFactory->create();
         $dto->setData(ResolvedMetaInterface::RESOLVED_ID, isset($row['resolved_id']) ? (int) $row['resolved_id'] : null);
         $dto->setStoreId((int) ($row['store_id'] ?? 0));
@@ -123,7 +111,6 @@ class ResolvedRepository
         return $dto;
     }
 
-    /** @return array<string,mixed> */
     private function decode(?string $payload): array
     {
         if ($payload === null || $payload === '') {
@@ -137,7 +124,6 @@ class ResolvedRepository
         }
     }
 
-    /** @param array<string,mixed> $payload */
     private function encode(array $payload): ?string
     {
         if ($payload === []) {

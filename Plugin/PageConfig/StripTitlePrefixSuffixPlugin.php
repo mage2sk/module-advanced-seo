@@ -8,10 +8,6 @@ use Magento\Framework\View\Page\Title;
 use Magento\Store\Model\ScopeInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 
-/**
- * Strips the native Magento title prefix and suffix when Panth SEO
- * templates are active, preventing doubled prefixes/suffixes in <title>.
- */
 class StripTitlePrefixSuffixPlugin
 {
     public function __construct(
@@ -20,20 +16,12 @@ class StripTitlePrefixSuffixPlugin
     ) {
     }
 
-    /**
-     * @param Title  $subject
-     * @param string $result
-     * @return string
-     */
     public function afterGet(Title $subject, string $result): string
     {
         if (!$this->config->isEnabled()) {
             return $result;
         }
 
-        // Honour the admin toggle: only strip the native prefix/suffix when
-        // "Strip Native Title Prefix/Suffix" is enabled. Without this guard
-        // the plugin always stripped, making the setting a no-op.
         if (!$this->config->isStripTitlePrefixSuffix()) {
             return $result;
         }

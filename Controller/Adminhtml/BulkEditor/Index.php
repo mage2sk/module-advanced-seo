@@ -22,8 +22,6 @@ class Index extends AbstractAction
 
     public function execute()
     {
-        // Read type from request (path/query param) — resolved only after dispatch,
-        // NOT at controller construct time. Fall back to session, then 'product'.
         $type = (string) $this->getRequest()->getParam('type', '');
         if (!in_array($type, ['product', 'category', 'cms'], true)) {
             $type = (string) ($this->backendSession->getData('panth_seo_bulkeditor_type') ?? 'product');

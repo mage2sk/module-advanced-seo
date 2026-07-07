@@ -8,13 +8,6 @@ use Magento\Framework\App\ResourceConnection;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Panth\AdvancedSEO\Model\Config\Source\MetaRobots;
 
-/**
- * Adds meta_robots (select) and hreflang_identifier (text) fields to the
- * CMS page edit form.
- *
- * CMS pages do not use EAV, so both values are stored in the
- * `panth_seo_override` table keyed by entity_type = 'cms_page'.
- */
 class CmsPageSeoFieldsPlugin
 {
     private const OVERRIDE_TABLE = 'panth_seo_override';
@@ -27,13 +20,6 @@ class CmsPageSeoFieldsPlugin
     ) {
     }
 
-    /**
-     * Inject SEO fields into the CMS page form meta.
-     *
-     * @param CmsPageDataProvider   $subject
-     * @param array<string, mixed>  $result
-     * @return array<string, mixed>
-     */
     public function afterGetMeta(CmsPageDataProvider $subject, array $result): array
     {
         if (!$this->seoConfig->isEnabled()) {
@@ -92,13 +78,6 @@ class CmsPageSeoFieldsPlugin
         return $result;
     }
 
-    /**
-     * Pre-fill meta_robots and hreflang_identifier from the override table.
-     *
-     * @param CmsPageDataProvider   $subject
-     * @param array<string, mixed>  $result
-     * @return array<string, mixed>
-     */
     public function afterGetData(CmsPageDataProvider $subject, array $result): array
     {
         if (!$this->seoConfig->isEnabled()) {
@@ -137,11 +116,6 @@ class CmsPageSeoFieldsPlugin
         return $result;
     }
 
-    /**
-     * Load an existing override row for the CMS page.
-     *
-     * @return array<string, mixed>|null
-     */
     private function loadOverride(int $entityId, int $storeId): ?array
     {
         $connection = $this->resource->getConnection();

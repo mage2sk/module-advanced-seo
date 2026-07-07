@@ -11,19 +11,8 @@ use Panth\AdvancedSEO\Api\MetaResolverInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Psr\Log\LoggerInterface;
 
-/**
- * CMS page metadata injection. Hooked on `Magento\Cms\Helper\Page::prepareResultPage`
- * because that is invoked by both the storefront CMS page controller and the
- * home-page action, and it gives us both the result page and the page id.
- *
- * The home-page controller (Magento\Cms\Controller\Index\Index) passes the raw
- * `web/default/cms_home_page` config value which is the page *identifier*
- * (e.g. "home" or "home|2"), not an integer id. The /about-us path on the
- * other hand passes a numeric id from the URL rewrite. We must handle both.
- */
 class MetadataPlugin
 {
-    /** @var array<string,int> identifier+store -> page_id */
     private array $identifierCache = [];
 
     public function __construct(
@@ -68,19 +57,12 @@ class MetadataPlugin
             if ($resolved->getRobots()) {
                 $config->setRobots($resolved->getRobots());
             }
-            // Canonical is handled by Block\Head\Canonical (via ViewModel\Canonical)
-            // which is pagination-aware.  Adding it here via addRemotePageAsset
-            // would create a duplicate <link rel="canonical"> tag.
         } catch (\Throwable $e) {
             $this->logger->warning('Panth SEO CMS metadata plugin failed', ['error' => $e->getMessage()]);
         }
         return $result;
     }
 
-    /**
-     * Resolve the raw pageId argument (integer, numeric string, or
-     * identifier[|store]) to the integer cms_page primary key.
-     */
     private function resolvePageId(mixed $pageId, int $storeId): int
     {
         if ($pageId === null || $pageId === '') {
@@ -92,7 +74,7 @@ class MetadataPlugin
         if (!is_string($pageId)) {
             return 0;
         }
-        // Magento stores the home-page config as either "home" or "home|STORE_ID".
+
         $identifier = $pageId;
         $delimiter = strrpos($identifier, '|');
         if ($delimiter !== false) {

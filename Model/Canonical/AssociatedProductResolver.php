@@ -12,13 +12,6 @@ use Magento\GroupedProduct\Model\ResourceModel\Product\Link as GroupedLink;
 use Magento\Store\Model\ScopeInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * Resolves the canonical URL for child products (simple/virtual) to their
- * parent composite product when the admin has enabled this behaviour.
- *
- * Checks in order: configurable, grouped, bundle.  Returns the first parent
- * product URL found, or null when the product is standalone.
- */
 class AssociatedProductResolver
 {
     private const XML_ENABLED = 'panth_seo/canonical/associated_product_canonical';
@@ -33,13 +26,6 @@ class AssociatedProductResolver
     ) {
     }
 
-    /**
-     * If the product is a child of a composite, return the parent product URL.
-     *
-     * @param int $productId  The child product entity ID.
-     * @param int $storeId    Current store context.
-     * @return string|null     Parent URL or null when not applicable.
-     */
     public function resolve(int $productId, int $storeId): ?string
     {
         if (!$this->isEnabled($storeId)) {
@@ -47,19 +33,16 @@ class AssociatedProductResolver
         }
 
         try {
-            // 1. Configurable parent
             $parentId = $this->findConfigurableParent($productId);
             if ($parentId !== null) {
                 return $this->getProductUrl($parentId, $storeId);
             }
 
-            // 2. Grouped parent
             $parentId = $this->findGroupedParent($productId);
             if ($parentId !== null) {
                 return $this->getProductUrl($parentId, $storeId);
             }
 
-            // 3. Bundle parent
             $parentId = $this->findBundleParent($productId);
             if ($parentId !== null) {
                 return $this->getProductUrl($parentId, $storeId);
@@ -83,9 +66,6 @@ class AssociatedProductResolver
         );
     }
 
-    /**
-     * Find configurable parent IDs for the given simple product.
-     */
     private function findConfigurableParent(int $childId): ?int
     {
         $parentIds = $this->configurableResource->getParentIdsByChild($childId);
@@ -95,9 +75,6 @@ class AssociatedProductResolver
         return null;
     }
 
-    /**
-     * Find grouped parent via the catalog_product_link table (link_type_id = 3).
-     */
     private function findGroupedParent(int $childId): ?int
     {
         $connection = $this->groupedLink->getConnection();
@@ -114,9 +91,6 @@ class AssociatedProductResolver
         return $parentId !== false ? (int) $parentId : null;
     }
 
-    /**
-     * Find bundle parent via the catalog_product_bundle_selection table.
-     */
     private function findBundleParent(int $childId): ?int
     {
         $connection = $this->bundleSelection->getConnection();
@@ -132,9 +106,6 @@ class AssociatedProductResolver
         return $parentId !== false ? (int) $parentId : null;
     }
 
-    /**
-     * Resolve a product entity ID to its frontend URL.
-     */
     private function getProductUrl(int $productId, int $storeId): ?string
     {
         try {

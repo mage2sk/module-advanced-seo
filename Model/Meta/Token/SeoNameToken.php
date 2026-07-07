@@ -6,15 +6,6 @@ namespace Panth\AdvancedSEO\Model\Meta\Token;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 
-/**
- * Token: {{seo_name}}
- *
- * Returns the `seo_name` EAV attribute value if set, otherwise falls back
- * to the entity name. When `panth_seo/meta/seo_name_enabled` is disabled,
- * the token ignores the dedicated `seo_name` attribute entirely and always
- * falls back to the entity's regular name, giving admins a single switch
- * to turn the SEO-name feature off globally.
- */
 class SeoNameToken implements TokenInterface
 {
     public function __construct(
@@ -30,8 +21,6 @@ class SeoNameToken implements TokenInterface
 
         $storeId = isset($context['store_id']) ? (int) $context['store_id'] : null;
 
-        // Honour the admin toggle — when disabled, bypass the seo_name
-        // attribute entirely and always return the plain entity name.
         if ($this->config->isSeoNameEnabled($storeId)) {
             $seoName = $this->extractSeoName($entity);
             if ($seoName !== '') {
@@ -39,7 +28,6 @@ class SeoNameToken implements TokenInterface
             }
         }
 
-        // Fallback to entity name
         return $this->extractName($entity);
     }
 

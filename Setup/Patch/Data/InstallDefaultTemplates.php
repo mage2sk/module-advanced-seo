@@ -6,10 +6,6 @@ namespace Panth\AdvancedSEO\Setup\Patch\Data;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 
-/**
- * Installs baseline meta templates for product, category and CMS entities
- * at the default store scope so the module works out of the box.
- */
 class InstallDefaultTemplates implements DataPatchInterface
 {
     public function __construct(
@@ -61,13 +57,7 @@ class InstallDefaultTemplates implements DataPatchInterface
                 'entity_type'      => 'cms',
                 'scope'            => 'default',
                 'name'             => 'Default CMS Template',
-                // {{page}} resolves to the CMS page title (see Token\PageToken).
-                // Earlier iterations of this patch used {{title}} which had no
-                // matching token resolver, so the indexer rendered blank
-                // titles and the storefront fell through to the native
-                // cms_page.meta_title — which on multi-store setups can still
-                // contain literal "Default Store View" text from the sample
-                // data seed.
+
                 'meta_title'       => '{{page}} | {{store.name}}',
                 'meta_description' => '{{content_heading|truncate:160}}',
                 'meta_keywords'    => null,

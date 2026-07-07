@@ -8,18 +8,10 @@ use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Psr\Log\LoggerInterface;
 
-/**
- * Scans resolved meta for duplicate titles and descriptions across entities
- * within the same store. Groups duplicates by content hash and writes results
- * to `panth_seo_duplicate` so admins can review and fix them.
- *
- * Runs on a slow cadence (weekly).
- */
 class DuplicateScan
 {
     private const SAMPLE_LIMIT = 10;
 
-    /** @var string[] Fields in panth_seo_resolved to check for duplicates */
     private const FIELDS = ['meta_title', 'meta_description'];
 
     public function __construct(
@@ -41,7 +33,6 @@ class DuplicateScan
         }
 
         try {
-            // Clear previous scan results
             $connection->delete($dupTable);
 
             $now = $this->dateTime->gmtDate();
@@ -54,9 +45,6 @@ class DuplicateScan
         }
     }
 
-    /**
-     * Find duplicate values for a single meta field across all stores.
-     */
     private function scanField(
         \Magento\Framework\DB\Adapter\AdapterInterface $connection,
         string $resolvedTable,
@@ -64,7 +52,6 @@ class DuplicateScan
         string $field,
         string $now
     ): void {
-        // Find content hashes that appear more than once within the same store
         $select = $connection->select()
             ->from(
                 $resolvedTable,
@@ -88,7 +75,6 @@ class DuplicateScan
             $hash    = (string) $dup['content_hash'];
             $count   = (int) $dup['dup_count'];
 
-            // Fetch a sample of entities that share this duplicate
             $sampleSelect = $connection->select()
                 ->from($resolvedTable, ['entity_type', 'entity_id'])
                 ->where('store_id = ?', $storeId)

@@ -15,18 +15,8 @@ use Panth\AdvancedSEO\Model\Meta\TemplateRenderer;
 use Panth\AdvancedSEO\Model\ResourceModel\Template\CollectionFactory as TemplateCollectionFactory;
 use Psr\Log\LoggerInterface;
 
-/**
- * After-plugin on {@see \Magento\Cms\Controller\Page\View::execute()}.
- *
- * When the rendered CMS page qualifies as a landing page, this plugin looks
- * for a `landing_page` entity-type template in `panth_seo_template` and
- * renders it against the CMS page entity. If no dedicated template exists the
- * regular CMS metadata (already applied by the core CMS metadata plugin) is
- * left untouched.
- */
 class CmsPageMetaPlugin
 {
-    /** Entity type stored in panth_seo_template for landing pages. */
     private const ENTITY_TYPE_LANDING_PAGE = 'landing_page';
 
     public function __construct(
@@ -41,9 +31,6 @@ class CmsPageMetaPlugin
     ) {
     }
 
-    /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
     public function afterExecute(CmsPageView $subject, mixed $result): mixed
     {
         try {
@@ -84,11 +71,6 @@ class CmsPageMetaPlugin
         return $result;
     }
 
-    /**
-     * Load the best-matching landing_page template for the given store.
-     *
-     * @return array<string, mixed>|null
-     */
     private function loadLandingPageTemplate(int $storeId): ?array
     {
         if (!$this->seoConfig->useTemplates($storeId)) {
@@ -111,12 +93,6 @@ class CmsPageMetaPlugin
         return $item->getData();
     }
 
-    /**
-     * Render the template fields and apply them to the page config.
-     *
-     * @param array<string, mixed> $template
-     * @param array<string, mixed> $context
-     */
     private function applyTemplate(
         ResultPage $resultPage,
         array $template,

@@ -9,9 +9,6 @@ use Panth\AdvancedSEO\Model\ResourceModel\Template\CollectionFactory;
 
 class TemplateFormDataProvider extends AbstractDataProvider
 {
-    /**
-     * @var array|null
-     */
     private ?array $loadedData = null;
 
     public function __construct(
@@ -42,7 +39,6 @@ class TemplateFormDataProvider extends AbstractDataProvider
             $this->loadedData[$item->getId()] = $itemData;
         }
 
-        // For new entities, provide empty defaults keyed by empty string
         if (empty($this->loadedData)) {
             $this->loadedData[''] = [
                 'entity_type' => 'product',
@@ -56,10 +52,6 @@ class TemplateFormDataProvider extends AbstractDataProvider
         return $this->loadedData;
     }
 
-    /**
-     * Extract condition_attribute and condition_value from conditions_serialized
-     * so the form fields are populated on edit.
-     */
     private function decodeConditions(array &$data): void
     {
         $raw = $data['conditions_serialized'] ?? '';
@@ -82,7 +74,6 @@ class TemplateFormDataProvider extends AbstractDataProvider
             return;
         }
 
-        // Take the first condition for the simple UI fields
         $first = $conditions[0] ?? null;
         if (!is_array($first)) {
             return;

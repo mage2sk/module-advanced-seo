@@ -31,7 +31,6 @@ class Fields extends AbstractAction implements HttpGetActionInterface
             return $this->resultRedirectFactory->create()->setPath('*/*/index');
         }
 
-        // Look up feed name
         $conn = $this->resource->getConnection();
         $feedName = $conn->fetchOne(
             $conn->select()
@@ -44,7 +43,6 @@ class Fields extends AbstractAction implements HttpGetActionInterface
             return $this->resultRedirectFactory->create()->setPath('*/*/index');
         }
 
-        // Store feed_id in session so the data provider can filter by it
         $this->backendSession->setData('panth_seo_feed_field_feed_id', $feedId);
 
         $page = $this->pageFactory->create();

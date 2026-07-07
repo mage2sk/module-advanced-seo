@@ -3,22 +3,12 @@ declare(strict_types=1);
 
 namespace Panth\AdvancedSEO\Model\Audit;
 
-/**
- * Post-crawl analysis: inspects an array of CrawlResult objects and enriches
- * each with categorised SEO issues (missing tags, duplicates, errors, etc.).
- */
 class IssueDetector
 {
     private const TITLE_MAX_LENGTH       = 60;
     private const DESCRIPTION_MAX_LENGTH = 160;
     private const MAX_REDIRECT_HOPS      = 2;
 
-    /**
-     * Analyse crawl results and return enriched copies with detected issues.
-     *
-     * @param CrawlResult[] $results
-     * @return array{results: CrawlResult[], summary: array<string, int>}
-     */
     public function analyse(array $results): array
     {
         $titleIndex = $this->buildTitleIndex($results);
@@ -37,9 +27,8 @@ class IssueDetector
         ];
 
         foreach ($results as $result) {
-            $issues = $result->issues; // preserve any pre-existing issues
+            $issues = $result->issues;
 
-            // --- Status code issues ---
             if ($result->statusCode === 0) {
                 $issues[] = 'Fetch failed (no response)';
                 $summary['fetch_errors']++;
@@ -51,13 +40,11 @@ class IssueDetector
                 $summary['status_5xx']++;
             }
 
-            // Skip further content checks for non-200 pages
             if ($result->statusCode !== 200) {
                 $enriched[] = $result->withIssues(array_diff($issues, $result->issues));
                 continue;
             }
 
-            // --- Title issues ---
             if ($result->title === '') {
                 $issues[] = 'Missing title';
                 $summary['missing_title']++;
@@ -71,7 +58,6 @@ class IssueDetector
                     $summary['title_too_long']++;
                 }
 
-                // Duplicate title detection
                 $duplicateUrls = $this->findDuplicateTitles($result, $titleIndex);
                 if ($duplicateUrls !== []) {
                     foreach ($duplicateUrls as $dupUrl) {
@@ -81,7 +67,6 @@ class IssueDetector
                 }
             }
 
-            // --- Description issues ---
             if ($result->description === '') {
                 $issues[] = 'Missing description';
                 $summary['missing_description']++;
@@ -94,7 +79,6 @@ class IssueDetector
                 $summary['description_too_long']++;
             }
 
-            // --- Canonical issues ---
             if ($result->canonical === '') {
                 $issues[] = 'No canonical';
                 $summary['missing_canonical']++;
@@ -109,15 +93,6 @@ class IssueDetector
         ];
     }
 
-    /**
-     * Detect redirect chains exceeding the allowed hop count.
-     *
-     * This requires the crawler to track redirect history. Each entry
-     * in $redirectMap should be url => array of intermediate URLs.
-     *
-     * @param array<string, string[]> $redirectMap URL => list of redirect hops
-     * @return array<string, string>  URL => issue description
-     */
     public function detectRedirectChains(array $redirectMap): array
     {
         $issues = [];
@@ -134,12 +109,6 @@ class IssueDetector
         return $issues;
     }
 
-    /**
-     * Build an index of normalized title => [url, ...] for duplicate detection.
-     *
-     * @param CrawlResult[] $results
-     * @return array<string, string[]>
-     */
     private function buildTitleIndex(array $results): array
     {
         $index = [];
@@ -153,12 +122,6 @@ class IssueDetector
         return $index;
     }
 
-    /**
-     * Find other URLs with the same title.
-     *
-     * @param array<string, string[]> $titleIndex
-     * @return string[] URLs that share the same title (excluding self)
-     */
     private function findDuplicateTitles(CrawlResult $result, array $titleIndex): array
     {
         $key  = mb_strtolower(trim($result->title));

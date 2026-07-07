@@ -8,11 +8,6 @@ use Magento\Framework\Cache\FrontendInterface;
 use Magento\Framework\Serialize\SerializerInterface;
 use Panth\AdvancedSEO\Api\Data\ResolvedMetaInterface;
 
-/**
- * Thin wrapper over the collections frontend cache pool used to memoize
- * ResolvedMeta DTOs between requests. Invalidated by save observers via
- * entity/store tags.
- */
 class Cache
 {
     private const CACHE_TYPE = 'collections';
@@ -40,7 +35,7 @@ class Cache
             if (!is_array($data)) {
                 return null;
             }
-            /** @var ResolvedMetaInterface $dto */
+
             $dto = $this->resolvedFactory->create();
             $dto->setStoreId((int) ($data['store_id'] ?? $storeId));
             $dto->setEntityType((string) ($data['entity_type'] ?? $entityType));
@@ -87,13 +82,9 @@ class Cache
                 self::LIFETIME
             );
         } catch (\Throwable) {
-            // swallow; cache is best-effort
         }
     }
 
-    /**
-     * @return string[]
-     */
     public function tagsFor(string $entityType, int $entityId, int $storeId): array
     {
         return [

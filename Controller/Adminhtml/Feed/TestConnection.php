@@ -10,9 +10,6 @@ use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Encryption\EncryptorInterface;
 
-/**
- * AJAX controller that tests FTP/SFTP connection.
- */
 class TestConnection extends AbstractAction implements HttpPostActionInterface
 {
     public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::manage';
@@ -43,7 +40,6 @@ class TestConnection extends AbstractAction implements HttpPostActionInterface
                 ]);
             }
 
-            // Try to decrypt; if it fails, use as plain text
             $decrypted = $this->encryptor->decrypt($password);
             if ($decrypted !== '') {
                 $password = $decrypted;

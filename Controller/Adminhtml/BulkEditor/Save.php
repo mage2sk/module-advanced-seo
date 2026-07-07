@@ -8,10 +8,6 @@ use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Backend\App\Action\Context;
 
-/**
- * Accepts an array `rows` with {entity_id, meta_title, meta_description}
- * and persists them against catalog products.
- */
 class Save extends AbstractAction implements HttpPostActionInterface
 {
     public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::templates';

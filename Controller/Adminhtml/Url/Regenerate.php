@@ -9,11 +9,6 @@ use Magento\Framework\Controller\Result\Redirect;
 use Panth\AdvancedSEO\Controller\Adminhtml\AbstractAction;
 use Panth\AdvancedSEO\Model\Url\RewriteRegenerator;
 
-/**
- * Admin POST controller to regenerate catalog URL rewrites.
- *
- * Route: panth_seo/url/regenerate
- */
 class Regenerate extends AbstractAction implements HttpPostActionInterface
 {
     public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::manage';
@@ -25,9 +20,6 @@ class Regenerate extends AbstractAction implements HttpPostActionInterface
         parent::__construct($context);
     }
 
-    /**
-     * @return Redirect
-     */
     public function execute(): Redirect
     {
         $resultRedirect = $this->resultRedirectFactory->create();

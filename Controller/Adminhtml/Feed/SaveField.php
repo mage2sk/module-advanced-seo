@@ -26,13 +26,11 @@ class SaveField extends AbstractAction implements HttpPostActionInterface
         $resultJson = $this->jsonFactory->create();
         $data = (array) $this->getRequest()->getPostValue();
 
-        // Support inline editing (items array)
         $items = $data['items'] ?? null;
         if (is_array($items)) {
             return $this->processInlineEdit($items, $resultJson);
         }
 
-        // Single field save (form submit)
         $feedId = (int) ($data['feed_id'] ?? 0);
         if ($feedId <= 0) {
             $this->messageManager->addErrorMessage(__('Feed ID is required.'));

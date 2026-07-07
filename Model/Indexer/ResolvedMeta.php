@@ -15,12 +15,6 @@ use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Panth\AdvancedSEO\Logger\Logger as SeoDebugLogger;
 use Psr\Log\LoggerInterface;
 
-/**
- * Indexer for `panth_seo_resolved`. For each (store, entity_type, entity_id)
- * triple it invokes the MetaResolver and writes the fully resolved payload
- * so the frontend can read a single row instead of re-running templates,
- * rules and overrides on every request.
- */
 class ResolvedMeta implements IndexerActionInterface, MviewActionInterface
 {
     public const INDEXER_ID = 'panth_seo_resolved_meta';
@@ -38,13 +32,6 @@ class ResolvedMeta implements IndexerActionInterface, MviewActionInterface
     ) {
     }
 
-    /**
-     * Write a structured debug line to var/log/panth_seo.log when the admin
-     * "Debug Logging" toggle is on. Safe no-op when the config helper or the
-     * dedicated logger are not wired (defensive, optional constructor args).
-     *
-     * @param array<string,mixed> $context
-     */
     private function debug(string $message, array $context = []): void
     {
         if ($this->seoDebugLogger === null || $this->seoConfig === null) {
@@ -56,9 +43,6 @@ class ResolvedMeta implements IndexerActionInterface, MviewActionInterface
         $this->seoDebugLogger->debug($message, $context);
     }
 
-    /**
-     * Full reindex: walks all stores and all catalog/CMS entities.
-     */
     public function executeFull(): void
     {
         $this->debug('panth_seo: indexer.run', [
@@ -77,13 +61,6 @@ class ResolvedMeta implements IndexerActionInterface, MviewActionInterface
         }
     }
 
-    /**
-     * Reindex an explicit list of ids. Mview passes the changed entity ids
-     * from all subscribed tables — we resolve against all known entity types
-     * because we can't tell which table the id came from.
-     *
-     * @param int[] $ids
-     */
     public function execute($ids): void
     {
         if ($ids === []) {
@@ -108,17 +85,11 @@ class ResolvedMeta implements IndexerActionInterface, MviewActionInterface
         }
     }
 
-    /**
-     * @param int[] $ids
-     */
     public function executeList(array $ids): void
     {
         $this->execute($ids);
     }
 
-    /**
-     * @param int $id
-     */
     public function executeRow($id): void
     {
         $this->execute([(int) $id]);
@@ -129,14 +100,12 @@ class ResolvedMeta implements IndexerActionInterface, MviewActionInterface
         $storeId = (int) $store->getId();
         $connection = $this->resource->getConnection();
 
-        // Products
         $productIds = $connection->fetchCol(
             $connection->select()
                 ->from(['cpe' => $this->resource->getTableName('catalog_product_entity')], ['entity_id'])
         );
         $this->reindexEntities($store, MetaResolverInterface::ENTITY_PRODUCT, array_map('intval', $productIds));
 
-        // Categories
         $categoryIds = $connection->fetchCol(
             $connection->select()
                 ->from(['cce' => $this->resource->getTableName('catalog_category_entity')], ['entity_id'])
@@ -144,7 +113,6 @@ class ResolvedMeta implements IndexerActionInterface, MviewActionInterface
         );
         $this->reindexEntities($store, MetaResolverInterface::ENTITY_CATEGORY, array_map('intval', $categoryIds));
 
-        // CMS pages (per store via cms_page_store map)
         $cmsIds = $connection->fetchCol(
             $connection->select()
                 ->from(['cps' => $this->resource->getTableName('cms_page_store')], ['page_id'])
@@ -153,9 +121,6 @@ class ResolvedMeta implements IndexerActionInterface, MviewActionInterface
         $this->reindexEntities($store, MetaResolverInterface::ENTITY_CMS, array_map('intval', array_unique($cmsIds)));
     }
 
-    /**
-     * @param int[] $entityIds
-     */
     private function reindexEntities(StoreInterface $store, string $entityType, array $entityIds): void
     {
         if ($entityIds === []) {
@@ -180,9 +145,6 @@ class ResolvedMeta implements IndexerActionInterface, MviewActionInterface
         }
     }
 
-    /**
-     * @param ResolvedMetaInterface[] $resolved
-     */
     private function writeRows(int $storeId, string $entityType, array $resolved): void
     {
         if ($resolved === []) {
@@ -225,9 +187,6 @@ class ResolvedMeta implements IndexerActionInterface, MviewActionInterface
         );
     }
 
-    /**
-     * @param array<string,mixed> $payload
-     */
     private function encode(array $payload): ?string
     {
         if ($payload === []) {

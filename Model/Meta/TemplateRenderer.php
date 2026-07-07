@@ -5,24 +5,6 @@ namespace Panth\AdvancedSEO\Model\Meta;
 
 use Psr\Log\LoggerInterface;
 
-/**
- * Sandboxed token replacement engine.
- *
- * Syntax:
- *   {{name}}                       — plain token
- *   {{attribute:color}}            — token with argument (after colon)
- *   {{name|truncate:60}}           — filter with numeric arg
- *   {{store|default:'Shop'}}       — filter with string arg
- *   {{description|strip|truncate:155}} — chained filters
- *
- * Supported filters: truncate, title, strip, default, upper, lower.
- *
- * There is NO eval and NO Magento variable filter involved. Tokens resolve
- * through TokenRegistry only; unknown tokens render as empty string.
- *
- * Recursion depth limit: 5 (template output is re-rendered if it still
- * contains tokens, e.g. when a token's value itself was a template).
- */
 class TemplateRenderer
 {
     private const MAX_DEPTH = 5;
@@ -34,9 +16,6 @@ class TemplateRenderer
     ) {
     }
 
-    /**
-     * @param array<string,mixed> $context
-     */
     public function render(string $template, mixed $entity, array $context = []): string
     {
         if ($template === '' || strpos($template, '{{') === false) {
@@ -61,43 +40,30 @@ class TemplateRenderer
         return $this->cleanOutput($output);
     }
 
-    /**
-     * Clean up rendered output: remove empty separators, duplicate spaces,
-     * trailing/leading punctuation from empty tokens.
-     */
     private function cleanOutput(string $output): string
     {
-        // Remove patterns like " - " or " | " where one side is empty (start/end of string)
         $output = preg_replace('/^\s*[-|]\s*/', '', $output) ?? $output;
         $output = preg_replace('/\s*[-|]\s*$/', '', $output) ?? $output;
 
-        // Remove empty comma-separated entries: ", ," or ", , ,"
         $output = preg_replace('/,\s*,/', ',', $output) ?? $output;
-        // Remove leading/trailing commas with spaces
+
         $output = preg_replace('/^[\s,]+/', '', $output) ?? $output;
         $output = preg_replace('/[\s,]+$/', '', $output) ?? $output;
 
-        // Remove double separators: " -  | " → " | " or " |  - " → " - "
         $output = preg_replace('/\s*[-]\s*\|\s*/', ' | ', $output) ?? $output;
         $output = preg_replace('/\s*\|\s*[-]\s*/', ' - ', $output) ?? $output;
 
-        // Collapse multiple spaces
         $output = preg_replace('/\s{2,}/', ' ', $output) ?? $output;
 
         return trim($output);
     }
 
-    /**
-     * @param array<int,string> $match
-     * @param array<string,mixed> $context
-     */
     private function resolveMatch(array $match, mixed $entity, array $context): string
     {
         $tokenName = strtolower($match[1] ?? '');
         $argument  = ($match[2] ?? '') !== '' ? $match[2] : null;
         $filters   = trim($match[3] ?? '');
 
-        // Support dot notation: {{store.name}} → token "store", argument "name"
         if ($argument === null && str_contains($tokenName, '.')) {
             $parts = explode('.', $tokenName, 2);
             $tokenName = $parts[0];

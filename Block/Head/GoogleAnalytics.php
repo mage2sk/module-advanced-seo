@@ -13,28 +13,12 @@ use Magento\Framework\View\Element\Template\Context;
 use Magento\Store\Model\ScopeInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 
-/**
- * Outputs the GA4 gtag.js snippet and enhanced ecommerce dataLayer events.
- *
- * On product pages: fires a `view_item` event.
- * On category pages: fires a `view_item_list` event.
- * On cart additions: fires `add_to_cart` via Alpine/JS-triggered push.
- *
- * Hyva-safe: this emits standard Google script tags, no jQuery dependency.
- */
 class GoogleAnalytics extends Template
 {
     public const XML_GA4_ENABLED        = 'panth_seo/analytics/ga4_enabled';
     public const XML_GA4_MEASUREMENT_ID = 'panth_seo/analytics/ga4_measurement_id';
     public const XML_GA4_ENHANCED_ECOM  = 'panth_seo/analytics/ga4_enhanced_ecommerce';
 
-    /**
-     * Whitelist for GA4 Measurement IDs. Google's format is `G-XXXXXXXXXX`
-     * (alphanumeric, 10+ chars). We intentionally accept a wider charset
-     * (alnum, dash, underscore, up to 64 chars) to stay forward-compatible,
-     * but any other character rejects the value entirely to prevent HTML/JS
-     * injection via a compromised admin session (defence-in-depth).
-     */
     private const MEASUREMENT_ID_REGEX = '/^[A-Za-z0-9_\-]{1,64}$/';
 
     public function __construct(
@@ -48,10 +32,6 @@ class GoogleAnalytics extends Template
         parent::__construct($context, $data);
     }
 
-    /**
-     * Whether GA4 output is active: master module enabled, GA4 flag is set, and a
-     * well-formed measurement ID is present.
-     */
     public function isEnabled(): bool
     {
         return $this->seoConfig->isEnabled()
@@ -59,13 +39,6 @@ class GoogleAnalytics extends Template
             && $this->getMeasurementId() !== '';
     }
 
-    /**
-     * The GA4 measurement ID (e.g. G-XXXXXXXXXX).
-     *
-     * Returns an empty string for any value that does not match the
-     * MEASUREMENT_ID_REGEX whitelist. This guarantees the template can
-     * safely emit the value without further validation.
-     */
     public function getMeasurementId(): string
     {
         $raw = trim((string) ($this->scopeConfig->getValue(
@@ -80,19 +53,11 @@ class GoogleAnalytics extends Template
         return $raw;
     }
 
-    /**
-     * Whether enhanced ecommerce events should be emitted.
-     */
     public function isEnhancedEcommerceEnabled(): bool
     {
         return $this->scopeConfig->isSetFlag(self::XML_GA4_ENHANCED_ECOM, ScopeInterface::SCOPE_STORE);
     }
 
-    /**
-     * Build the enhanced ecommerce event JS snippet for the current page context.
-     *
-     * Returns empty string when enhanced ecommerce is disabled or no event applies.
-     */
     public function getEnhancedEcommerceJs(): string
     {
         if (!$this->isEnhancedEcommerceEnabled()) {
@@ -112,9 +77,6 @@ class GoogleAnalytics extends Template
         return '';
     }
 
-    /**
-     * Build the `view_item` event JS for a product page.
-     */
     private function buildViewItemEvent(ProductInterface $product): string
     {
         $currency = $this->getCurrencyCode();
@@ -149,9 +111,6 @@ class GoogleAnalytics extends Template
         return $this->wrapEvent($event);
     }
 
-    /**
-     * Build the `view_item_list` event JS for a category page.
-     */
     private function buildViewItemListEvent(CategoryInterface $category): string
     {
         $currency = $this->getCurrencyCode();
@@ -159,7 +118,6 @@ class GoogleAnalytics extends Template
         $listId   = 'category_' . $category->getId();
 
         try {
-            /** @var \Magento\Catalog\Model\Layer $layer */
             $layer = $this->getLayout()
                 ->getBlock('category.products.list')
                 ?->getLayer();
@@ -172,11 +130,6 @@ class GoogleAnalytics extends Template
             return '';
         }
 
-        // The CatalogSearch / Layer collection can throw "Item with the same
-        // ID already exists" when stock or other joins produce duplicate
-        // entity_id rows. Force the load here under a try/catch so the GA4
-        // event is silently skipped instead of 500'ing the whole category
-        // page render.
         try {
             $loadedProducts = $collection->getItems();
         } catch (\Throwable) {
@@ -187,7 +140,7 @@ class GoogleAnalytics extends Template
         $index = 0;
         foreach ($loadedProducts as $product) {
             if ($index >= 50) {
-                break; // Limit to avoid oversized data layer
+                break;
             }
 
             $item = [
@@ -230,11 +183,6 @@ class GoogleAnalytics extends Template
         return $this->wrapEvent($event);
     }
 
-    /**
-     * Wrap an event array into a gtag dataLayer push JS statement.
-     *
-     * @param array<string, mixed> $event
-     */
     private function wrapEvent(array $event): string
     {
         return "gtag('event', " . json_encode($event['event'], JSON_THROW_ON_ERROR) . ", "
@@ -242,9 +190,6 @@ class GoogleAnalytics extends Template
             . ");";
     }
 
-    /**
-     * Resolve the final price for a product.
-     */
     private function resolvePrice(ProductInterface $product): float
     {
         try {
@@ -259,9 +204,6 @@ class GoogleAnalytics extends Template
         return round($price, 2);
     }
 
-    /**
-     * Resolve brand name from product attributes.
-     */
     private function resolveBrand(ProductInterface $product): string
     {
         try {
@@ -271,20 +213,16 @@ class GoogleAnalytics extends Template
         }
     }
 
-    /**
-     * Resolve the primary category name for a product.
-     */
     private function resolveCategoryName(ProductInterface $product): string
     {
         try {
             $breadcrumbs = $this->catalogHelper->getBreadcrumbPath();
-            // The last breadcrumb before the product is the category.
+
             $crumbs = array_values($breadcrumbs);
             if (count($crumbs) >= 2) {
                 return (string) ($crumbs[count($crumbs) - 2]['label'] ?? '');
             }
         } catch (\Throwable) {
-            // fall through
         }
 
         try {
@@ -293,7 +231,6 @@ class GoogleAnalytics extends Template
                 return (string) $category->getName();
             }
         } catch (\Throwable) {
-            // fall through
         }
 
         return '';

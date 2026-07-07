@@ -13,11 +13,6 @@ use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Panth\AdvancedSEO\Model\Meta\Cache as MetaCache;
 use Psr\Log\LoggerInterface;
 
-/**
- * When a category moves its children's canonical URLs and the products inside
- * them all shift. We publish per-product score/reresolve jobs asynchronously —
- * never inline, because a move can touch thousands of rows.
- */
 class MoveAfter implements ObserverInterface
 {
     private const BATCH_SIZE = 500;
@@ -58,7 +53,6 @@ class MoveAfter implements ObserverInterface
 
             $connection = $this->resource->getConnection();
 
-            // All descendant categories.
             $pathPattern = rtrim((string) $category->getPath(), '/') . '/%';
             $descendantIds = $connection->fetchCol(
                 $connection->select()
@@ -75,7 +69,6 @@ class MoveAfter implements ObserverInterface
                 return;
             }
 
-            // All products linked to any of those categories.
             $productIds = $connection->fetchCol(
                 $connection->select()
                     ->from($this->resource->getTableName('catalog_category_product'), ['product_id'])

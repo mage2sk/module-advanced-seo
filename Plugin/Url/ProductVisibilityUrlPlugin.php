@@ -12,16 +12,6 @@ use Magento\Store\Model\ScopeInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Psr\Log\LoggerInterface;
 
-/**
- * After a product is saved, detects whether the `visibility` attribute changed.
- * When it has, regenerates URL rewrites so the product immediately becomes
- * reachable (or unreachable) at its canonical URL.
- *
- * Plugin target (per di.xml): Magento\Catalog\Model\Product::save
- *
- * Guarded by the same "Use Short Category URL" feature flag so the rewrite
- * regeneration only fires when the advanced URL feature set is active.
- */
 class ProductVisibilityUrlPlugin
 {
     private const XML_PATH_USE_SHORT_CATEGORY_URL = 'panth_seo/canonical/use_short_category_url';
@@ -35,15 +25,6 @@ class ProductVisibilityUrlPlugin
     ) {
     }
 
-    /**
-     * Regenerate URL rewrites when product visibility changes.
-     *
-     * @param Product $subject The product model being saved.
-     * @param Product $result  The product returned by the original save().
-     * @return Product
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
     public function afterSave(Product $subject, Product $result): Product
     {
         try {
@@ -55,16 +36,12 @@ class ProductVisibilityUrlPlugin
                 return $result;
             }
 
-            // Do not regenerate URLs for disabled products -- they should not
-            // have storefront rewrites at all.
             if ((int) $result->getStatus() === \Magento\Catalog\Model\Product\Attribute\Source\Status::STATUS_DISABLED) {
                 return $result;
             }
 
             $newVisibility = (int) $result->getVisibility();
 
-            // Product moved to "Not Visible Individually": remove its rewrites
-            // so stale URLs don't linger.
             if ($newVisibility === Visibility::VISIBILITY_NOT_VISIBLE) {
                 $this->urlPersist->deleteByData([
                     \Magento\UrlRewrite\Service\V1\Data\UrlRewrite::ENTITY_ID   => $result->getId(),
@@ -73,14 +50,11 @@ class ProductVisibilityUrlPlugin
                 return $result;
             }
 
-            // Visibility gained or changed between catalog/search/both:
-            // regenerate the full set of URL rewrites for this product.
             $urls = $this->urlRewriteGenerator->generate($result);
             if ($urls) {
                 $this->urlPersist->replace($urls);
             }
         } catch (\Throwable $e) {
-            // Never break the save flow -- log and continue.
             $this->logger->error(
                 '[PanthSEO] Failed to regenerate URL rewrites after visibility change',
                 [
@@ -93,14 +67,10 @@ class ProductVisibilityUrlPlugin
         return $result;
     }
 
-    /**
-     * Compare original visibility value against current to detect a change.
-     */
     private function hasVisibilityChanged(Product $product): bool
     {
         $origData = $product->getOrigData('visibility');
 
-        // No original data means this is a new product -- nothing to compare.
         if ($origData === null) {
             return false;
         }

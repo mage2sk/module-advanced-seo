@@ -7,13 +7,6 @@ use Magento\Cms\Api\Data\PageInterface;
 use Magento\Framework\App\ResourceConnection;
 use Psr\Log\LoggerInterface;
 
-/**
- * Determines whether a CMS page qualifies as a "landing page" for SEO purposes.
- *
- * A CMS page is considered a landing page when at least one of the following is true:
- *   - Its identifier starts with the `landing-` prefix.
- *   - Its layout update XML contains the `landing_page` handle.
- */
 class LandingPageDetector
 {
     private const IDENTIFIER_PREFIX = 'landing-';
@@ -25,9 +18,6 @@ class LandingPageDetector
     ) {
     }
 
-    /**
-     * Check whether a single CMS page qualifies as a landing page.
-     */
     public function isLandingPage(PageInterface $page): bool
     {
         $identifier = (string) $page->getIdentifier();
@@ -48,13 +38,6 @@ class LandingPageDetector
         return false;
     }
 
-    /**
-     * Return all active CMS pages that qualify as landing pages for a given store.
-     *
-     * Each element is an associative array with all `cms_page` columns.
-     *
-     * @return array<int, array<string, mixed>>
-     */
     public function getLandingPages(int $storeId): array
     {
         try {

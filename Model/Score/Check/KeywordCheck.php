@@ -5,10 +5,6 @@ namespace Panth\AdvancedSEO\Model\Score\Check;
 
 use Panth\AdvancedSEO\Model\Score\CheckInterface;
 
-/**
- * Keyword check: verifies that meta keywords appear in title/description/content
- * at reasonable densities (0.5% – 3%).
- */
 class KeywordCheck implements CheckInterface
 {
     public function getCode(): string
@@ -16,10 +12,6 @@ class KeywordCheck implements CheckInterface
         return 'keyword';
     }
 
-    /**
-     * @param array<string,mixed> $context
-     * @return array{score:float, max:float, message:string, details?:array<string,mixed>}
-     */
     public function run(array $context): array
     {
         $keywords = trim((string)($context['meta']['keywords'] ?? ''));

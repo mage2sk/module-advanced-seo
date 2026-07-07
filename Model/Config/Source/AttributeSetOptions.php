@@ -8,9 +8,6 @@ use Magento\Catalog\Model\Product;
 use Magento\Eav\Model\Config as EavConfig;
 use Magento\Framework\Data\OptionSourceInterface;
 
-/**
- * Returns all product attribute sets as option array for multiselect.
- */
 class AttributeSetOptions implements OptionSourceInterface
 {
     public function __construct(

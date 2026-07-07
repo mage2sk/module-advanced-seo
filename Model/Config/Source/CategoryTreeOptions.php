@@ -6,10 +6,6 @@ namespace Panth\AdvancedSEO\Model\Config\Source;
 use Magento\Catalog\Model\ResourceModel\Category\CollectionFactory;
 use Magento\Framework\Data\OptionSourceInterface;
 
-/**
- * Returns categories as a flat option array with indentation showing hierarchy.
- * Format: "Root > Gear > Bags (ID: 4)"
- */
 class CategoryTreeOptions implements OptionSourceInterface
 {
     public function __construct(
@@ -24,7 +20,6 @@ class CategoryTreeOptions implements OptionSourceInterface
         $collection->addFieldToFilter('level', ['gt' => 0]);
         $collection->setOrder('path', 'ASC');
 
-        // Build path-to-name map
         $nameMap = [];
         foreach ($collection as $category) {
             $nameMap[(int) $category->getId()] = (string) $category->getName();
@@ -37,7 +32,6 @@ class CategoryTreeOptions implements OptionSourceInterface
                 continue;
             }
 
-            // Build breadcrumb path from path IDs
             $pathIds = array_map('intval', explode('/', (string) $category->getPath()));
             $pathNames = [];
             foreach ($pathIds as $pathId) {

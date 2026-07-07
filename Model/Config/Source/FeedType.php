@@ -5,9 +5,6 @@ namespace Panth\AdvancedSEO\Model\Config\Source;
 
 use Magento\Framework\Data\OptionSourceInterface;
 
-/**
- * Source model for feed profile types.
- */
 class FeedType implements OptionSourceInterface
 {
     public function toOptionArray(): array

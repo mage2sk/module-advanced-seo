@@ -9,13 +9,6 @@ use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
 
-/**
- * Cross-domain canonical resolver.
- *
- * When the `panth_seo/canonical/cross_domain_store` config points to another
- * store, this resolver replaces the domain portion of the canonical URL with
- * the base URL of that target store, producing a cross-domain canonical tag.
- */
 class CrossDomainResolver
 {
     private const XML_CROSS_DOMAIN_STORE = 'panth_seo/canonical/cross_domain_store';
@@ -27,11 +20,6 @@ class CrossDomainResolver
     ) {
     }
 
-    /**
-     * Replace the domain of $canonicalUrl with the cross-domain store's base
-     * URL when configured.  Returns the original URL unchanged when no
-     * cross-domain store is set.
-     */
     public function resolve(string $canonicalUrl, int $storeId): string
     {
         if ($canonicalUrl === '') {
@@ -60,10 +48,6 @@ class CrossDomainResolver
         }
     }
 
-    /**
-     * Read the cross-domain store ID from config; returns null when unset or
-     * pointing at the same store.
-     */
     private function getCrossDomainStoreId(int $storeId): ?int
     {
         $value = $this->scopeConfig->getValue(
@@ -78,7 +62,6 @@ class CrossDomainResolver
 
         $targetStoreId = (int) $value;
 
-        // No point rewriting to the same store.
         if ($targetStoreId === $storeId) {
             return null;
         }
@@ -86,9 +69,6 @@ class CrossDomainResolver
         return $targetStoreId;
     }
 
-    /**
-     * Get the base web URL for a given store.
-     */
     private function getStoreBaseUrl(int $storeId): string
     {
         try {
@@ -99,9 +79,6 @@ class CrossDomainResolver
         }
     }
 
-    /**
-     * Replace scheme + host (+ port) of $url with those from $targetBaseUrl.
-     */
     private function replaceDomain(string $url, string $targetBaseUrl): string
     {
         $sourceParts = parse_url($url);

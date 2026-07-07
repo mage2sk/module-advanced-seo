@@ -44,7 +44,6 @@ class FeedFieldFormDataProvider extends AbstractDataProvider
             }
         }
 
-        // For new field, provide defaults with feed_id
         if (empty($this->loadedData)) {
             $feedId = (int) $this->request->getParam('feed_id');
             if ($feedId <= 0) {

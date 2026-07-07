@@ -8,11 +8,6 @@ use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Backend\App\Action\Context;
 use Panth\AdvancedSEO\Model\Feed\ProfileBasedFeedBuilder;
 
-/**
- * Admin controller: generates a feed from a specific feed profile.
- *
- * Accepts `id` (feed_id) param, generates the feed, and redirects back with stats.
- */
 class Generate extends AbstractAction implements HttpGetActionInterface
 {
     public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::manage';
@@ -52,9 +47,6 @@ class Generate extends AbstractAction implements HttpGetActionInterface
         return $resultRedirect->setPath('*/*/');
     }
 
-    /**
-     * Format byte count for human-readable display.
-     */
     private function formatFileSize(int $bytes): string
     {
         if ($bytes < 1024) {

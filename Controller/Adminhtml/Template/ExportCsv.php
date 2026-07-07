@@ -17,14 +17,6 @@ use Panth\AdvancedSEO\Model\Meta\Template\ConditionEvaluator;
 use Panth\AdvancedSEO\Model\Meta\TemplateRenderer;
 use Psr\Log\LoggerInterface;
 
-/**
- * Export a CSV file showing current vs. new meta values for ALL matching entities.
- *
- * Columns: entity_id, identifier (sku for products / name for categories),
- *          current_meta_title, new_meta_title, current_meta_description, new_meta_description
- *
- * Entities are loaded in paginated batches to bound memory usage.
- */
 class ExportCsv extends AbstractAction implements HttpGetActionInterface
 {
     public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::templates';
@@ -46,9 +38,6 @@ class ExportCsv extends AbstractAction implements HttpGetActionInterface
         parent::__construct($context);
     }
 
-    /**
-     * @return \Magento\Framework\App\ResponseInterface
-     */
     public function execute()
     {
         $templateId = (int) $this->getRequest()->getParam('template_id');
@@ -149,9 +138,6 @@ class ExportCsv extends AbstractAction implements HttpGetActionInterface
         }
     }
 
-    /**
-     * @return array<string,mixed>|null
-     */
     private function loadTemplate(int $templateId): ?array
     {
         $connection = $this->resource->getConnection();
@@ -164,10 +150,6 @@ class ExportCsv extends AbstractAction implements HttpGetActionInterface
         return is_array($row) && $row !== [] ? $row : null;
     }
 
-    /**
-     * @param array<string,mixed> $template
-     * @return array<string,mixed>
-     */
     private function decodeConditions(array $template): array
     {
         $raw = $template['conditions_serialized'] ?? null;
@@ -183,11 +165,6 @@ class ExportCsv extends AbstractAction implements HttpGetActionInterface
         }
     }
 
-    /**
-     * Iterate all products for a store in paginated batches.
-     *
-     * @param callable(iterable): void $callback
-     */
     private function iterateProducts(int $storeId, callable $callback): void
     {
         $page = 1;
@@ -213,11 +190,6 @@ class ExportCsv extends AbstractAction implements HttpGetActionInterface
         } while ($page <= $lastPage);
     }
 
-    /**
-     * Iterate all categories for a store in paginated batches.
-     *
-     * @param callable(iterable): void $callback
-     */
     private function iterateCategories(int $storeId, callable $callback): void
     {
         $page = 1;

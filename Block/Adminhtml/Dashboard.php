@@ -20,19 +20,6 @@ class Dashboard extends Template
         parent::__construct($context, $data);
     }
 
-    /**
-     * Catalog SEO health overview: products & categories missing meta fields.
-     *
-     * @return array{
-     *     total_products: int,
-     *     products_missing_title: int,
-     *     products_missing_desc: int,
-     *     total_categories: int,
-     *     categories_missing_title: int,
-     *     categories_missing_desc: int,
-     *     total_cms: int
-     * }
-     */
     public function getCatalogOverview(): array
     {
         $conn = $this->getConnection();
@@ -47,7 +34,6 @@ class Dashboard extends Template
         ];
 
         try {
-            // Total products
             $productTable = $this->resource->getTableName('catalog_product_entity');
             if ($conn->isTableExists($productTable)) {
                 $result['total_products'] = (int) $conn->fetchOne(
@@ -55,7 +41,6 @@ class Dashboard extends Template
                 );
             }
 
-            // Products missing meta_title
             $metaTitleAttrId = $this->getAttributeId('catalog_product', 'meta_title');
             if ($metaTitleAttrId && $result['total_products'] > 0) {
                 $varcharTable = $this->resource->getTableName('catalog_product_entity_varchar');
@@ -71,8 +56,6 @@ class Dashboard extends Template
                 $result['products_missing_title'] = $result['total_products'];
             }
 
-            // Products missing meta_description
-            // Note: meta_description backend_type varies (varchar in some installs, text in others)
             $metaDescAttrId = $this->getAttributeId('catalog_product', 'meta_description');
             if ($metaDescAttrId && $result['total_products'] > 0) {
                 $backendType = $this->getAttributeBackendType('catalog_product', 'meta_description');
@@ -91,7 +74,6 @@ class Dashboard extends Template
                 $result['products_missing_desc'] = $result['total_products'];
             }
 
-            // Total categories (exclude root + default)
             $catTable = $this->resource->getTableName('catalog_category_entity');
             if ($conn->isTableExists($catTable)) {
                 $result['total_categories'] = (int) $conn->fetchOne(
@@ -99,7 +81,6 @@ class Dashboard extends Template
                 );
             }
 
-            // Categories missing meta_title
             $catTitleAttrId = $this->getAttributeId('catalog_category', 'meta_title');
             if ($catTitleAttrId && $result['total_categories'] > 0) {
                 $catVarcharTable = $this->resource->getTableName('catalog_category_entity_varchar');
@@ -117,7 +98,6 @@ class Dashboard extends Template
                 $result['categories_missing_title'] = $result['total_categories'];
             }
 
-            // Categories missing meta_description
             $catDescAttrId = $this->getAttributeId('catalog_category', 'meta_description');
             if ($catDescAttrId && $result['total_categories'] > 0) {
                 $catBackendType = $this->getAttributeBackendType('catalog_category', 'meta_description');
@@ -138,7 +118,6 @@ class Dashboard extends Template
                 $result['categories_missing_desc'] = $result['total_categories'];
             }
 
-            // CMS pages
             $cmsTable = $this->resource->getTableName('cms_page');
             if ($conn->isTableExists($cmsTable)) {
                 $result['total_cms'] = (int) $conn->fetchOne(
@@ -146,17 +125,11 @@ class Dashboard extends Template
                 );
             }
         } catch (\Throwable $e) {
-            // Fail gracefully — return zeroes rather than crashing the dashboard
         }
 
         return $result;
     }
 
-    /**
-     * Module feature statistics (counts of active records per feature table).
-     *
-     * @return array<string, int>
-     */
     public function getModuleStats(): array
     {
         $conn = $this->getConnection();
@@ -188,17 +161,11 @@ class Dashboard extends Template
                 }
             }
         } catch (\Throwable $e) {
-            // Fail gracefully
         }
 
         return $stats;
     }
 
-    /**
-     * Quick-action links for the dashboard.
-     *
-     * @return list<array{label: string, url: string, icon: string}>
-     */
     public function getQuickActions(): array
     {
         return [
@@ -250,18 +217,11 @@ class Dashboard extends Template
         ];
     }
 
-    /**
-     * Calculate percentage; returns 0.0 when total is zero.
-     */
     public function pct(int $part, int $total): float
     {
         return $total > 0 ? round(($part / $total) * 100, 1) : 0.0;
     }
 
-    /**
-     * Return CSS colour class based on percentage of missing items.
-     * green < 5%, yellow 5-20%, red > 20%
-     */
     public function healthColor(float $pct): string
     {
         if ($pct > 20.0) {
@@ -274,18 +234,11 @@ class Dashboard extends Template
         return 'panth-card--green';
     }
 
-    // ---------------------------------------------------------------
-    //  Private helpers
-    // ---------------------------------------------------------------
-
     private function getConnection(): AdapterInterface
     {
         return $this->resource->getConnection();
     }
 
-    /**
-     * Sitemap & Feed generation status.
-     */
     public function getSitemapFeedStats(): array
     {
         $stats = [

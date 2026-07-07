@@ -6,13 +6,6 @@ namespace Panth\AdvancedSEO\ViewModel;
 use Magento\Backend\Model\Session as BackendSession;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 
-/**
- * ViewModel for the Bulk Editor "type" tabs phtml template.
- *
- * Avoids direct ObjectManager usage inside the template by exposing the
- * currently-selected bulk editor entity type (product / category / cms)
- * through dependency injection.
- */
 class BulkEditorTypeTabs implements ArgumentInterface
 {
     private const SESSION_KEY = 'panth_seo_bulkeditor_type';
@@ -24,9 +17,6 @@ class BulkEditorTypeTabs implements ArgumentInterface
     ) {
     }
 
-    /**
-     * Return the currently-selected bulk editor entity type.
-     */
     public function getCurrentType(): string
     {
         $type = (string) ($this->backendSession->getData(self::SESSION_KEY) ?? self::DEFAULT_TYPE);

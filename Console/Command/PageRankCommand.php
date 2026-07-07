@@ -39,7 +39,6 @@ class PageRankCommand extends Command
         try {
             $this->appState->setAreaCode(Area::AREA_ADMINHTML);
         } catch (\Throwable) {
-            // already set
         }
 
         $storeArg = $input->getOption('store');
@@ -82,8 +81,7 @@ class PageRankCommand extends Command
             if (!$hasTable) {
                 continue;
             }
-            // Persist top-N related per source node using PR weight
-            // (Embedding-blended suggestions are computed lazily in ViewModel.)
+
             $conn->delete($table, ['store_id = ?' => $storeId]);
             arsort($ranks);
             $buffer = [];

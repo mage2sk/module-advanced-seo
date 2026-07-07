@@ -13,10 +13,6 @@ use Panth\AdvancedSEO\Helper\Config;
 use Panth\AdvancedSEO\Model\Audit\Crawler;
 use Panth\AdvancedSEO\Model\Audit\IssueDetector;
 
-/**
- * Admin controller: trigger a manual SEO crawl audit for the current store scope.
- * Route: panth_seo/audit/crawl (POST)
- */
 class Crawl extends AbstractAction implements HttpPostActionInterface
 {
     public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::crawl_audit';
@@ -33,9 +29,6 @@ class Crawl extends AbstractAction implements HttpPostActionInterface
         parent::__construct($context);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function execute()
     {
         $resultRedirect = $this->resultRedirectFactory->create();
@@ -47,7 +40,6 @@ class Crawl extends AbstractAction implements HttpPostActionInterface
             $rawResults = $this->crawler->crawl($storeId, $maxPages);
             $analysis   = $this->issueDetector->analyse($rawResults);
 
-            /** @var \Panth\AdvancedSEO\Model\Audit\CrawlResult[] $results */
             $results = $analysis['results'];
             $summary = $analysis['summary'];
 
@@ -89,11 +81,6 @@ class Crawl extends AbstractAction implements HttpPostActionInterface
         return $resultRedirect->setPath('*/audit/index');
     }
 
-    /**
-     * Delete previous crawl results for the store and insert new ones.
-     *
-     * @param \Panth\AdvancedSEO\Model\Audit\CrawlResult[] $results
-     */
     private function persistResults(int $storeId, array $results): void
     {
         $connection = $this->resource->getConnection();

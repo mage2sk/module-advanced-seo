@@ -7,11 +7,6 @@ use Magento\Framework\View\Element\UiComponent\ContextInterface;
 use Magento\Framework\View\Element\UiComponentFactory;
 use Magento\Ui\Component\Listing\Columns\Column;
 
-/**
- * Column renderer that displays "MISSING" in red when the cell value is empty.
- *
- * Used in the Missing Meta Report grid for meta_title and meta_description.
- */
 class MissingMetaHighlight extends Column
 {
     public function __construct(
