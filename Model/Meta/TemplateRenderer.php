@@ -120,12 +120,12 @@ class TemplateRenderer
     {
         switch ($name) {
             case 'truncate':
-                $len = max(1, (int) ($arg ?? '60'));
+                $len = max(4, (int) ($arg ?? '60'));
                 if (function_exists('mb_strlen') && mb_strlen($value, 'UTF-8') > $len) {
-                    return rtrim(mb_substr($value, 0, $len - 1, 'UTF-8')) . '…';
+                    return rtrim(mb_substr($value, 0, $len - 3, 'UTF-8')) . '...';
                 }
                 if (strlen($value) > $len) {
-                    return rtrim(substr($value, 0, $len - 1)) . '…';
+                    return rtrim(substr($value, 0, $len - 3)) . '...';
                 }
                 return $value;
 

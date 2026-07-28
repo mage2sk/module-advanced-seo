@@ -1,4 +1,4 @@
-# Panth Advanced SEO — User Guide
+# Panth Advanced SEO - User Guide
 
 This guide walks a Magento store administrator through every screen
 and setting of the Panth Advanced SEO extension. No coding required.
@@ -16,11 +16,11 @@ and setting of the Panth Advanced SEO extension. No coding required.
 7.  [Hreflang](#7-hreflang)
 8.  [Redirects](#8-redirects)
 9.  [Structured data (JSON-LD)](#9-structured-data-json-ld)
-10. [Social meta — OpenGraph & Twitter](#10-social-meta--opengraph--twitter)
+10. [Social meta - OpenGraph & Twitter](#10-social-meta--opengraph--twitter)
 11. [SEO rules engine](#11-seo-rules-engine)
 12. [SEO scoring & audit](#12-seo-scoring--audit)
 13. [AI content generation](#13-ai-content-generation)
-14. [Sitemaps — XML & HTML](#14-sitemaps--xml--html)
+14. [Sitemaps - XML & HTML](#14-sitemaps--xml--html)
 15. [Image SEO](#15-image-seo)
 16. [Cross-linking & internal link suggestions](#16-cross-linking--internal-link-suggestions)
 17. [Layered navigation / filter URL control](#17-layered-navigation--filter-url-control)
@@ -68,11 +68,11 @@ bin/magento module:status Panth_AdvancedSEO
 
 After installation, these things should be true:
 
-- **Admin sidebar** — a new "Advanced SEO" section appears under
+- **Admin sidebar** - a new "Advanced SEO" section appears under
   the "Panth Infotech" top-level menu.
-- **Configuration** — `Stores > Configuration > Panth Extensions > Advanced SEO`
+- **Configuration** - `Stores > Configuration > Panth Extensions > Advanced SEO`
   is available with all sub-sections.
-- **Indexers** — `bin/magento indexer:status` lists
+- **Indexers** - `bin/magento indexer:status` lists
   `panth_seo_resolved_meta` and `panth_seo_hreflang`.
 
 ---
@@ -159,11 +159,11 @@ URL for every page on your store.
 
 ### Configuration
 
-- **Strip query parameters** — removes UTM tags, session IDs, and
+- **Strip query parameters** - removes UTM tags, session IDs, and
   other tracking parameters from canonical URLs.
-- **Pagination handling** — choose whether paginated category pages
+- **Pagination handling** - choose whether paginated category pages
   point their canonical to page 1 or to themselves.
-- **Layered navigation** — when enabled, filtered pages point their
+- **Layered navigation** - when enabled, filtered pages point their
   canonical back to the unfiltered category.
 
 The resolver is layered-nav aware: it understands Magento's native
@@ -226,7 +226,7 @@ creates hreflang links without manual mapping.
 
 ### Reciprocity validation
 
-The module validates that hreflang tags are reciprocal — if Store A
+The module validates that hreflang tags are reciprocal - if Store A
 points to Store B, Store B must point back to Store A. Broken
 reciprocity is flagged in the audit dashboard.
 
@@ -245,9 +245,9 @@ bin/magento indexer:reindex panth_seo_hreflang
 
 ### Redirect types
 
-- **301 Permanent** — standard permanent redirect
-- **302 Found** — temporary redirect
-- **503 Maintenance** — returns a 503 status with a Retry-After header
+- **301 Permanent** - standard permanent redirect
+- **302 Found** - temporary redirect
+- **503 Maintenance** - returns a 503 status with a Retry-After header
 
 ### Creating redirects
 
@@ -328,7 +328,7 @@ Under `Structured Data`:
 
 ---
 
-## 10. Social meta — OpenGraph & Twitter
+## 10. Social meta - OpenGraph & Twitter
 
 ### OpenGraph tags
 
@@ -342,11 +342,11 @@ Generates `twitter:card`, `twitter:title`, `twitter:description`,
 
 ### Configuration
 
-- **Default OG image** — fallback image when no page-specific image
+- **Default OG image** - fallback image when no page-specific image
   is available
-- **Twitter card type** — `summary` or `summary_large_image`
-- **Twitter @handle** — your brand's Twitter username
-- **Facebook App ID** — optional, for Facebook Insights
+- **Twitter card type** - `summary` or `summary_large_image`
+- **Twitter @handle** - your brand's Twitter username
+- **Facebook App ID** - optional, for Facebook Insights
 
 ### Per-entity overrides
 
@@ -365,12 +365,12 @@ automatically apply actions to matching pages.
 Rules use a condition-combine tree (similar to Magento's catalog
 price rules):
 
-- **Entity type** — product, category, CMS page
-- **Attribute conditions** — any product/category attribute
-- **Stock status** — in stock / out of stock
-- **Price range** — min/max price
-- **Category membership** — belongs to category X
-- **URL pattern** — URL contains / matches regex
+- **Entity type** - product, category, CMS page
+- **Attribute conditions** - any product/category attribute
+- **Stock status** - in stock / out of stock
+- **Price range** - min/max price
+- **Category membership** - belongs to category X
+- **URL pattern** - URL contains / matches regex
 
 ### Actions
 
@@ -446,17 +446,17 @@ bin/magento queue:consumers:start panth.seo.score.consumer
 |---------|-----------|---------------------------------------|
 | OpenAI  | OpenAI    | GPT-4o, GPT-4, GPT-3.5-turbo         |
 | Claude  | Anthropic | Claude 3.5 Sonnet, Claude 3 Opus     |
-| Null    | None      | Disabled — no API calls               |
+| Null    | None      | Disabled - no API calls               |
 
 ### Configuration
 
 Under `AI Generation`:
 
-- **Adapter** — choose OpenAI, Claude, or Null
-- **API Key** — your provider's API key
-- **Model** — specific model to use
-- **Monthly budget** — maximum spend per calendar month (USD)
-- **Cache TTL** — how long to cache generated content (hours)
+- **Adapter** - choose OpenAI, Claude, or Null
+- **API Key** - your provider's API key
+- **Model** - specific model to use
+- **Monthly budget** - maximum spend per calendar month (USD)
+- **Cache TTL** - how long to cache generated content (hours)
 
 ### How it works
 
@@ -480,19 +480,19 @@ View all generation jobs (pending, completed, failed) in
 
 ---
 
-## 14. Sitemaps — XML & HTML
+## 14. Sitemaps - XML & HTML
 
 ### XML sitemaps
 
 The module extends Magento's native sitemap with:
 
-- **Sharding** — large sitemaps are split into multiple files
+- **Sharding** - large sitemaps are split into multiple files
   (configurable entries per file, default 50,000)
-- **Image extension** — product images are included as
+- **Image extension** - product images are included as
   `<image:image>` tags
-- **Hreflang extension** — hreflang alternate URLs are included
+- **Hreflang extension** - hreflang alternate URLs are included
   as `<xhtml:link>` tags
-- **Delta tracking** — the `DeltaTracker` only regenerates entries
+- **Delta tracking** - the `DeltaTracker` only regenerates entries
   for entities that changed since the last generation
 
 ### HTML sitemap
@@ -509,13 +509,13 @@ The HTML sitemap:
 
 ### Configuration
 
-- **Entries per shard** — maximum URLs per XML sitemap file
-- **Include images** — yes/no
-- **Include hreflang** — yes/no
-- **HTML sitemap URL** — custom URL key
-- **HTML sitemap — show products** — yes/no
-- **HTML sitemap — show categories** — yes/no
-- **HTML sitemap — show CMS pages** — yes/no
+- **Entries per shard** - maximum URLs per XML sitemap file
+- **Include images** - yes/no
+- **Include hreflang** - yes/no
+- **HTML sitemap URL** - custom URL key
+- **HTML sitemap - show products** - yes/no
+- **HTML sitemap - show categories** - yes/no
+- **HTML sitemap - show CMS pages** - yes/no
 
 ---
 
@@ -554,9 +554,9 @@ to product images below the fold automatically.
 The module builds an internal link graph of your store and calculates
 a simplified PageRank score for each page.
 
-- `Panth\AdvancedSEO\Model\InternalLinking\Graph` — builds the link graph
-- `Panth\AdvancedSEO\Model\InternalLinking\PageRank` — calculates scores
-- `Panth\AdvancedSEO\Model\InternalLinking\Suggester` — suggests links
+- `Panth\AdvancedSEO\Model\InternalLinking\Graph` - builds the link graph
+- `Panth\AdvancedSEO\Model\InternalLinking\PageRank` - calculates scores
+- `Panth\AdvancedSEO\Model\InternalLinking\Suggester` - suggests links
 
 ### Related links block
 
@@ -564,15 +564,15 @@ The `RelatedLinks` ViewModel renders contextual internal links on
 product and category pages. Links are chosen based on:
 
 - Textual relevance (shared keywords / categories)
-- PageRank — preference for linking to high-authority pages
-- Reciprocity — avoid one-way link clusters
+- PageRank - preference for linking to high-authority pages
+- Reciprocity - avoid one-way link clusters
 
 ### Configuration
 
-- **Enable suggestions** — yes/no
-- **Max links per page** — default 5
-- **PageRank decay factor** — default 0.85
-- **Exclude categories** — category IDs to exclude from suggestions
+- **Enable suggestions** - yes/no
+- **Max links per page** - default 5
+- **PageRank decay factor** - default 0.85
+- **Exclude categories** - category IDs to exclude from suggestions
 
 ### CLI
 
@@ -590,13 +590,13 @@ Control how search engines handle filtered category pages.
 
 ### Options
 
-- **Noindex filtered pages** — add `noindex,follow` to all pages
+- **Noindex filtered pages** - add `noindex,follow` to all pages
   with active layered navigation filters
-- **Nofollow filter links** — add `rel="nofollow"` to filter links
+- **Nofollow filter links** - add `rel="nofollow"` to filter links
   in the sidebar
-- **Canonical to parent** — filtered pages point their canonical
+- **Canonical to parent** - filtered pages point their canonical
   back to the unfiltered category
-- **Allowed filters** — whitelist specific filters that should
+- **Allowed filters** - whitelist specific filters that should
   remain indexable (e.g., brand pages)
 
 ---
@@ -646,9 +646,9 @@ Yandex, Seznam, Naver) instantly when content changes.
 
 **Configuration:**
 
-- **Enable IndexNow** — yes/no
-- **API key** — your IndexNow API key (auto-generated if blank)
-- **Endpoints** — which search engines to notify
+- **Enable IndexNow** - yes/no
+- **API key** - your IndexNow API key (auto-generated if blank)
+- **Endpoints** - which search engines to notify
 
 When enabled, the module automatically pings IndexNow whenever a
 product, category, or CMS page is saved.
@@ -670,9 +670,9 @@ information to large language models about their site.
 
 ### Configuration
 
-- **Enable llms.txt** — serves a `/llms.txt` endpoint
-- **Custom directives** — add custom key-value pairs
-- **Auto-generate** — automatically include store name, description,
+- **Enable llms.txt** - serves a `/llms.txt` endpoint
+- **Custom directives** - add custom key-value pairs
+- **Auto-generate** - automatically include store name, description,
   product count, and category tree
 
 The `Panth\AdvancedSEO\Model\LlmsTxt\Builder` generates the file
@@ -690,12 +690,12 @@ content dynamically.
 
 ### Configuration
 
-- **Enable feeds** — yes/no
-- **Feed format** — Google Shopping / Facebook / CSV
-- **Included attributes** — select which product attributes to export
-- **Filter by category** — only include products from specific categories
-- **Filter by stock** — exclude out-of-stock products
-- **Feed URL** — custom URL where the feed is accessible
+- **Enable feeds** - yes/no
+- **Feed format** - Google Shopping / Facebook / CSV
+- **Included attributes** - select which product attributes to export
+- **Filter by category** - only include products from specific categories
+- **Filter by stock** - exclude out-of-stock products
+- **Feed URL** - custom URL where the feed is accessible
 
 ### Generation
 
@@ -711,8 +711,8 @@ Feeds can be generated:
 
 ### Supported platforms
 
-- **Google Analytics 4 (GA4)** — enhanced ecommerce events
-- **Matomo** — server-side tracking
+- **Google Analytics 4 (GA4)** - enhanced ecommerce events
+- **Matomo** - server-side tracking
 
 ### SEO event tracking
 
@@ -724,9 +724,9 @@ The module can fire custom analytics events for:
 
 ### Configuration
 
-- **Enable analytics** — yes/no
-- **Platform** — GA4 / Matomo
-- **Tracking ID** — your GA4 measurement ID or Matomo site ID
+- **Enable analytics** - yes/no
+- **Platform** - GA4 / Matomo
+- **Tracking ID** - your GA4 measurement ID or Matomo site ID
 
 ---
 

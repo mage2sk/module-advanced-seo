@@ -62,9 +62,9 @@ class HeadPlugin
                             && mb_strlen($combined, 'UTF-8') > $maxLen
                         ) {
                             $budget = $maxLen - mb_strlen($suffix, 'UTF-8');
-                            if ($budget > 1) {
-                                $title = rtrim(mb_substr($title, 0, $budget - 1, 'UTF-8'))
-                                    . '…'
+                            if ($budget > 3) {
+                                $title = rtrim(mb_substr($title, 0, $budget - 3, 'UTF-8'))
+                                    . '...'
                                     . $suffix;
                             } else {
                                 $title = mb_substr($combined, 0, $maxLen, 'UTF-8');

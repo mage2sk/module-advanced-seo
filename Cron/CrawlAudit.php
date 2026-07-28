@@ -65,7 +65,7 @@ class CrawlAudit
 
         $totalIssues = (int) array_sum($summary);
         $this->logger->info(sprintf(
-            'Panth SEO CrawlAudit: store %d complete — %d pages crawled, %d issues found',
+            'Panth SEO CrawlAudit: store %d complete - %d pages crawled, %d issues found',
             $storeId,
             count($results),
             $totalIssues

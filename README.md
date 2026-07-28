@@ -251,14 +251,14 @@ bin/magento module:status Panth_AdvancedSEO
 
 After install, open:
 ```
-Admin → Stores → Configuration → Panth Extensions → Advanced SEO
+Admin -> Stores -> Configuration -> Panth Extensions -> Advanced SEO
 ```
 
 ---
 
 ## Configuration
 
-Go to **Stores → Configuration → Panth Extensions → Advanced SEO**.
+Go to **Stores -> Configuration -> Panth Extensions -> Advanced SEO**.
 
 | Setting | Group | Default | Description |
 |---|---|---|---|

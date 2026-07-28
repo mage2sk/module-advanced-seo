@@ -1,5 +1,5 @@
 /**
- * Panth AdvancedSEO — live SERP preview.
+ * Panth AdvancedSEO - live SERP preview.
  *
  * Binds to any [name="meta_title"] and [name="meta_description"] inputs on the
  * page and updates the SERP preview card live as the user types. Truncates
@@ -26,7 +26,7 @@ define(['jquery'], function ($) {
         var out = '', i;
         for (i = 0; i < text.length; i++) {
             if (approxPixelWidth(out + text.charAt(i)) > maxPx) {
-                return out.replace(/\s+\S*$/, '') + '…';
+                return out.replace(/\s+\S*$/, '') + '...';
             }
             out += text.charAt(i);
         }
@@ -35,7 +35,7 @@ define(['jquery'], function ($) {
 
     function truncateByChars(text, max) {
         if (text.length <= max) { return text; }
-        return text.substring(0, max).replace(/\s+\S*$/, '') + '…';
+        return text.substring(0, max).replace(/\s+\S*$/, '') + '...';
     }
 
     return function () {

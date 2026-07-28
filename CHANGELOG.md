@@ -4,6 +4,12 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.3.14]
+
+### Changed
+- Replaced typographic characters (em dashes, curly quotes, ellipsis) with plain ASCII punctuation. No functional changes.
+- Meta title and description truncation now appends "..." instead of the single-character ellipsis; truncated output still fits within the configured maximum length.
+
 ## [1.3.13]
 
 ### Changed
@@ -15,18 +21,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - README rewritten to match the Panth Infotech documentation standard: gold-template structure, Quick Answer block, full configuration table sourced from system.xml, companion modules table, and updated SEO keywords.
 
-## [1.3.11] — 2026-06-14
+## [1.3.11] - 2026-06-14
 
 ### Fixed
 
 - **SEO scores are now persisted instead of silently failing.** `Model/Score/Scorer.php` wrote a non-existent `updated_at` column to `panth_seo_score`, so every persist threw `SQLSTATE[42S22] Unknown column 'updated_at'`. The exception was caught and logged, so the storefront kept working, but no score row was ever written and `var/log/system.log` filled with one error per entity × store on every recompute. The persist now uses the schema's `computed_at` column, referenced via the `SeoScoreInterface` constants so the column names cannot drift again.
 - **Meta-embedding (duplicate-content) storage no longer fails on every score.** `Model/Score/EmbeddingIndex.php` wrote `dims`/`updated_at` to `panth_seo_meta_embedding` and omitted the required `field`/`hash` columns, none of which matched the schema (`dimensions`, `field`, `hash`, `created_at`). Every `DuplicateCheck` run logged `Unknown column 'dims'`. The writer now matches the schema, keying one combined title+description vector per entity under a stable `field`, so near-duplicate detection works and the log stays clean.
 
-## [1.3.9] — 2026-05-13
+## [1.3.9] - 2026-05-13
 
 ### Fixed
 
-- **Frontend route `frontName` no longer collides with other extensions on the same project.** `etc/frontend/routes.xml` previously declared `frontName="seo"`, a generic value that any other installed SEO extension is likely to claim. Magento merges `routes.xml` across all modules and the XSD enforces uniqueness on `frontName`, so the duplicate caused `Element 'route': Duplicate key-sequence ['seo']` and 500'd every storefront request after both modules loaded. The route id `panth_seo` is unchanged — only the public URL prefix moves.
+- **Frontend route `frontName` no longer collides with other extensions on the same project.** `etc/frontend/routes.xml` previously declared `frontName="seo"`, a generic value that any other installed SEO extension is likely to claim. Magento merges `routes.xml` across all modules and the XSD enforces uniqueness on `frontName`, so the duplicate caused `Element 'route': Duplicate key-sequence ['seo']` and 500'd every storefront request after both modules loaded. The route id `panth_seo` is unchanged - only the public URL prefix moves.
 
 ### Changed
 
@@ -34,23 +40,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ### Migration
 
-Update the URL in any external integration that fetches the feed — typically the Merchant Center "Add a primary feed" URL, monitoring probes, and external test scripts — from `/seo/feed/google` to `/panth_seo/feed/google`.
+Update the URL in any external integration that fetches the feed - typically the Merchant Center "Add a primary feed" URL, monitoring probes, and external test scripts - from `/seo/feed/google` to `/panth_seo/feed/google`.
 
-## [1.2.0] — 2026-04-21
+## [1.2.0] - 2026-04-21
 
-### BREAKING — XML Sitemap extracted
+### BREAKING - XML Sitemap extracted
 
 The XML Sitemap feature has been extracted into a dedicated Packagist
 module:
 
-- **XML Sitemap** → `mage2kishan/module-xml-sitemap`
+- **XML Sitemap** -> `mage2kishan/module-xml-sitemap`
   Sharded XML sitemap generator with per-store profile CRUD, 7 entity-
   type contributors (product, category, CMS page, landing page, blog,
   video, additional links), hreflang + image + video tags, auto-split
   at configurable threshold, gzip compression, XSL stylesheet, search-
   engine ping, delta tracking, async shard queue, cron, CLI.
   Table names preserved (`panth_seo_sitemap_profile`,
-  `panth_seo_sitemap_shard`) — zero data migration required.
+  `panth_seo_sitemap_shard`) - zero data migration required.
 
 ### Removed
 
@@ -64,7 +70,7 @@ module:
 - `Setup/Patch/Data/{AddDefaultSitemapProfile,AddSitemapExclusionAttributes}`
 - `Setup/Patch/Schema/AddSitemapProfileTable`
 - `Api/{SitemapBuilderInterface,SitemapContributorInterface}`
-- System-config group "Sitemaps" under Panth Infotech → SEO
+- System-config group "Sitemaps" under Panth Infotech -> SEO
 - Admin menu item "Sitemaps"
 - DB tables declaration (tables owned by sibling module now)
 - Cron job `panth_seo_sitemap_rebuild`
@@ -83,9 +89,9 @@ module:
 - DB tables preserved; all existing sitemap profiles keep working.
 - `/panth-sitemap.xml` URL remains unchanged (url_rewrite updated by the new module's patch).
 
-## [1.1.0] — 2026-04-21
+## [1.1.0] - 2026-04-21
 
-### BREAKING — feature split
+### BREAKING - feature split
 
 Panth_AdvancedSEO has been refactored into a family of focused modules. Five
 feature areas have been extracted into dedicated Packagist modules. Installing
@@ -93,24 +99,24 @@ only `mage2kishan/module-advanced-seo` after upgrading to 1.1.0 will remove
 the following features; reinstall the corresponding sibling module to restore
 each.
 
-- **Cross-Links** → `mage2kishan/module-crosslinks`
-  Auto keyword → internal-link replacement in CMS / product / category HTML.
-  Same table name (`panth_seo_crosslink`) — zero data migration required.
+- **Cross-Links** -> `mage2kishan/module-crosslinks`
+  Auto keyword -> internal-link replacement in CMS / product / category HTML.
+  Same table name (`panth_seo_crosslink`) - zero data migration required.
 
-- **Redirects & 404s** → `mage2kishan/module-redirects`
+- **Redirects & 404s** -> `mage2kishan/module-redirects`
   301/302/303/307/308/410/451 redirects, 404 log with clustering, CSV
   import/export, homepage-alias canonicaliser, lowercase + trailing-slash
   normalisers, expiry cron, loop detector, XHR guard. Table names preserved
   (`panth_seo_redirect`, `panth_seo_404_log`, `panth_seo_404_cluster`).
 
-- **Robots & LLM Bots** → `mage2kishan/module-robots-seo`
+- **Robots & LLM Bots** -> `mage2kishan/module-robots-seo`
   Dedicated `/robots.txt` endpoint, `X-Robots-Tag` HTTP response header,
   per-entity `<meta name="robots">` pipeline, 14 LLM / AI crawler toggles
   (GPTBot, ClaudeBot, PerplexityBot, Google-Extended, Bytespider, CCBot,
-  Applebot-Extended, Meta-ExternalAgent, Amazonbot, Cohere-AI, …). Table
+  Applebot-Extended, Meta-ExternalAgent, Amazonbot, Cohere-AI, ...). Table
   name preserved (`panth_seo_robots_policy`).
 
-- **AI Meta Generation** → `mage2kishan/module-pagebuilder-ai`
+- **AI Meta Generation** -> `mage2kishan/module-pagebuilder-ai`
   OpenAI + Claude adapter factory, monthly token budget, response cache,
   async job queue, AI Prompts CRUD, AI Knowledge Base with seeded reference
   content, "Generate with AI" button injection on product / category / CMS
@@ -118,26 +124,26 @@ each.
   names preserved (`panth_seo_ai_prompt`, `panth_seo_ai_knowledge`,
   `panth_seo_ai_usage`, `panth_seo_ai_cache`, `panth_seo_generation_job`).
 
-- **HTML Sitemap** → `mage2kishan/module-html-sitemap`
+- **HTML Sitemap** -> `mage2kishan/module-html-sitemap`
   Frontend `/sitemap` HTML page with categories, products, CMS pages, stores,
-  custom links. Custom router rewriting `/sitemap` → module controller.
+  custom links. Custom router rewriting `/sitemap` -> module controller.
 
 ### Removed
 
-- ~70 files — controllers, models, blocks, plugins, UI components,
+- ~70 files - controllers, models, blocks, plugins, UI components,
   layouts, templates, setup patches belonging exclusively to the five
   extracted features.
-- System-config groups under `Stores → Configuration → Panth Infotech →
+- System-config groups under `Stores -> Configuration -> Panth Infotech ->
   SEO`: Auto Cross-Links, Redirects, Robots & LLM Bots, AI Meta Generation,
   HTML Sitemap. Each is now exposed by its own module's config section.
 - 9 LLM bot toggles + robots.txt custom-body override (moved to Panth_RobotsSeo).
 - DB tables `panth_seo_crosslink`, `panth_seo_redirect`, `panth_seo_404_log`,
   `panth_seo_404_cluster`, `panth_seo_robots_policy`, `panth_seo_ai_prompt`,
   `panth_seo_ai_knowledge`, `panth_seo_ai_usage`, `panth_seo_ai_cache`,
-  `panth_seo_generation_job` — Magento will NOT drop existing rows because
+  `panth_seo_generation_job` - Magento will NOT drop existing rows because
   the sibling module re-declares each table byte-identically.
 - AI-approval columns (`ai_generated`, `ai_approved`) on `panth_seo_override`
-  — Override usability no longer gates on AI approval. Panth_PageBuilderAi
+  - Override usability no longer gates on AI approval. Panth_PageBuilderAi
   owns the AI review workflow separately.
 
 ### Changed
@@ -154,7 +160,7 @@ each.
   Status cards.
 - `Plugin/Admin/{Product,Category,CmsPage}SeoFieldsPlugin.php`: "Generate
   with AI" button + prompt selector + image upload removed. Install
-  Panth_PageBuilderAi to restore — it plugs into the same fieldsets via
+  Panth_PageBuilderAi to restore - it plugs into the same fieldsets via
   its own DI.
 
 ### Migration notes
@@ -188,7 +194,7 @@ each.
 ### Performance
 - **Removed the redundant `RemoveNativeOgPlugin` `afterToHtml` plugin.**
   It was declared on `Magento\Framework\View\Element\AbstractBlock`, so it
-  fired for every block on every frontend page (400–1500 invocations per
+  fired for every block on every frontend page (400-1500 invocations per
   category render). After the 1.0.2 pattern fix, the observer on
   `layout_generate_blocks_after` reliably removes all native OG blocks from
   the layout, so the plugin's "safety net" role is obsolete. Deleting it
@@ -209,7 +215,7 @@ each.
 
 ## [1.0.3]
 
-### Fixed — Product feed generation
+### Fixed - Product feed generation
 - **Stock filter no longer crashes feed generation.** The `joinField()` on
   `cataloginventory_stock_item` in `ProfileBasedFeedBuilder` could produce
   multiple rows per product (multi-source / shared catalog setups), tripping
@@ -222,7 +228,7 @@ each.
   on `:::` and emits proper `<g:country>` / `<g:price>` children.
 - **`sale_price_effective_date` now matches Google's spec.** Format changed
   from `Y-m-d\TH:i:sO` to `Y-m-d\TH:iO` (no seconds), and partial ranges
-  (`from/`, `/to`) are no longer emitted — Google rejects both. The element
+  (`from/`, `/to`) are no longer emitted - Google rejects both. The element
   is now written only when both dates exist.
 - **`<g:identifier_exists>` is always emitted.** Previously only the `false`
   case was written; now `true` is written whenever a brand, GTIN, or MPN is
@@ -242,7 +248,7 @@ each.
 - OG block detection no longer false-matches `catalog.*` blocks. The `'og.'`
   pattern in `RemoveNativeOgObserver` and `RemoveNativeOgPlugin` was matched
   with `str_contains`, so any layout block whose name contains the substring
-  `"og."` (every `catalog.*` block — `catalog.leftnav`,
+  `"og."` (every `catalog.*` block - `catalog.leftnav`,
   `catalog.navigation.state`, `catalog.list.item.addto`,
   `catalog.list.item.wishlist`, `catalog.compare.sidebar`, etc.) was silently
   removed from the layout and blanked in `toHtml()` on every frontend
@@ -257,16 +263,16 @@ each.
 ### Changed
 - Documentation tidy-up; no functional changes.
 
-## [1.0.0] — Initial release
+## [1.0.0] - Initial release
 
-### Added — Meta templates & resolution
+### Added - Meta templates & resolution
 - **Smarty-lite token engine** with `{name}`, `{price}`, `{sku}`,
   `{category}`, `{store}`, `{attribute:X}`, `{description}` tokens
   for product, category, and CMS page meta titles and descriptions.
 - **Token registry** (`Panth\AdvancedSEO\Model\Meta\TokenRegistry`)
   allowing third-party modules to register custom tokens.
 - **Per-entity override** fields on product, category, and CMS edit
-  pages — overrides always take precedence over templates.
+  pages - overrides always take precedence over templates.
 - **Bulk editor** admin grid for viewing and editing resolved meta
   across hundreds of entities at once.
 - **Resolved meta indexer** (`panth_seo_resolved_meta`) with mview
@@ -274,12 +280,12 @@ each.
 - **Resolved meta cache** layer to avoid redundant resolution on
   every page load.
 
-### Added — Canonical URL resolver
+### Added - Canonical URL resolver
 - **Automatic canonical resolution** with query-parameter stripping,
   pagination awareness, and layered-navigation handling.
 - Configurable per store view.
 
-### Added — Robots & LLM bot control
+### Added - Robots & LLM bot control
 - **Dynamic robots.txt** served from database via a dedicated
   controller (`Panth\AdvancedSEO\Controller\Robots\Index`).
 - **Per-LLM-bot allow/deny** for GPTBot, ClaudeBot,
@@ -287,7 +293,7 @@ each.
 - **Default robots policy** installed via data patch
   (`Setup\Patch\Data\InstallDefaultRobotsPolicy`).
 
-### Added — Hreflang
+### Added - Hreflang
 - **Hreflang group management** with locale-to-store-view mapping
   and x-default designation.
 - **Auto-binder** (`Panth\AdvancedSEO\Model\Hreflang\AutoBinder`)
@@ -295,7 +301,7 @@ each.
 - **Reciprocity validation** flagging broken hreflang pairs.
 - **Hreflang indexer** (`panth_seo_hreflang`) with mview support.
 
-### Added — Redirects & 404 management
+### Added - Redirects & 404 management
 - **Redirect matcher** supporting literal and PCRE regex source paths
   with 301, 302, and 503 (maintenance) redirect types.
 - **Loop detection** (`Panth\AdvancedSEO\Model\Redirect\Loop`)
@@ -309,26 +315,26 @@ each.
 - **Suggestion engine** (`Panth\AdvancedSEO\Model\Redirect\SuggestionEngine`)
   recommending redirect targets based on URL similarity.
 
-### Added — Structured data (JSON-LD)
+### Added - Structured data (JSON-LD)
 - **Six providers** out of the box: Product, Breadcrumb, Organization,
   WebSite, FAQPage, Article, plus a Video provider.
 - **Structured data validator** checking generated JSON-LD against
   schema.org requirements.
-- Server-rendered output injected via layout XML — no frontend JS.
+- Server-rendered output injected via layout XML - no frontend JS.
 
-### Added — Social meta (OpenGraph & Twitter)
+### Added - Social meta (OpenGraph & Twitter)
 - Automatic `og:*` and `twitter:*` tag generation for all pages.
 - Per-entity override fields for OG title, description, and image.
 - Configurable default images, Twitter card type, and Facebook App ID.
 
-### Added — SEO rules engine
+### Added - SEO rules engine
 - **Condition-combine tree** matching on entity type, attributes,
   stock status, price range, category membership, and URL patterns.
 - **Three action types**: Template (apply meta template), Canonical
   (override canonical), and Noindex (set robots directive).
-- Priority-based evaluation — first matching rule wins.
+- Priority-based evaluation - first matching rule wins.
 
-### Added — SEO scoring & audit
+### Added - SEO scoring & audit
 - **Five check types**: Length, Duplicate, Readability, Entity
   (structured data completeness), and Keyword presence.
 - **0-100 score** per entity with weighted scoring.
@@ -339,7 +345,7 @@ each.
 - **Embedding index** for semantic duplicate detection.
 - **CLI audit** command: `bin/magento panth:seo:audit`.
 
-### Added — AI content generation
+### Added - AI content generation
 - **Three adapters**: OpenAI (GPT-4o/4/3.5), Claude (Sonnet/Opus),
   and Null (disabled).
 - **Monthly budget control** with spend tracking.
@@ -347,51 +353,51 @@ each.
 - **Generation job tracking** grid in admin.
 - **CLI generation**: `bin/magento panth:seo:generate-meta`.
 
-### Added — Sitemaps (XML & HTML)
+### Added - Sitemaps (XML & HTML)
 - **Sharded XML sitemaps** with configurable entries per file.
 - **Image extension** including product images as `<image:image>`.
 - **Hreflang extension** including alternate URLs as `<xhtml:link>`.
 - **Delta tracker** for incremental sitemap regeneration.
 - **HTML sitemap** page with pagination, respecting noindex rules.
 
-### Added — Image SEO
+### Added - Image SEO
 - **Alt-text templates** using the same token engine as meta templates.
 - **Vision adapter interface** for AI-powered alt-text generation.
 - Null adapter shipped as default (disabled).
 
-### Added — Cross-linking & internal links
+### Added - Cross-linking & internal links
 - **Internal link graph** builder.
 - **PageRank calculator** with configurable decay factor.
 - **Link suggester** recommending contextual internal links.
 - **RelatedLinks ViewModel** rendering link suggestions on frontend.
 - **CLI**: `bin/magento panth:seo:pagerank`.
 
-### Added — Filter URL control
+### Added - Filter URL control
 - Noindex/nofollow rules for layered navigation filtered pages.
 - Canonical-to-parent for filtered URLs.
 - Whitelist for indexable filter combinations (e.g., brand pages).
 
-### Added — IndexNow & Search Console
+### Added - IndexNow & Search Console
 - **IndexNow integration** pinging Bing, Yandex, Seznam, and Naver
   on content save.
 - Optional Google Search Console API integration for crawl error
   monitoring.
 
-### Added — llms.txt
+### Added - llms.txt
 - **Dynamic `/llms.txt` endpoint** built by
   `Panth\AdvancedSEO\Model\LlmsTxt\Builder`.
 - Auto-generated store information with custom directive support.
 
-### Added — Product feeds
+### Added - Product feeds
 - Google Shopping XML, Facebook Catalog, and generic CSV formats.
 - Attribute selection, category filtering, stock filtering.
 - Cron-based and CLI generation.
 
-### Added — Analytics integration
+### Added - Analytics integration
 - GA4 and Matomo support for SEO event tracking.
 - Internal link click tracking, structured data impression events.
 
-### Added — Admin UI
+### Added - Admin UI
 - Dashboard, Templates grid, Rules grid, Bulk Editor, Redirects grid,
   Hreflang Groups, Sitemap settings, Robots/LLM policy, Audit,
   AI Settings, 404 Log, Generation Jobs.
@@ -400,8 +406,8 @@ each.
 ### Compatibility
 - Magento Open Source / Commerce / Cloud 2.4.4 - 2.4.8
 - PHP 8.1, 8.2, 8.3, 8.4
-- Hyva theme — fully compatible (no jQuery, server-rendered output)
-- Luma theme — fully compatible without modification
+- Hyva theme - fully compatible (no jQuery, server-rendered output)
+- Luma theme - fully compatible without modification
 
 ---
 

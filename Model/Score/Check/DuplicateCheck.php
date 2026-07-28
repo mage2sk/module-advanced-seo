@@ -31,7 +31,7 @@ class DuplicateCheck implements CheckInterface
             return [
                 'score' => 0.0,
                 'max' => 100.0,
-                'message' => 'Meta is empty — cannot evaluate duplication',
+                'message' => 'Meta is empty - cannot evaluate duplication',
             ];
         }
 

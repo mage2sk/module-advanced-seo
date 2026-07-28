@@ -39,7 +39,7 @@ class MissingMeta extends AbstractAction
 
         $page = $this->pageFactory->create();
         $page->setActiveMenu('Panth_AdvancedSEO::seo_dashboard');
-        $page->getConfig()->getTitle()->prepend(__('Missing Meta Report — %1', $label));
+        $page->getConfig()->getTitle()->prepend(__('Missing Meta Report - %1', $label));
 
         return $page;
     }

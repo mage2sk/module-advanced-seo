@@ -36,7 +36,7 @@ class Index extends AbstractAction
 
         $page = $this->pageFactory->create();
         $page->setActiveMenu('Panth_AdvancedSEO::bulkeditor');
-        $page->getConfig()->getTitle()->prepend(__('Bulk Meta Editor — %1', $label));
+        $page->getConfig()->getTitle()->prepend(__('Bulk Meta Editor - %1', $label));
         return $page;
     }
 }

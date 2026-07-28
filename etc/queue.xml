@@ -3,7 +3,7 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/queue.xsd">
     <broker topic="panth_seo.score_entity" exchange="panth_seo.exchange" type="db">
         <!--
-            consumerInstance was set here too — same defect as in
+            consumerInstance was set here too - same defect as in
             queue_consumer.xml. Removed; consumer wiring lives in
             queue_consumer.xml using the framework's default consumer
             with our `handler` method.

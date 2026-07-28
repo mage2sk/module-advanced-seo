@@ -5,7 +5,7 @@
         ScoreConsumer is a lightweight handler (process(string $message): void),
         not a full Magento\Framework\MessageQueue\ConsumerInterface impl.
         Magento 2.4.x rejects classes registered as `consumerInstance` unless
-        they implement that interface — the previous wiring (which set both
+        they implement that interface - the previous wiring (which set both
         `consumerInstance` and `handler`) made every `consumers_runner` cron
         tick fail validation, silently stalling all other queues. Keep only
         `handler`; the framework's default consumer wraps it.

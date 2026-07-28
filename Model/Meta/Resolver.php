@@ -417,14 +417,14 @@ class Resolver implements MetaResolverInterface
             return $value;
         }
         $value = trim((string) preg_replace('/\s+/u', ' ', $value));
-        if ($max <= 0) {
+        if ($max <= 3) {
             return $value;
         }
         if (function_exists('mb_strlen') && mb_strlen($value, 'UTF-8') > $max) {
-            return rtrim(mb_substr($value, 0, $max - 1, 'UTF-8')) . '…';
+            return rtrim(mb_substr($value, 0, $max - 3, 'UTF-8')) . '...';
         }
         if (strlen($value) > $max) {
-            return rtrim(substr($value, 0, $max - 1)) . '…';
+            return rtrim(substr($value, 0, $max - 3)) . '...';
         }
         return $value;
     }

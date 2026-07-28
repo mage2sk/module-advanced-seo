@@ -47,7 +47,7 @@ class Fields extends AbstractAction implements HttpGetActionInterface
 
         $page = $this->pageFactory->create();
         $page->setActiveMenu('Panth_AdvancedSEO::manage');
-        $page->getConfig()->getTitle()->prepend(__('Feed Field Mapping — %1', $feedName));
+        $page->getConfig()->getTitle()->prepend(__('Feed Field Mapping - %1', $feedName));
         return $page;
     }
 }
