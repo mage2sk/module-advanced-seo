@@ -17,6 +17,7 @@ class Config
     public const XML_META_DESC_MAX       = 'panth_seo/meta/description_max_length';
     public const XML_META_APPEND_STORE              = 'panth_seo/meta/append_store_name';
     public const XML_META_FORCE_TEMPLATE_OVER_EXISTING = 'panth_seo/meta/force_template_over_existing';
+    public const XML_META_NOINDEX_NOROUTE   = 'panth_seo/meta/noindex_noroute';
 
     public const XML_CANONICAL_ENABLED           = 'panth_seo/canonical/enabled';
     public const XML_CANONICAL_STRIP_QUERY       = 'panth_seo/canonical/strip_query';
@@ -179,6 +180,11 @@ class Config
     public function useTemplates(?int $storeId = null): bool
     {
         return $this->flag(self::XML_META_USE_TEMPLATES, $storeId);
+    }
+
+    public function isNoindexNoRoute(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_META_NOINDEX_NOROUTE, $storeId);
     }
 
     public function getTitleMaxLength(?int $storeId = null): int

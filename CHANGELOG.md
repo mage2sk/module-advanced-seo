@@ -4,6 +4,14 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.3.15] - 2026-08-18
+
+### Fixed
+- **404 (no-route) pages are no longer indexable.** The 404 page previously rendered `robots index,follow` (from the shipped CMS meta template applied to the no-route page) together with a self-referencing canonical pointing at the requested 4XX URL, which SEO crawlers flag as "Canonical points to 4XX". The no-route page now defaults to `robots noindex,follow`, and the existing "Disable Canonical for NOINDEX Pages" guard drops the canonical tag on it. A layout override in the theme could not fix this because the module's CMS metadata plugin overrides layout-declared robots.
+
+### Added
+- New setting Stores > Configuration > Panth > Advanced SEO > Meta Tags > **Noindex 404 (No-Route) Page** (`panth_seo/meta/noindex_noroute`, default Yes). Turning it off restores the previous 404 behaviour.
+
 ## [1.3.14]
 
 ### Changed

@@ -47,6 +47,10 @@ class Canonical implements ArgumentInterface
         try {
             $store   = $this->storeManager->getStore();
             $storeId = (int) $store->getId();
+
+            if ($this->isNoRouteRequest() && $this->config->isNoindexNoRoute($storeId)) {
+                return '';
+            }
             $page    = (int) $this->request->getParam('p', 0);
 
             $requestUri = (string) $this->request->getRequestUri();
@@ -105,6 +109,17 @@ class Canonical implements ArgumentInterface
         } catch (\Throwable) {
             return '';
         }
+    }
+
+    private function isNoRouteRequest(): bool
+    {
+        try {
+            if (method_exists($this->request, 'getFullActionName')) {
+                return (string) $this->request->getFullActionName() === 'cms_noroute_index';
+            }
+        } catch (\Throwable) {
+        }
+        return false;
     }
 
     private function isIgnoredRequestPath(string $currentPath, int $storeId): bool

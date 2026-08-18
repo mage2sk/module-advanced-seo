@@ -71,6 +71,11 @@
                         <field id="use_templates">1</field>
                     </depends>
                 </field>
+                <field id="noindex_noroute" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Noindex 404 (No-Route) Page</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>When enabled (default), the 404 no-route page gets robots "noindex,follow" and no canonical tag. When disabled, the 404 page uses the normal meta resolution.</comment>
+                </field>
             </group>
 
             <group id="canonical" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">

@@ -33,6 +33,7 @@
                 <pagination_position>suffix</pagination_position>
                 <pagination_format> | Page %p</pagination_format>
                 <force_template_over_existing>0</force_template_over_existing>
+                <noindex_noroute>1</noindex_noroute>
             </meta>
             <canonical>
                 <enabled>1</enabled>

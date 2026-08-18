@@ -273,6 +273,7 @@ Go to **Stores -> Configuration -> Panth Extensions -> Advanced SEO**.
 | Pagination Label Position | Meta Tags | None | Where to place the page number indicator in the title: prefix, suffix, or none. |
 | Pagination Format | Meta Tags | \| Page %p | Use `%p` as the page number placeholder. |
 | Force Template Over Existing Meta | Meta Tags | No | When on, templates override manually written meta on products and categories. |
+| Noindex 404 (No-Route) Page | Meta Tags | Yes | The 404 no-route page gets robots `noindex,follow` and emits no canonical tag. |
 | Emit Canonical Tag | Canonical URLs | Yes | Outputs `rel="canonical"` on all pages. |
 | Strip Query String | Canonical URLs | No | Removes all query parameters from canonical URLs. |
 | Lowercase Host | Canonical URLs | Yes | Forces the hostname in canonical URLs to lowercase. |
@@ -281,7 +282,7 @@ Go to **Stores -> Configuration -> Panth Extensions -> Advanced SEO**.
 | Associated Product Canonical to Parent | Canonical URLs | No | Simple products in configurables or bundles point their canonical to the parent. |
 | Cross-Domain Canonical Store | Canonical URLs | - | Select a store view for cross-domain canonical links. |
 | Ignore Pages | Canonical URLs | - | URL paths that should not emit a canonical tag (one per line). |
-| Disable Canonical for NOINDEX Pages | Canonical URLs | No | Suppresses canonical on noindex pages. |
+| Disable Canonical for NOINDEX Pages | Canonical URLs | Yes | Suppresses canonical on noindex pages. |
 | Product Canonical URL Type | Canonical URLs | No category path | Build product canonicals without any category path, with the shortest path, or the deepest path. |
 | Use Short Category URL for Canonical | Canonical URLs | No | Use the shallowest URL path for category canonical URLs. |
 | Trailing Slash on Homepage | Canonical URLs | Add | Controls trailing slash on the homepage canonical independently. |

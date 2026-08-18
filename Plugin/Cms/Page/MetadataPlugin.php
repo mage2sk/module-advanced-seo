@@ -36,31 +36,45 @@ class MetadataPlugin
             }
             $storeId = (int) $this->storeManager->getStore()->getId();
             $resolvedPageId = $this->resolvePageId($pageId, $storeId);
-            if ($resolvedPageId <= 0) {
-                return $result;
+            if ($resolvedPageId > 0) {
+                $resolved = $this->metaResolver->resolve(
+                    MetaResolverInterface::ENTITY_CMS,
+                    $resolvedPageId,
+                    $storeId
+                );
+                $config = $result->getConfig();
+                if ($resolved->getMetaTitle()) {
+                    $config->getTitle()->set($resolved->getMetaTitle());
+                }
+                if ($resolved->getMetaDescription()) {
+                    $config->setDescription($resolved->getMetaDescription());
+                }
+                if ($resolved->getMetaKeywords()) {
+                    $config->setKeywords($resolved->getMetaKeywords());
+                }
+                if ($resolved->getRobots()) {
+                    $config->setRobots($resolved->getRobots());
+                }
             }
-            $resolved = $this->metaResolver->resolve(
-                MetaResolverInterface::ENTITY_CMS,
-                $resolvedPageId,
-                $storeId
-            );
-            $config = $result->getConfig();
-            if ($resolved->getMetaTitle()) {
-                $config->getTitle()->set($resolved->getMetaTitle());
-            }
-            if ($resolved->getMetaDescription()) {
-                $config->setDescription($resolved->getMetaDescription());
-            }
-            if ($resolved->getMetaKeywords()) {
-                $config->setKeywords($resolved->getMetaKeywords());
-            }
-            if ($resolved->getRobots()) {
-                $config->setRobots($resolved->getRobots());
+            if ($this->isNoRouteRequest($action) && $this->seoConfig->isNoindexNoRoute($storeId)) {
+                $result->getConfig()->setRobots('noindex,follow');
             }
         } catch (\Throwable $e) {
             $this->logger->warning('Panth SEO CMS metadata plugin failed', ['error' => $e->getMessage()]);
         }
         return $result;
+    }
+
+    private function isNoRouteRequest(\Magento\Framework\App\Action\Action $action): bool
+    {
+        try {
+            $request = $action->getRequest();
+            if (method_exists($request, 'getFullActionName')) {
+                return (string) $request->getFullActionName() === 'cms_noroute_index';
+            }
+        } catch (\Throwable) {
+        }
+        return false;
     }
 
     private function resolvePageId(mixed $pageId, int $storeId): int
