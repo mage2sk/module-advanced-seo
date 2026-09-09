@@ -4,7 +4,10 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [1.3.16] - 2026-09-09
+## [1.3.17] - 2026-09-09
+
+Replaces 1.3.16, which was withdrawn. The code is identical. The sample strings
+used by the new unit tests have been replaced with neutral catalogue text.
 
 ### Fixed
 - **Meta titles and descriptions no longer cut a word in half.** Truncation kept a hard character count, so a title could end `... with Vacu...`. It now steps back to the last space, and only when that space keeps at least 60 per cent of the available room, so a long unbroken string still truncates instead of collapsing to a fragment. Trailing spaces and punctuation are trimmed before the ellipsis.
