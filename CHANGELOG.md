@@ -4,6 +4,11 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.3.20] - 2026-09-09
+
+### Fixed
+- **Pages owned by another module carried two canonical tags.** Modules that register their own canonical on the page config, such as the blog listing, post, category, tag, author and search pages, plus dynamic form and FAQ pages, ended up with their tag and this module's tag on the same page. Two conflicting canonicals are usually ignored altogether by search engines, so those pages had no effective canonical at all. The view model already carried a `hasCanonicalInPageConfig()` check for exactly this, but nothing ever called it. It is now consulted first, and the owning module's tag is left alone. The suppression is reported as `already_in_page_config` in the debug log. Product, category, CMS and home pages are unaffected.
+
 ## [1.3.19] - 2026-09-09
 
 ### Fixed

@@ -6,6 +6,7 @@ namespace Panth\AdvancedSEO\Test\Unit\ViewModel;
 use Magento\Eav\Model\ResourceModel\Entity\Attribute\CollectionFactory as AttributeCollectionFactory;
 use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\Framework\Registry;
+use Magento\Framework\View\Asset\GroupedCollection;
 use Magento\Framework\View\Page\Config as PageConfig;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
@@ -53,6 +54,7 @@ class CanonicalDebugTest extends TestCase
             'enabledThrows' => false,
             'resolverThrows' => false,
             'path' => '/some-page',
+            'pageConfigCanonical' => false,
         ];
 
         $config = $this->createMock(SeoConfig::class);
@@ -89,6 +91,16 @@ class CanonicalDebugTest extends TestCase
 
         $pageConfig = $this->createMock(PageConfig::class);
         $pageConfig->method('getRobots')->willReturn($options['robots']);
+
+        $assets = [];
+        if ($options['pageConfigCanonical']) {
+            $asset = $this->createMock(\Magento\Framework\View\Asset\AssetInterface::class);
+            $asset->method('getContentType')->willReturn('canonical');
+            $assets[] = $asset;
+        }
+        $collection = $this->createMock(GroupedCollection::class);
+        $collection->method('getAll')->willReturn($assets);
+        $pageConfig->method('getAssetCollection')->willReturn($collection);
 
         return new Canonical(
             $resolver,
@@ -166,5 +178,20 @@ class CanonicalDebugTest extends TestCase
 
         $this->assertSame('', $url, 'a missing di.xml binding must not change behaviour, only silence the log');
         $this->assertSame([], $this->lines);
+    }
+
+    public function testAnotherModulesCanonicalIsNotDuplicated(): void
+    {
+        $url = $this->viewModel(['pageConfigCanonical' => true], $this->logger())->getCanonicalUrl();
+
+        $this->assertSame('', $url, 'a page that already has a canonical must not get a second one');
+        $this->assertSame(['already_in_page_config'], $this->decisions());
+    }
+
+    public function testAPageWithNoExistingCanonicalStillGetsOne(): void
+    {
+        $url = $this->viewModel(['pageConfigCanonical' => false], $this->logger())->getCanonicalUrl();
+
+        $this->assertSame('https://example.com/some-page', $url);
     }
 }

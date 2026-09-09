@@ -73,6 +73,10 @@ class Canonical implements ArgumentInterface
             return $this->suppressed('canonical_disabled');
         }
 
+        if ($this->hasCanonicalInPageConfig()) {
+            return $this->suppressed('already_in_page_config');
+        }
+
         [$type, $id] = $this->detectEntity();
         try {
             $store   = $this->storeManager->getStore();
