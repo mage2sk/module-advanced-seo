@@ -19,6 +19,7 @@ class MissingMetaDataProvider extends AbstractDataProvider
 
     private bool $initialized = false;
     private string $entityType = 'product';
+    private int $scopeStoreId = 0;
 
     private array $attrSetNames = [];
 
@@ -70,14 +71,20 @@ class MissingMetaDataProvider extends AbstractDataProvider
         }
         $this->initialized = true;
         $this->entityType = $this->resolveEntityType();
+        $this->scopeStoreId = $this->resolveScopeStoreId();
 
         if ($this->entityType === 'category') {
             $this->collection = $this->categoryCollectionFactory->create();
+            $this->collection->setStore($this->scopeStoreId);
             $this->collection->addAttributeToSelect(self::CATEGORY_EAV);
             $this->collection->addFieldToSelect(['path', 'level']);
             $this->collection->addFieldToFilter('level', ['gt' => 1]);
         } else {
             $this->collection = $this->productCollectionFactory->create();
+            $this->collection->setStore($this->scopeStoreId);
+            if ($this->scopeStoreId > 0) {
+                $this->collection->addStoreFilter($this->scopeStoreId);
+            }
             $this->collection->addAttributeToSelect(self::PRODUCT_EAV);
         }
 
@@ -87,6 +94,25 @@ class MissingMetaDataProvider extends AbstractDataProvider
             ['attribute' => 'meta_description', 'null' => true],
             ['attribute' => 'meta_description', 'eq' => ''],
         ]);
+    }
+
+    private function resolveScopeStoreId(): int
+    {
+        $raw = $this->request->getParam('store');
+        if ($raw === null || $raw === '') {
+            $referer = (string) ($this->request->getServer('HTTP_REFERER') ?? '');
+            if (preg_match('#/store/(\d+)(?:/|$)#', $referer, $m)) {
+                $raw = $m[1];
+            }
+        }
+        if ($raw === null || $raw === '') {
+            $raw = $this->backendSession->getData('panth_seo_missing_meta_store');
+        }
+
+        $storeId = max(0, (int) $raw);
+        $this->backendSession->setData('panth_seo_missing_meta_store', $storeId);
+
+        return $storeId;
     }
 
     public function getData(): array

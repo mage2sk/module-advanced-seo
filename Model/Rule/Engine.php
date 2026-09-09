@@ -69,7 +69,7 @@ class Engine implements RuleEvaluatorInterface
                 if ($value === null || $value === '') {
                     continue;
                 }
-                if ($mergedActions[$key] === null) {
+                if (($mergedActions[$key] ?? null) === null) {
                     $mergedActions[$key] = $value;
                 }
             }

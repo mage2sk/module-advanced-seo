@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Panth\AdvancedSEO\Controller\Adminhtml\Template;
 
 use Panth\AdvancedSEO\Controller\Adminhtml\AbstractAction;
+use Panth\AdvancedSEO\Model\Cache\SeoCacheInvalidator;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\ResourceConnection;
@@ -13,7 +14,11 @@ class Delete extends AbstractAction implements HttpGetActionInterface, HttpPostA
 {
     public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::templates';
 
-    public function __construct(Context $context, private readonly ResourceConnection $resource)
+    public function __construct(
+        Context $context,
+        private readonly ResourceConnection $resource,
+        private readonly SeoCacheInvalidator $cacheInvalidator
+    )
     {
         parent::__construct($context);
     }
@@ -29,6 +34,7 @@ class Delete extends AbstractAction implements HttpGetActionInterface, HttpPostA
                     ['template_id = ?' => $id]
                 );
                 $this->messageManager->addSuccessMessage(__('Template deleted.'));
+                $this->cacheInvalidator->invalidateResolvedMeta();
             } catch (\Throwable $e) {
                 $this->messageManager->addErrorMessage($e->getMessage());
             }

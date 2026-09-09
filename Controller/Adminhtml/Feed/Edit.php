@@ -11,7 +11,7 @@ use Magento\Backend\App\Action\Context;
 
 class Edit extends AbstractAction
 {
-    public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::manage';
+    public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::feeds';
     public function __construct(
         Context $context,
         private readonly PageFactory $pageFactory,

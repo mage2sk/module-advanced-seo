@@ -8,6 +8,8 @@
                     <resource id="Panth_AdvancedSEO::dashboard" title="Dashboard" sortOrder="10"/>
                     <resource id="Panth_AdvancedSEO::templates" title="Meta Templates" sortOrder="20"/>
                     <resource id="Panth_AdvancedSEO::rules" title="SEO Rules" sortOrder="30"/>
+                    <resource id="Panth_AdvancedSEO::bulkeditor" title="Bulk Meta Editor" sortOrder="32"/>
+                    <resource id="Panth_AdvancedSEO::feeds" title="Product Feeds" sortOrder="34"/>
                     <resource id="Panth_AdvancedSEO::custom_canonical" title="Custom Canonicals" sortOrder="36"/>
                     <resource id="Panth_AdvancedSEO::reports" title="SEO Reports" sortOrder="74"/>
                     <resource id="Panth_AdvancedSEO::missing_meta" title="Missing Meta Report" sortOrder="75"/>

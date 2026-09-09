@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Panth\AdvancedSEO\Controller\Adminhtml\Template;
 
 use Panth\AdvancedSEO\Controller\Adminhtml\AbstractAction;
+use Panth\AdvancedSEO\Model\Cache\SeoCacheInvalidator;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Stdlib\DateTime\DateTime;
@@ -16,7 +17,8 @@ class Save extends AbstractAction implements HttpPostActionInterface
     public function __construct(
         Context $context,
         private readonly ResourceConnection $resource,
-        private readonly DateTime $dateTime
+        private readonly DateTime $dateTime,
+        private readonly SeoCacheInvalidator $cacheInvalidator
     ) {
         parent::__construct($context);
     }
@@ -66,6 +68,7 @@ class Save extends AbstractAction implements HttpPostActionInterface
                 $connection->insert($table, $row);
                 $id = (int)$connection->lastInsertId($table);
             }
+            $this->cacheInvalidator->invalidateResolvedMeta();
             $this->messageManager->addSuccessMessage(__('Template saved.'));
             if ($this->getRequest()->getParam('back')) {
                 return $resultRedirect->setPath('*/*/edit', ['id' => $id]);

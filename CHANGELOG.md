@@ -4,6 +4,28 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.4.0] - 2026-09-09
+
+### Fixed
+- **Applying a meta template overwrote every hand-written meta title and description.** `Force Template Over Existing Meta` is off by default and the live meta resolver honours it, but the Apply Now button and the cron applier both ignored it and wrote the rendered pattern over whatever the merchant had typed, across the whole catalogue, with no undo. Both paths now skip products and categories that already carry a value unless the setting is on.
+- **Applying a template wrote every value into the All Store Views scope**, whatever the template's own Store View was set to. A template scoped to one store view silently replaced the meta of every other store view. The rendered values are now written in the scope the template targets.
+- **`{{store.name}}` and the other store tokens always rendered with the first store view.** An All Store Views template therefore stamped the first store's name onto every store. A global template whose patterns use a store token is now rendered once per store view and stored per store view; templates without store tokens keep writing a single default-scope value as before.
+- **Applied templates wrote their pre-computed rows against store 0**, which the frontend resolver never reads (it looks up a real store view id), so the rows were dead weight and the pages fell back to a live render. Rows are now written per store view. Rows where every field ended up empty are no longer written at all.
+- **`Last Applied At` and `Apply Count` were never updated**, so both columns in the Meta Templates grid stayed blank and 0 no matter how often a template was applied.
+- **Saving or deleting an SEO Rule or a Meta Template had no effect until a full manual reindex.** The admin explains that rules are evaluated on every page load with no Apply step; in practice the pre-computed meta index and the one-hour rule cache were never invalidated, so nothing changed. Rules and overrides now take effect on the next page load, and the resolved-meta indexer plus the rule cache are invalidated on save, delete and apply.
+- **The Google Merchant feed never emitted `brand`, `gtin` or `mpn`.** The helper still read the `panth_seo/structured_data/...` paths, which no admin field has written since structured data moved to its own module, so every item shipped with `identifier_exists=false`. The three attribute settings, and Default Brand Name, now read the Structured Data section and fall back to the legacy path for stores that still carry the old rows.
+- **Every feed item declared the Google product category `Apparel & Accessories > Jewelry`.** That value was a hardcoded fallback used whenever no category attribute is configured, which is the default. The element is now omitted when it cannot be resolved, and Merchant Center assigns the category itself.
+- **The SEO Dashboard linked to three admin routes that no longer exist** (`panth_seo/hreflang/index`, `panth_seo/filterrewrite/index`, `panth_seo/sitemap/index`). They now point at Hreflang, Filter SEO and XML Sitemap, and the cards are hidden when the module that owns them is not installed.
+- **The dashboard's feed status always read "0 total products" and never showed a last-generated date.** It queried a `generated_at` column that does not exist; the column is `last_generated_at`. The failing query also aborted the sitemap and feed statistics that ran in the same try block, so those are now independent.
+- **The admin menu asked for `Panth_AdvancedSEO::manage` on every entry** while the controllers check granular resources, so a role granted only, say, Meta Templates saw an empty menu. Each menu entry now declares the resource its controller actually checks, and the missing `Product Feeds` and `Bulk Meta Editor` ACL resources have been added.
+- A rule action key outside the known set raised an undefined array key warning on every page load that matched the rule.
+
+### Added
+- **Store view scope for the Bulk Meta Editor and the Missing Meta report.** Both tools read and wrote default-scope values only, with nothing in the UI to say so, which made them unusable on a multi store install: a merchant who fills meta per store view saw the whole catalogue reported as missing. Both screens now carry a scope switcher, read the selected store view, and the inline editor saves in that scope. The default-scope option now genuinely reads the default scope rather than falling through to the first store view.
+
+### Removed
+- 66 configuration getters that read `panth_seo/breadcrumbs`, `filter_meta`, `filter_urls`, `hreflang`, `image`, `indexnow`, `llms_txt`, `organization`, `social`, `social_profiles` and `structured_data` paths. Those settings moved to their own modules when this one was split, and nothing in the module had called the getters since; the paths have had neither an admin field nor a default here for several releases.
+
 ## [1.3.20] - 2026-09-09
 
 ### Fixed

@@ -15,7 +15,7 @@ use Magento\Framework\Controller\Result\JsonFactory;
 
 class InlineEdit extends AbstractAction implements HttpPostActionInterface
 {
-    public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::templates';
+    public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::bulkeditor';
 
     public function __construct(
         Context $context,
@@ -37,6 +37,11 @@ class InlineEdit extends AbstractAction implements HttpPostActionInterface
 
         $items = (array) $this->getRequest()->getParam('items', []);
         $entityType = (string) ($this->backendSession->getData('panth_seo_bulkeditor_type') ?? 'product');
+        $storeId = $this->getRequest()->getParam('store');
+        if ($storeId === null || $storeId === '') {
+            $storeId = $this->backendSession->getData('panth_seo_bulkeditor_store');
+        }
+        $storeId = max(0, (int) $storeId);
 
         if (empty($items)) {
             return $resultJson->setData(['messages' => [__('Please correct the data sent.')], 'error' => true]);
@@ -45,9 +50,9 @@ class InlineEdit extends AbstractAction implements HttpPostActionInterface
         foreach ($items as $entityId => $itemData) {
             try {
                 match ($entityType) {
-                    'category' => $this->saveCategory((int) $entityId, $itemData),
+                    'category' => $this->saveCategory((int) $entityId, $itemData, $storeId),
                     'cms' => $this->saveCmsPage((int) $entityId, $itemData),
-                    default => $this->saveProduct((int) $entityId, $itemData),
+                    default => $this->saveProduct((int) $entityId, $itemData, $storeId),
                 };
             } catch (\Throwable $e) {
                 $error = true;
@@ -61,9 +66,10 @@ class InlineEdit extends AbstractAction implements HttpPostActionInterface
         ]);
     }
 
-    private function saveProduct(int $entityId, array $data): void
+    private function saveProduct(int $entityId, array $data, int $storeId = 0): void
     {
-        $product = $this->productRepository->getById($entityId, true, 0);
+        $product = $this->productRepository->getById($entityId, true, $storeId);
+        $product->setStoreId($storeId);
 
         if (isset($data['meta_title'])) {
             $product->setMetaTitle((string) $data['meta_title']);
@@ -75,7 +81,7 @@ class InlineEdit extends AbstractAction implements HttpPostActionInterface
         $this->productRepository->save($product);
     }
 
-    private function saveCategory(int $entityId, array $data): void
+    private function saveCategory(int $entityId, array $data, int $storeId = 0): void
     {
         $conn = $this->resource->getConnection();
         $metaFields = ['meta_title', 'meta_description'];
@@ -91,7 +97,7 @@ class InlineEdit extends AbstractAction implements HttpPostActionInterface
             $table = $attribute->getBackendTable();
             $conn->insertOnDuplicate($table, [
                 'attribute_id' => $attribute->getAttributeId(),
-                'store_id' => 0,
+                'store_id' => $storeId,
                 'entity_id' => $entityId,
                 'value' => (string) $data[$attrCode],
             ], ['value']);

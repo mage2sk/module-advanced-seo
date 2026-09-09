@@ -72,6 +72,7 @@ class Resolver implements MetaResolverInterface
 
         $fast = $this->resolvedRepository->find($entityType, $entityId, $storeId);
         if ($fast !== null && $fast->getMetaTitle() !== null) {
+            $fast = $this->applyLiveRules($fast, $entityType, $entityId, $storeId);
             $this->cache->save($fast);
             $this->debug('panth_seo: meta.resolved', [
                 'entity_type' => $entityType,
@@ -116,6 +117,62 @@ class Resolver implements MetaResolverInterface
             }
         }
         return $out;
+    }
+
+    private function applyLiveRules(
+        ResolvedMetaInterface $resolved,
+        string $entityType,
+        int $entityId,
+        int $storeId
+    ): ResolvedMetaInterface {
+        try {
+            $ruleResult = $this->ruleEngine->evaluate($entityType, $entityId, $storeId, [
+                'entity_type' => $entityType,
+                'entity_id'   => $entityId,
+                'store_id'    => $storeId,
+            ]);
+        } catch (\Throwable $e) {
+            $this->logger->warning('Panth SEO rule engine failed', ['error' => $e->getMessage()]);
+            return $resolved;
+        }
+
+        if (empty($ruleResult['matched_rules'])) {
+            return $resolved;
+        }
+
+        $needsEntity = !empty($ruleResult['title_template']) || !empty($ruleResult['description_template']);
+        $entity      = $needsEntity ? $this->loadEntity($entityType, $entityId, $storeId) : null;
+        $context     = [
+            'store_id'    => $storeId,
+            'entity_type' => $entityType,
+            'entity_id'   => $entityId,
+        ];
+
+        if (!empty($ruleResult['title_template'])) {
+            $resolved->setMetaTitle($this->truncate(
+                $this->renderer->render((string) $ruleResult['title_template'], $entity, $context),
+                $this->config->getTitleMaxLength($storeId)
+            ));
+        }
+
+        if (!empty($ruleResult['description_template'])) {
+            $resolved->setMetaDescription($this->truncate(
+                $this->renderer->render((string) $ruleResult['description_template'], $entity, $context),
+                $this->config->getDescriptionMaxLength($storeId)
+            ));
+        }
+
+        if (!empty($ruleResult['noindex'])) {
+            $resolved->setRobots(!empty($ruleResult['nofollow']) ? 'noindex,nofollow' : 'noindex,follow');
+        }
+
+        if (!empty($ruleResult['canonical']) && is_string($ruleResult['canonical'])) {
+            $resolved->setCanonicalUrl($ruleResult['canonical']);
+        }
+
+        $resolved->setSource('rule');
+
+        return $resolved;
     }
 
     private function renderLive(string $entityType, int $entityId, int $storeId, array $context): ResolvedMetaInterface

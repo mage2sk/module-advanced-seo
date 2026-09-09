@@ -146,3 +146,44 @@
 .panth-serp-bar-over {
     background-color: #d93025;
 }
+
+.panth-seo-store-scope {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0 0 15px;
+    padding: 10px 15px;
+    background: #f5f5f5;
+    border: 1px solid #e3e3e3;
+    border-radius: 3px;
+    font-size: 13px;
+}
+
+.panth-seo-store-scope__label {
+    font-weight: 600;
+    color: #303030;
+}
+
+.panth-seo-store-scope__current {
+    padding: 3px 10px;
+    background: #007bdb;
+    color: #fff;
+    border-radius: 3px;
+}
+
+.panth-seo-store-scope__link {
+    padding: 3px 10px;
+    color: #007bdb;
+    text-decoration: none;
+}
+
+.panth-seo-store-scope__link:hover {
+    text-decoration: underline;
+}
+
+.panth-seo-store-scope__hint {
+    margin-left: auto;
+    color: #777;
+    font-style: italic;
+}

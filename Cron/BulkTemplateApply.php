@@ -10,6 +10,7 @@ use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Store\Api\StoreRepositoryInterface;
 use Panth\AdvancedSEO\Api\Data\MetaTemplateInterface;
+use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Panth\AdvancedSEO\Model\Meta\ResolvedMetaFactory;
 use Panth\AdvancedSEO\Model\Meta\Template\ConditionEvaluator;
 use Panth\AdvancedSEO\Model\Meta\TemplateRenderer;
@@ -31,7 +32,8 @@ class BulkTemplateApply
         private readonly CategoryCollectionFactory $categoryCollectionFactory,
         private readonly CmsPageCollectionFactory $cmsPageCollectionFactory,
         private readonly ResolvedMetaFactory $resolvedMetaFactory,
-        private readonly SerializerInterface $serializer
+        private readonly SerializerInterface $serializer,
+        private readonly SeoConfig $config
     ) {
     }
 
@@ -90,9 +92,8 @@ class BulkTemplateApply
     {
         $entityType = $template->getEntityType();
         $conditions = $this->decodeConditions($template);
-        $renderStoreId = $storeId > 0 ? $storeId : 1;
-        $context    = ['store_id' => $renderStoreId];
-        $processed  = 0;
+        $context   = ['store_id' => $storeId];
+        $processed = 0;
 
         $batchCallback = function (iterable $entities) use ($template, $entityType, $storeId, $conditions, $context, &$processed): void {
             foreach ($entities as $entity) {
@@ -105,11 +106,10 @@ class BulkTemplateApply
             }
         };
 
-        $renderStoreId = $storeId > 0 ? $storeId : 1;
         match ($entityType) {
-            'product'  => $this->iterateProducts($renderStoreId, $batchCallback),
-            'category' => $this->iterateCategories($renderStoreId, $batchCallback),
-            'cms', 'cms_page' => $this->iterateCmsPages($renderStoreId, $batchCallback),
+            'product'  => $this->iterateProducts($storeId, $batchCallback),
+            'category' => $this->iterateCategories($storeId, $batchCallback),
+            'cms', 'cms_page' => $this->iterateCmsPages($storeId, $batchCallback),
             default    => null,
         };
 
@@ -215,6 +215,15 @@ class BulkTemplateApply
         $metaKeywords    = $this->renderField($template->getMetaKeywords(), $entity, $context);
         $robots          = $template->getRobots();
 
+        if (!$this->config->isForceTemplateOverExisting($storeId)) {
+            if ($this->hasExistingValue($entity, 'meta_title')) {
+                $metaTitle = '';
+            }
+            if ($this->hasExistingValue($entity, 'meta_description')) {
+                $metaDescription = '';
+            }
+        }
+
         $ogPayload = [];
         $ogTitle = $this->renderField($template->getOgTitle(), $entity, $context);
         if ($ogTitle !== '') {
@@ -252,6 +261,15 @@ class BulkTemplateApply
             'og_payload',
             'source',
         ]);
+    }
+
+    private function hasExistingValue(mixed $entity, string $field): bool
+    {
+        if (!is_object($entity) || !method_exists($entity, 'getData')) {
+            return false;
+        }
+
+        return trim((string) ($entity->getData($field) ?? '')) !== '';
     }
 
     private function renderField(?string $templateString, mixed $entity, array $context): string

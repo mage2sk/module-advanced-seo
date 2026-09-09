@@ -179,20 +179,24 @@ $catPct = $block->pct($catMissing, (int) $catalog['total_categories']);
                 <div class="panth-card-value"><?= (int) $stats['rules'] ?></div>
                 <div class="panth-card-label"><?= $block->escapeHtml(__('Active Rules')) ?></div>
             </div>
+            <?php if ($block->isModuleAvailable('Panth_Hreflang')): ?>
             <div class="panth-card panth-card--neutral">
                 <a class="panth-card-link"
-                   href="<?= $block->escapeUrl($block->getUrl('panth_seo/hreflang/index')) ?>"
+                   href="<?= $block->escapeUrl($block->getUrl('panth_hreflang/hreflang/index')) ?>"
                    title="<?= $block->escapeHtmlAttr(__('Manage Hreflang')) ?>"></a>
                 <div class="panth-card-value"><?= (int) $stats['hreflang_groups'] ?></div>
                 <div class="panth-card-label"><?= $block->escapeHtml(__('Hreflang Groups')) ?></div>
             </div>
+            <?php endif; ?>
+            <?php if ($block->isModuleAvailable('Panth_FilterSeo')): ?>
             <div class="panth-card panth-card--neutral">
                 <a class="panth-card-link"
-                   href="<?= $block->escapeUrl($block->getUrl('panth_seo/filterrewrite/index')) ?>"
+                   href="<?= $block->escapeUrl($block->getUrl('panth_filterseo/filterrewrite/index')) ?>"
                    title="<?= $block->escapeHtmlAttr(__('Manage Filter Rewrites')) ?>"></a>
                 <div class="panth-card-value"><?= (int) $stats['filter_rewrites'] ?></div>
                 <div class="panth-card-label"><?= $block->escapeHtml(__('Filter URL Rewrites')) ?></div>
             </div>
+            <?php endif; ?>
             <div class="panth-card panth-card--neutral">
                 <a class="panth-card-link"
                    href="<?= $block->escapeUrl($block->getUrl('panth_seo/customcanonical/index')) ?>"
@@ -207,6 +211,7 @@ $catPct = $block->pct($catMissing, (int) $catalog['total_categories']);
     <div class="panth-section">
         <h2><?= $block->escapeHtml(__('Sitemap & Feed Status')) ?></h2>
         <div class="panth-grid">
+            <?php if ($block->isModuleAvailable('Panth_XmlSitemap')): ?>
             <div class="panth-card panth-card--green">
                 <div class="panth-card-value"><?= (int) $smFeed['sitemap_profiles'] ?></div>
                 <div class="panth-card-label"><?= $block->escapeHtml(__('Active Sitemap Profiles')) ?></div>
@@ -214,8 +219,9 @@ $catPct = $block->pct($catMissing, (int) $catalog['total_categories']);
                 <?php if ($smFeed['sitemap_last_generated']): ?>
                 <div class="panth-card-sub"><?= $block->escapeHtml(__('Last: %1', $smFeed['sitemap_last_generated'])) ?></div>
                 <?php endif; ?>
-                <a class="panth-card-link" href="<?= $block->escapeUrl($block->getUrl('panth_seo/sitemap/index')) ?>"></a>
+                <a class="panth-card-link" href="<?= $block->escapeUrl($block->getUrl('panth_xml_sitemap/profile/index')) ?>"></a>
             </div>
+            <?php endif; ?>
             <div class="panth-card panth-card--green">
                 <div class="panth-card-value"><?= (int) $smFeed['feed_profiles'] ?></div>
                 <div class="panth-card-label"><?= $block->escapeHtml(__('Active Feed Profiles')) ?></div>

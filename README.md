@@ -273,6 +273,7 @@ Go to **Stores -> Configuration -> Panth Extensions -> Advanced SEO**.
 | Pagination Label Position | Meta Tags | None | Where to place the page number indicator in the title: prefix, suffix, or none. |
 | Pagination Format | Meta Tags | \| Page %p | Use `%p` as the page number placeholder. |
 | Force Template Over Existing Meta | Meta Tags | No | When on, templates override manually written meta on products and categories. |
+| Store view scope switcher | Bulk Meta Editor, Missing Meta Report | All Store Views | Choose which store view the grid reads and the inline editor writes. |
 | Noindex 404 (No-Route) Page | Meta Tags | Yes | The 404 no-route page gets robots `noindex,follow` and emits no canonical tag. |
 | Emit Canonical Tag | Canonical URLs | Yes | Outputs `rel="canonical"` on all pages. |
 | Strip Query String | Canonical URLs | No | Removes all query parameters from canonical URLs. |

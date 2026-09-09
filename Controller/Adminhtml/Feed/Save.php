@@ -12,7 +12,7 @@ use Magento\Backend\App\Action\Context;
 
 class Save extends AbstractAction implements HttpPostActionInterface
 {
-    public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::manage';
+    public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::feeds';
     public function __construct(
         Context $context,
         private readonly ResourceConnection $resource,

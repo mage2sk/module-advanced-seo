@@ -11,7 +11,7 @@ use Panth\AdvancedSEO\Controller\Adminhtml\AbstractAction;
 
 class AddDefaultFields extends AbstractAction implements HttpGetActionInterface, HttpPostActionInterface
 {
-    public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::manage';
+    public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::feeds';
 
     public function __construct(
         Context $context,

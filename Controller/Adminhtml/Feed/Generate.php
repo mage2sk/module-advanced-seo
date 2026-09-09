@@ -10,7 +10,7 @@ use Panth\AdvancedSEO\Model\Feed\ProfileBasedFeedBuilder;
 
 class Generate extends AbstractAction implements HttpGetActionInterface
 {
-    public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::manage';
+    public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::feeds';
 
     public function __construct(
         Context $context,

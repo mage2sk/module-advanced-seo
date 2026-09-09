@@ -285,10 +285,9 @@ class GoogleMerchantFeedBuilder
         if ($googleCatAttr !== '') {
             $googleCat = $this->getProductAttributeValue($product, $googleCatAttr);
         }
-        if ($googleCat === '') {
-            $googleCat = 'Apparel & Accessories > Jewelry';
+        if ($googleCat !== '') {
+            $this->writeGElement($xml, 'google_product_category', $googleCat);
         }
-        $this->writeGElement($xml, 'google_product_category', $googleCat);
 
         $this->writeShippingElement($xml, $storeId, $currencyCode);
 

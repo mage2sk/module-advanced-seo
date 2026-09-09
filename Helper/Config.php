@@ -25,41 +25,18 @@ class Config
     public const XML_CANONICAL_REMOVE_TRAILING   = 'panth_seo/canonical/remove_trailing_slash';
     public const XML_CANONICAL_PAGINATED_TO_FIRST = 'panth_seo/canonical/paginated_canonical_to_first';
 
-    public const XML_SD_PRODUCT      = 'panth_seo/structured_data/product';
-    public const XML_SD_BREADCRUMB   = 'panth_seo/structured_data/breadcrumb';
-    public const XML_SD_ORGANIZATION = 'panth_seo/structured_data/organization';
-    public const XML_SD_WEBSITE      = 'panth_seo/structured_data/website';
-    public const XML_SD_FAQ          = 'panth_seo/structured_data/faq';
-    public const XML_SD_ARTICLE      = 'panth_seo/structured_data/article';
-
-    public const XML_HREFLANG_ENABLED  = 'panth_seo/hreflang/enabled';
-    public const XML_HREFLANG_XDEFAULT = 'panth_seo/hreflang/emit_x_default';
-
-    public const XML_SOCIAL_OG_ENABLED        = 'panth_seo/social/og_enabled';
-    public const XML_SOCIAL_TWITTER_ENABLED   = 'panth_seo/social/twitter_enabled';
-    public const XML_SOCIAL_TWITTER_CARD_TYPE = 'panth_seo/social/twitter_card_type';
-    public const XML_SOCIAL_TWITTER_HANDLE    = 'panth_seo/social/twitter_site_handle';
-    public const XML_SOCIAL_DEFAULT_OG_IMAGE  = 'panth_seo/social/default_og_image';
-
     public const XML_CANONICAL_ASSOCIATED_PRODUCT  = 'panth_seo/canonical/associated_product_canonical';
     public const XML_CANONICAL_CROSS_DOMAIN_STORE  = 'panth_seo/canonical/cross_domain_store';
     public const XML_CANONICAL_IGNORE_PAGES        = 'panth_seo/canonical/canonical_ignore_pages';
     public const XML_CANONICAL_DISABLE_FOR_NOINDEX = 'panth_seo/canonical/disable_canonical_for_noindex';
 
-    public const XML_SD_CONFIGURABLE_MULTI_OFFER = 'panth_seo/structured_data/configurable_multi_offer';
-    public const XML_SD_REMOVE_NATIVE_MARKUP     = 'panth_seo/structured_data/remove_native_markup';
-    public const XML_SD_RETURN_POLICY_DAYS       = 'panth_seo/structured_data/return_policy_days';
-    public const XML_SD_BRAND_ATTRIBUTE          = 'panth_seo/structured_data/brand_attribute';
-    public const XML_SD_GTIN_ATTRIBUTE           = 'panth_seo/structured_data/gtin_attribute';
-    public const XML_SD_MPN_ATTRIBUTE            = 'panth_seo/structured_data/mpn_attribute';
+    public const XML_SD_BRAND_ATTRIBUTE          = 'panth_structured_data/structured_data/brand_attribute';
+    public const XML_SD_GTIN_ATTRIBUTE           = 'panth_structured_data/structured_data/gtin_attribute';
+    public const XML_SD_MPN_ATTRIBUTE            = 'panth_structured_data/structured_data/mpn_attribute';
 
-    public const XML_FILTER_URL_ENABLED   = 'panth_seo/filter_urls/filter_urls_enabled';
-    public const XML_FILTER_URL_FORMAT    = 'panth_seo/filter_urls/url_format';
-    public const XML_FILTER_URL_SEPARATOR = 'panth_seo/filter_urls/separator';
-
-    public const XML_FILTER_META_ENABLED            = 'panth_seo/filter_meta/filter_meta_enabled';
-    public const XML_FILTER_META_INJECT_TITLE       = 'panth_seo/filter_meta/inject_filter_in_title';
-    public const XML_FILTER_META_INJECT_DESCRIPTION = 'panth_seo/filter_meta/inject_filter_in_description';
+    public const XML_SD_BRAND_ATTRIBUTE_LEGACY   = 'panth_seo/structured_data/brand_attribute';
+    public const XML_SD_GTIN_ATTRIBUTE_LEGACY    = 'panth_seo/structured_data/gtin_attribute';
+    public const XML_SD_MPN_ATTRIBUTE_LEGACY     = 'panth_seo/structured_data/mpn_attribute';
 
     public const XML_META_STRIP_TITLE_PREFIX_SUFFIX = 'panth_seo/meta/strip_title_prefix_suffix';
     public const XML_META_SEO_NAME_ENABLED          = 'panth_seo/meta/seo_name_enabled';
@@ -72,20 +49,6 @@ class Config
 
     public const XML_CANONICAL_TRAILING_SLASH_HOMEPAGE = 'panth_seo/canonical/trailing_slash_homepage';
 
-    public const XML_HREFLANG_SCOPE              = 'panth_seo/hreflang/hreflang_scope';
-    public const XML_HREFLANG_CMS_RELATION       = 'panth_seo/hreflang/cms_relation_method';
-
-    public const XML_SD_PRODUCT_LIST_SCHEMA       = 'panth_seo/structured_data/enable_product_list_schema';
-    public const XML_SD_ACCEPTED_PAYMENT          = 'panth_seo/structured_data/accepted_payment_methods';
-    public const XML_SD_DELIVERY_METHODS          = 'panth_seo/structured_data/delivery_methods';
-    public const XML_SD_PRODUCT_CONDITION         = 'panth_seo/structured_data/product_condition';
-    public const XML_SD_PRICE_VALID_UNTIL_DEFAULT = 'panth_seo/structured_data/price_valid_until_default';
-    public const XML_SD_CUSTOM_PROPERTIES         = 'panth_seo/structured_data/custom_properties';
-    public const XML_SD_PRODUCT_GROUP_ENABLED     = 'panth_seo/structured_data/product_group_enabled';
-    public const XML_SD_PROS_CONS_ENABLED         = 'panth_seo/structured_data/pros_cons_enabled';
-    public const XML_SD_PROS_ATTRIBUTE            = 'panth_seo/structured_data/pros_attribute';
-    public const XML_SD_CONS_ATTRIBUTE            = 'panth_seo/structured_data/cons_attribute';
-
     public const XML_URL_AUTO_URL_KEY_ENABLED      = 'panth_seo/url/auto_url_key_enabled';
     public const XML_URL_URL_KEY_TEMPLATE          = 'panth_seo/url/url_key_template';
     public const XML_URL_AUTO_URL_KEY_FOR_EXISTING = 'panth_seo/url/auto_url_key_for_existing';
@@ -95,17 +58,6 @@ class Config
     public const XML_REPORTS_TOOLBAR_ENABLED      = 'panth_seo/reports/seo_toolbar_enabled';
     public const XML_REPORTS_TOOLBAR_ALLOWED_IPS  = 'panth_seo/reports/seo_toolbar_allowed_ips';
 
-    public const XML_BREADCRUMBS_FORMAT          = 'panth_seo/breadcrumbs/breadcrumb_format';
-    public const XML_BREADCRUMBS_PRIORITY_ENABLED = 'panth_seo/breadcrumbs/enable_breadcrumb_priority';
-
-    public const XML_IMAGE_SEO_ENABLED    = 'panth_seo/image/image_seo_enabled';
-    public const XML_IMAGE_ALT_TEMPLATE   = 'panth_seo/image/alt_template';
-    public const XML_IMAGE_TITLE_TEMPLATE = 'panth_seo/image/title_template';
-    public const XML_IMAGE_GALLERY_ENABLED = 'panth_seo/image/gallery_seo_enabled';
-
-    public const XML_INDEXNOW_ENABLED = 'panth_seo/indexnow/enabled';
-    public const XML_INDEXNOW_API_KEY = 'panth_seo/indexnow/api_key';
-
     public const XML_ADV_ASYNC_INDEXING          = 'panth_seo/advanced/async_indexing';
     public const XML_ADV_MVIEW_ENABLED           = 'panth_seo/advanced/mview_enabled';
     public const XML_ADV_LAST_MODIFIED_HEADER    = 'panth_seo/advanced/last_modified_header';
@@ -113,38 +65,8 @@ class Config
 
     public const XML_CANONICAL_STRIP_PARAMS = 'panth_seo/canonical/strip_params';
 
-    public const XML_LLMS_TXT_ENABLED        = 'panth_seo/llms_txt/enabled';
-    public const XML_LLMS_TXT_SUMMARY        = 'panth_seo/llms_txt/summary';
-    public const XML_LLMS_TXT_MAX_CATEGORIES = 'panth_seo/llms_txt/max_categories';
-    public const XML_LLMS_TXT_MAX_PRODUCTS   = 'panth_seo/llms_txt/max_products';
-    public const XML_LLMS_TXT_MAX_CMS        = 'panth_seo/llms_txt/max_cms';
-    public const XML_LLMS_TXT_GENERATE_FULL  = 'panth_seo/llms_txt/generate_full_llms';
-    public const XML_LLMS_TXT_SHIPPING_PAGE  = 'panth_seo/llms_txt/shipping_page';
-    public const XML_LLMS_TXT_RETURNS_PAGE   = 'panth_seo/llms_txt/returns_page';
-    public const XML_LLMS_TXT_ABOUT_PAGE     = 'panth_seo/llms_txt/about_page';
-    public const XML_LLMS_TXT_FAQ_PAGE       = 'panth_seo/llms_txt/faq_page';
-
-    public const XML_ORG_LEGAL_NAME = 'panth_seo/organization/legal_name';
-    public const XML_ORG_LOGO       = 'panth_seo/organization/logo';
-    public const XML_ORG_PHONE      = 'panth_seo/organization/phone';
-    public const XML_ORG_EMAIL      = 'panth_seo/organization/email';
-    public const XML_ORG_STREET     = 'panth_seo/organization/street';
-    public const XML_ORG_LOCALITY   = 'panth_seo/organization/locality';
-    public const XML_ORG_REGION     = 'panth_seo/organization/region';
-    public const XML_ORG_POSTCODE   = 'panth_seo/organization/postcode';
-    public const XML_ORG_COUNTRY    = 'panth_seo/organization/country';
-    public const XML_ORG_SAME_AS    = 'panth_seo/organization/same_as';
-
-    public const XML_SD_BUSINESS_TYPE      = 'panth_seo/structured_data/business_type';
-    public const XML_SD_DEFAULT_BRAND      = 'panth_seo/structured_data/default_brand';
-    public const XML_SD_RETURN_POLICY_TYPE = 'panth_seo/structured_data/return_policy_type';
-    public const XML_SD_RETURN_POLICY_FEES = 'panth_seo/structured_data/return_policy_fees';
-    public const XML_SD_ENERGY_LABEL_ENABLED  = 'panth_seo/structured_data/energy_label_enabled';
-    public const XML_SD_ENERGY_CLASS_ATTRIBUTE = 'panth_seo/structured_data/energy_class_attribute';
-    public const XML_SD_CERTIFICATION_ENABLED  = 'panth_seo/structured_data/certification_enabled';
-    public const XML_SD_CERTIFICATION_ATTRIBUTE = 'panth_seo/structured_data/certification_attribute';
-    public const XML_SD_SALE_EVENT_ENABLED     = 'panth_seo/structured_data/sale_event_enabled';
-    public const XML_SD_LIMITED_STOCK_THRESHOLD = 'panth_seo/structured_data/limited_stock_threshold';
+    public const XML_SD_DEFAULT_BRAND        = 'panth_structured_data/structured_data/default_brand';
+    public const XML_SD_DEFAULT_BRAND_LEGACY = 'panth_seo/structured_data/default_brand';
 
     public const XML_GA4_ENABLED        = 'panth_seo/analytics/ga4_enabled';
     public const XML_GA4_MEASUREMENT_ID = 'panth_seo/analytics/ga4_measurement_id';
@@ -254,41 +176,6 @@ class Config
         return $this->flag($path, $storeId);
     }
 
-    public function isHreflangEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_HREFLANG_ENABLED, $storeId);
-    }
-
-    public function emitHreflangXDefault(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_HREFLANG_XDEFAULT, $storeId);
-    }
-
-    public function isOgEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SOCIAL_OG_ENABLED, $storeId);
-    }
-
-    public function isTwitterEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SOCIAL_TWITTER_ENABLED, $storeId);
-    }
-
-    public function getTwitterCardType(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_SOCIAL_TWITTER_CARD_TYPE, $storeId) ?? 'summary_large_image');
-    }
-
-    public function getTwitterSiteHandle(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_SOCIAL_TWITTER_HANDLE, $storeId) ?? '');
-    }
-
-    public function getDefaultOgImage(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_SOCIAL_DEFAULT_OG_IMAGE, $storeId) ?? '');
-    }
-
     public function isAssociatedProductCanonical(?int $storeId = null): bool
     {
         return $this->flag(self::XML_CANONICAL_ASSOCIATED_PRODUCT, $storeId);
@@ -314,65 +201,21 @@ class Config
         return (string) ($this->value(self::XML_CANONICAL_PRODUCT_CANONICAL_TYPE, $storeId) ?? 'without_category');
     }
 
-    public function isConfigurableMultiOffer(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SD_CONFIGURABLE_MULTI_OFFER, $storeId);
-    }
-
-    public function isRemoveNativeMarkup(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SD_REMOVE_NATIVE_MARKUP, $storeId);
-    }
-
-    public function getReturnPolicyDays(?int $storeId = null): int
-    {
-        return (int) ($this->value(self::XML_SD_RETURN_POLICY_DAYS, $storeId) ?? 30);
-    }
-
     public function getBrandAttribute(?int $storeId = null): string
     {
-        return (string) ($this->value(self::XML_SD_BRAND_ATTRIBUTE, $storeId) ?? 'manufacturer');
+        $value = $this->valueWithLegacy(self::XML_SD_BRAND_ATTRIBUTE, self::XML_SD_BRAND_ATTRIBUTE_LEGACY, $storeId);
+
+        return $value !== '' ? $value : 'manufacturer';
     }
 
     public function getGtinAttribute(?int $storeId = null): string
     {
-        return (string) ($this->value(self::XML_SD_GTIN_ATTRIBUTE, $storeId) ?? '');
+        return $this->valueWithLegacy(self::XML_SD_GTIN_ATTRIBUTE, self::XML_SD_GTIN_ATTRIBUTE_LEGACY, $storeId);
     }
 
     public function getMpnAttribute(?int $storeId = null): string
     {
-        return (string) ($this->value(self::XML_SD_MPN_ATTRIBUTE, $storeId) ?? '');
-    }
-
-    public function isFilterUrlEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_FILTER_URL_ENABLED, $storeId);
-    }
-
-    public function getFilterUrlFormat(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_FILTER_URL_FORMAT, $storeId) ?? 'short');
-    }
-
-    public function getFilterUrlSeparator(?int $storeId = null): string
-    {
-        $val = (string) ($this->value(self::XML_FILTER_URL_SEPARATOR, $storeId) ?? '-');
-        return $val !== '' ? $val : '-';
-    }
-
-    public function isFilterMetaEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_FILTER_META_ENABLED, $storeId);
-    }
-
-    public function injectFilterInTitle(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_FILTER_META_INJECT_TITLE, $storeId);
-    }
-
-    public function injectFilterInDescription(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_FILTER_META_INJECT_DESCRIPTION, $storeId);
+        return $this->valueWithLegacy(self::XML_SD_MPN_ATTRIBUTE, self::XML_SD_MPN_ATTRIBUTE_LEGACY, $storeId);
     }
 
     public function isStripTitlePrefixSuffix(?int $storeId = null): bool
@@ -425,52 +268,6 @@ class Config
         return (string) ($this->value(self::XML_CANONICAL_TRAILING_SLASH_HOMEPAGE, $storeId) ?? 'none');
     }
 
-    public function getHreflangScope(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_HREFLANG_SCOPE, $storeId) ?? 'website');
-    }
-
-    public function getCmsRelationMethod(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_HREFLANG_CMS_RELATION, $storeId) ?? 'by_url_key');
-    }
-
-    public function isProductListSchemaEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SD_PRODUCT_LIST_SCHEMA, $storeId);
-    }
-
-    public function getAcceptedPaymentMethods(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_SD_ACCEPTED_PAYMENT, $storeId) ?? '');
-    }
-
-    public function getDeliveryMethods(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_SD_DELIVERY_METHODS, $storeId) ?? '');
-    }
-
-    public function getCustomSchemaProperties(?int $storeId = null): array
-    {
-        $raw = trim((string) ($this->value(self::XML_SD_CUSTOM_PROPERTIES, $storeId) ?? ''));
-        if ($raw === '') {
-            return [];
-        }
-
-        try {
-            $decoded = json_decode($raw, true, 64, JSON_THROW_ON_ERROR);
-        } catch (\JsonException) {
-            return [];
-        }
-
-        return is_array($decoded) ? $decoded : [];
-    }
-
-    public function getProductCondition(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_SD_PRODUCT_CONDITION, $storeId) ?? 'new');
-    }
-
     public function getProductConditionSchemaUrl(?int $storeId = null): string
     {
         $map = [
@@ -482,47 +279,6 @@ class Config
 
         return $map[$this->getProductCondition($storeId)] ?? 'https://schema.org/NewCondition';
     }
-
-    public function getPriceValidUntilDefault(?int $storeId = null): string
-    {
-        return trim((string) ($this->value(self::XML_SD_PRICE_VALID_UNTIL_DEFAULT, $storeId) ?? ''));
-    }
-
-    public function isProductGroupEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SD_PRODUCT_GROUP_ENABLED, $storeId);
-    }
-
-    public function isProsConsEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SD_PROS_CONS_ENABLED, $storeId);
-    }
-
-    public function getProsAttribute(?int $storeId = null): string
-    {
-        $value = (string) ($this->value(self::XML_SD_PROS_ATTRIBUTE, $storeId) ?? '');
-        return $value !== '' ? $value : 'product_pros';
-    }
-
-    public function getConsAttribute(?int $storeId = null): string
-    {
-        $value = (string) ($this->value(self::XML_SD_CONS_ATTRIBUTE, $storeId) ?? '');
-        return $value !== '' ? $value : 'product_cons';
-    }
-
-    public function getLimitedStockThreshold(?int $storeId = null): int
-    {
-        $value = $this->value(self::XML_SD_LIMITED_STOCK_THRESHOLD, $storeId);
-        return $value !== null ? max(1, (int) $value) : 5;
-    }
-
-    public const XML_SOCIAL_PROFILE_FACEBOOK  = 'panth_seo/social_profiles/facebook_url';
-    public const XML_SOCIAL_PROFILE_TWITTER   = 'panth_seo/social_profiles/twitter_url';
-    public const XML_SOCIAL_PROFILE_INSTAGRAM = 'panth_seo/social_profiles/instagram_url';
-    public const XML_SOCIAL_PROFILE_LINKEDIN  = 'panth_seo/social_profiles/linkedin_url';
-    public const XML_SOCIAL_PROFILE_YOUTUBE   = 'panth_seo/social_profiles/youtube_url';
-    public const XML_SOCIAL_PROFILE_PINTEREST = 'panth_seo/social_profiles/pinterest_url';
-    public const XML_SOCIAL_PROFILE_TIKTOK    = 'panth_seo/social_profiles/tiktok_url';
 
     public function isAutoUrlKeyEnabled(?int $storeId = null): bool
     {
@@ -559,60 +315,6 @@ class Config
         return (string) ($this->value(self::XML_REPORTS_TOOLBAR_ALLOWED_IPS, $storeId) ?? '');
     }
 
-    public function getBreadcrumbFormat(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_BREADCRUMBS_FORMAT, $storeId) ?? 'longest');
-    }
-
-    public function isBreadcrumbPriorityEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_BREADCRUMBS_PRIORITY_ENABLED, $storeId);
-    }
-
-    public function isImageSeoEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_IMAGE_SEO_ENABLED, $storeId);
-    }
-
-    public function getImageAltTemplate(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_IMAGE_ALT_TEMPLATE, $storeId) ?? '{{name}} - {{store}}');
-    }
-
-    public function getImageTitleTemplate(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_IMAGE_TITLE_TEMPLATE, $storeId) ?? '{{name}}');
-    }
-
-    public function isImageGallerySeoEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_IMAGE_GALLERY_ENABLED, $storeId);
-    }
-
-    public function getSocialProfileUrls(?int $storeId = null): array
-    {
-        $paths = [
-            self::XML_SOCIAL_PROFILE_FACEBOOK,
-            self::XML_SOCIAL_PROFILE_TWITTER,
-            self::XML_SOCIAL_PROFILE_INSTAGRAM,
-            self::XML_SOCIAL_PROFILE_LINKEDIN,
-            self::XML_SOCIAL_PROFILE_YOUTUBE,
-            self::XML_SOCIAL_PROFILE_PINTEREST,
-            self::XML_SOCIAL_PROFILE_TIKTOK,
-        ];
-
-        $urls = [];
-        foreach ($paths as $path) {
-            $url = trim((string) ($this->value($path, $storeId) ?? ''));
-            if ($url === '' || !$this->isSafeHttpUrl($url)) {
-                continue;
-            }
-            $urls[] = $url;
-        }
-
-        return $urls;
-    }
-
     private function isSafeHttpUrl(string $url): bool
     {
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
@@ -624,16 +326,6 @@ class Config
         }
         $host = (string) parse_url($url, PHP_URL_HOST);
         return $host !== '';
-    }
-
-    public function isIndexNowEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_INDEXNOW_ENABLED, $storeId);
-    }
-
-    public function getIndexNowApiKey(?int $storeId = null): string
-    {
-        return trim((string) ($this->value(self::XML_INDEXNOW_API_KEY, $storeId) ?? ''));
     }
 
     public function isMerchantFeedEnabled(?int $storeId = null): bool
@@ -736,153 +428,9 @@ class Config
         return $this->flag(self::XML_ADV_SPECULATION_RULES, $storeId);
     }
 
-    public function isLlmsTxtEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_LLMS_TXT_ENABLED, $storeId);
-    }
-
-    public function getLlmsTxtSummary(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_LLMS_TXT_SUMMARY, $storeId) ?? '');
-    }
-
-    public function getLlmsTxtMaxCategories(?int $storeId = null): int
-    {
-        return (int) ($this->value(self::XML_LLMS_TXT_MAX_CATEGORIES, $storeId) ?? 20);
-    }
-
-    public function getLlmsTxtMaxProducts(?int $storeId = null): int
-    {
-        return (int) ($this->value(self::XML_LLMS_TXT_MAX_PRODUCTS, $storeId) ?? 50);
-    }
-
-    public function getLlmsTxtMaxCms(?int $storeId = null): int
-    {
-        return (int) ($this->value(self::XML_LLMS_TXT_MAX_CMS, $storeId) ?? 10);
-    }
-
-    public function isLlmsTxtGenerateFullEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_LLMS_TXT_GENERATE_FULL, $storeId);
-    }
-
-    public function getLlmsTxtShippingPage(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_LLMS_TXT_SHIPPING_PAGE, $storeId) ?? '');
-    }
-
-    public function getLlmsTxtReturnsPage(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_LLMS_TXT_RETURNS_PAGE, $storeId) ?? '');
-    }
-
-    public function getLlmsTxtAboutPage(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_LLMS_TXT_ABOUT_PAGE, $storeId) ?? '');
-    }
-
-    public function getLlmsTxtFaqPage(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_LLMS_TXT_FAQ_PAGE, $storeId) ?? '');
-    }
-
-    public function getOrgLegalName(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_ORG_LEGAL_NAME, $storeId) ?? '');
-    }
-
-    public function getOrgLogo(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_ORG_LOGO, $storeId) ?? '');
-    }
-
-    public function getOrgPhone(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_ORG_PHONE, $storeId) ?? '');
-    }
-
-    public function getOrgEmail(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_ORG_EMAIL, $storeId) ?? '');
-    }
-
-    public function getOrgStreet(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_ORG_STREET, $storeId) ?? '');
-    }
-
-    public function getOrgLocality(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_ORG_LOCALITY, $storeId) ?? '');
-    }
-
-    public function getOrgRegion(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_ORG_REGION, $storeId) ?? '');
-    }
-
-    public function getOrgPostcode(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_ORG_POSTCODE, $storeId) ?? '');
-    }
-
-    public function getOrgCountry(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_ORG_COUNTRY, $storeId) ?? '');
-    }
-
-    public function getOrgSameAs(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_ORG_SAME_AS, $storeId) ?? '');
-    }
-
-    public function getBusinessType(?int $storeId = null): string
-    {
-        $value = (string) ($this->value(self::XML_SD_BUSINESS_TYPE, $storeId) ?? 'Organization');
-        $allowed = ['Organization', 'LocalBusiness', 'Store', 'OnlineStore'];
-        return in_array($value, $allowed, true) ? $value : 'Organization';
-    }
-
     public function getDefaultBrand(?int $storeId = null): string
     {
-        return (string) ($this->value(self::XML_SD_DEFAULT_BRAND, $storeId) ?? '');
-    }
-
-    public function getReturnPolicyType(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_SD_RETURN_POLICY_TYPE, $storeId) ?? 'refund');
-    }
-
-    public function getReturnPolicyFees(?int $storeId = null): string
-    {
-        return (string) ($this->value(self::XML_SD_RETURN_POLICY_FEES, $storeId) ?? 'free');
-    }
-
-    public function isEnergyLabelEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SD_ENERGY_LABEL_ENABLED, $storeId);
-    }
-
-    public function getEnergyClassAttribute(?int $storeId = null): string
-    {
-        $value = (string) ($this->value(self::XML_SD_ENERGY_CLASS_ATTRIBUTE, $storeId) ?? '');
-        return $value !== '' ? $value : 'energy_class';
-    }
-
-    public function isCertificationEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SD_CERTIFICATION_ENABLED, $storeId);
-    }
-
-    public function getCertificationAttribute(?int $storeId = null): string
-    {
-        $value = (string) ($this->value(self::XML_SD_CERTIFICATION_ATTRIBUTE, $storeId) ?? '');
-        return $value !== '' ? $value : 'certifications';
-    }
-
-    public function isSaleEventEnabled(?int $storeId = null): bool
-    {
-        return $this->flag(self::XML_SD_SALE_EVENT_ENABLED, $storeId);
+        return $this->valueWithLegacy(self::XML_SD_DEFAULT_BRAND, self::XML_SD_DEFAULT_BRAND_LEGACY, $storeId);
     }
 
     private function flag(string $path, ?int $storeId): bool
@@ -893,5 +441,15 @@ class Config
     private function value(string $path, ?int $storeId): mixed
     {
         return $this->scopeConfig->getValue($path, ScopeInterface::SCOPE_STORE, $storeId);
+    }
+
+    private function valueWithLegacy(string $path, string $legacyPath, ?int $storeId): string
+    {
+        $value = trim((string) ($this->value($path, $storeId) ?? ''));
+        if ($value !== '') {
+            return $value;
+        }
+
+        return trim((string) ($this->value($legacyPath, $storeId) ?? ''));
     }
 }

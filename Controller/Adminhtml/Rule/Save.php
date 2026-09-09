@@ -9,6 +9,7 @@ use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Framework\App\Cache\TypeListInterface;
+use Panth\AdvancedSEO\Model\Cache\SeoCacheInvalidator;
 use Magento\Backend\App\Action\Context;
 
 class Save extends AbstractAction implements HttpPostActionInterface
@@ -20,7 +21,8 @@ class Save extends AbstractAction implements HttpPostActionInterface
         private readonly ResourceConnection $resource,
         private readonly SerializerInterface $serializer,
         private readonly DateTime $dateTime,
-        private readonly TypeListInterface $cacheTypeList
+        private readonly TypeListInterface $cacheTypeList,
+        private readonly SeoCacheInvalidator $cacheInvalidator
     ) {
         parent::__construct($context);
     }
@@ -98,6 +100,7 @@ class Save extends AbstractAction implements HttpPostActionInterface
                 $id = (int)$connection->lastInsertId($table);
             }
             $this->cacheTypeList->cleanType('config');
+            $this->cacheInvalidator->invalidateAll();
             $this->messageManager->addSuccessMessage(__('Rule saved.'));
             if ($this->getRequest()->getParam('back')) {
                 return $resultRedirect->setPath('*/*/edit', ['id' => $id]);

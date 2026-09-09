@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Panth\AdvancedSEO\Controller\Adminhtml\Rule;
 
 use Panth\AdvancedSEO\Controller\Adminhtml\AbstractAction;
+use Panth\AdvancedSEO\Model\Cache\SeoCacheInvalidator;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\ResourceConnection;
@@ -13,7 +14,11 @@ class Delete extends AbstractAction implements HttpGetActionInterface, HttpPostA
 {
     public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::rules';
 
-    public function __construct(Context $context, private readonly ResourceConnection $resource)
+    public function __construct(
+        Context $context,
+        private readonly ResourceConnection $resource,
+        private readonly SeoCacheInvalidator $cacheInvalidator
+    )
     {
         parent::__construct($context);
     }
@@ -29,6 +34,7 @@ class Delete extends AbstractAction implements HttpGetActionInterface, HttpPostA
                     ['rule_id = ?' => $id]
                 );
                 $this->messageManager->addSuccessMessage(__('Rule deleted.'));
+                $this->cacheInvalidator->invalidateAll();
             } catch (\Throwable $e) {
                 $this->messageManager->addErrorMessage($e->getMessage());
             }

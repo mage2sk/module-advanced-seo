@@ -14,6 +14,7 @@ use Magento\Ui\DataProvider\AbstractDataProvider;
 class BulkEditorDataProvider extends AbstractDataProvider
 {
     private string $entityType;
+    private int $scopeStoreId = 0;
     private bool $collectionInitialized = false;
 
     public function __construct(
@@ -43,8 +44,28 @@ class BulkEditorDataProvider extends AbstractDataProvider
         }
         $this->entityType = $type;
         $this->backendSession->setData('panth_seo_bulkeditor_type', $type);
+        $this->scopeStoreId = $this->resolveScopeStoreId();
         $this->collection = $this->createCollection();
         parent::__construct($name, $primaryFieldName, $requestFieldName, $meta, $data);
+    }
+
+    private function resolveScopeStoreId(): int
+    {
+        $raw = $this->request->getParam('store');
+        if ($raw === null || $raw === '') {
+            $referer = (string) ($this->request->getServer('HTTP_REFERER') ?? '');
+            if (preg_match('#/store/(\d+)(?:/|$)#', $referer, $m)) {
+                $raw = $m[1];
+            }
+        }
+        if ($raw === null || $raw === '') {
+            $raw = $this->backendSession->getData('panth_seo_bulkeditor_store');
+        }
+
+        $storeId = max(0, (int) $raw);
+        $this->backendSession->setData('panth_seo_bulkeditor_store', $storeId);
+
+        return $storeId;
     }
 
     private function createCollection(): mixed
@@ -59,6 +80,10 @@ class BulkEditorDataProvider extends AbstractDataProvider
     private function createProductCollection(): mixed
     {
         $collection = $this->productCollectionFactory->create();
+        $collection->setStore($this->scopeStoreId);
+        if ($this->scopeStoreId > 0) {
+            $collection->addStoreFilter($this->scopeStoreId);
+        }
         $collection->addAttributeToSelect(['name', 'sku', 'meta_title', 'meta_description', 'meta_keyword']);
         return $collection;
     }
@@ -66,6 +91,7 @@ class BulkEditorDataProvider extends AbstractDataProvider
     private function createCategoryCollection(): mixed
     {
         $collection = $this->categoryCollectionFactory->create();
+        $collection->setStore($this->scopeStoreId);
         $collection->addAttributeToSelect(['name', 'url_key', 'meta_title', 'meta_description', 'meta_keywords']);
         $collection->addFieldToFilter('level', ['gteq' => 2]);
         return $collection;
@@ -75,6 +101,9 @@ class BulkEditorDataProvider extends AbstractDataProvider
     {
         $collection = $this->cmsPageCollectionFactory->create();
         $collection->addFieldToFilter('is_active', 1);
+        if ($this->scopeStoreId > 0) {
+            $collection->addStoreFilter($this->scopeStoreId);
+        }
         return $collection;
     }
 

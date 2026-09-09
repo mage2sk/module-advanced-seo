@@ -10,7 +10,7 @@ use Magento\Backend\Model\Session as BackendSession;
 
 class Index extends AbstractAction
 {
-    public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::templates';
+    public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::bulkeditor';
 
     public function __construct(
         Context $context,

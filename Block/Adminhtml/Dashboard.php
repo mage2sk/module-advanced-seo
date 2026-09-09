@@ -7,6 +7,7 @@ use Magento\Backend\Block\Template;
 use Magento\Backend\Block\Template\Context;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\DB\Adapter\AdapterInterface;
+use Magento\Framework\Module\Manager as ModuleManager;
 
 class Dashboard extends Template
 {
@@ -15,6 +16,7 @@ class Dashboard extends Template
     public function __construct(
         Context $context,
         private readonly ResourceConnection $resource,
+        private readonly ModuleManager $moduleManager,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -168,7 +170,7 @@ class Dashboard extends Template
 
     public function getQuickActions(): array
     {
-        return [
+        $actions = [
             [
                 'label' => 'Manage Templates',
                 'url'   => $this->getUrl('panth_seo/template/index'),
@@ -183,16 +185,6 @@ class Dashboard extends Template
                 'label' => 'SEO Audit',
                 'url'   => $this->getUrl('panth_seo/audit/index'),
                 'icon'  => 'search',
-            ],
-            [
-                'label' => 'Filter URL Rewrites',
-                'url'   => $this->getUrl('panth_seo/filterrewrite/index'),
-                'icon'  => 'filter',
-            ],
-            [
-                'label' => 'Manage Sitemaps',
-                'url'   => $this->getUrl('panth_seo/sitemap/index'),
-                'icon'  => 'sitemap',
             ],
             [
                 'label' => 'Manage Feeds',
@@ -215,6 +207,44 @@ class Dashboard extends Template
                 'icon'  => 'cog',
             ],
         ];
+
+        foreach ($this->getSiblingModuleActions() as $action) {
+            $actions[] = $action;
+        }
+
+        return $actions;
+    }
+
+    public function getSiblingModuleActions(): array
+    {
+        $candidates = [
+            ['module' => 'Panth_FilterSeo', 'label' => 'Filter URL Rewrites', 'route' => 'panth_filterseo/filterrewrite/index', 'icon' => 'filter'],
+            ['module' => 'Panth_XmlSitemap', 'label' => 'Manage Sitemaps', 'route' => 'panth_xml_sitemap/profile/index', 'icon' => 'sitemap'],
+            ['module' => 'Panth_Hreflang', 'label' => 'Hreflang Groups', 'route' => 'panth_hreflang/hreflang/index', 'icon' => 'globe'],
+        ];
+
+        $actions = [];
+        foreach ($candidates as $candidate) {
+            if (!$this->isModuleAvailable($candidate['module'])) {
+                continue;
+            }
+            $actions[] = [
+                'label' => $candidate['label'],
+                'url'   => $this->getUrl($candidate['route']),
+                'icon'  => $candidate['icon'],
+            ];
+        }
+
+        return $actions;
+    }
+
+    public function isModuleAvailable(string $moduleName): bool
+    {
+        try {
+            return $this->moduleManager->isEnabled($moduleName);
+        } catch (\Throwable) {
+            return false;
+        }
     }
 
     public function pct(int $part, int $total): float
@@ -252,18 +282,21 @@ class Dashboard extends Template
 
         try {
             $conn = $this->getConnection();
-
             $sitemapTable = $this->resource->getTableName('panth_seo_sitemap_profile');
             if ($conn->isTableExists($sitemapTable)) {
                 $stats['sitemap_profiles'] = (int) $conn->fetchOne("SELECT COUNT(*) FROM {$sitemapTable} WHERE is_active = 1");
                 $stats['sitemap_last_generated'] = (string) $conn->fetchOne("SELECT MAX(last_generated_at) FROM {$sitemapTable}");
                 $stats['sitemap_total_urls'] = (int) $conn->fetchOne("SELECT COALESCE(SUM(url_count), 0) FROM {$sitemapTable}");
             }
+        } catch (\Throwable) {
+        }
 
+        try {
+            $conn = $this->getConnection();
             $feedTable = $this->resource->getTableName('panth_seo_feed_profile');
             if ($conn->isTableExists($feedTable)) {
                 $stats['feed_profiles'] = (int) $conn->fetchOne("SELECT COUNT(*) FROM {$feedTable} WHERE is_active = 1");
-                $stats['feed_last_generated'] = (string) $conn->fetchOne("SELECT MAX(generated_at) FROM {$feedTable}");
+                $stats['feed_last_generated'] = (string) $conn->fetchOne("SELECT MAX(last_generated_at) FROM {$feedTable}");
                 $stats['feed_total_products'] = (int) $conn->fetchOne("SELECT COALESCE(SUM(product_count), 0) FROM {$feedTable}");
             }
         } catch (\Throwable) {

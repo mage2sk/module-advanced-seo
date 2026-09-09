@@ -11,7 +11,7 @@ use Panth\AdvancedSEO\Controller\Adminhtml\AbstractAction;
 
 class SaveField extends AbstractAction implements HttpPostActionInterface
 {
-    public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::manage';
+    public const ADMIN_RESOURCE = 'Panth_AdvancedSEO::feeds';
 
     public function __construct(
         Context $context,

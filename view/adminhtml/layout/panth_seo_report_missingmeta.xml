@@ -4,6 +4,11 @@
     <update handle="styles"/>
     <body>
         <referenceContainer name="content">
+            <block class="Magento\Backend\Block\Template" name="panth_seo_store_scope" template="Panth_AdvancedSEO::store_switcher.phtml" before="-">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Panth\AdvancedSEO\ViewModel\StoreScopeSwitcher</argument>
+                </arguments>
+            </block>
             <uiComponent name="panth_seo_missing_meta_listing"/>
         </referenceContainer>
     </body>
