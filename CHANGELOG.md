@@ -4,7 +4,7 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
-## [1.4.0] - 2026-09-09
+## [1.4.1] - 2026-09-09
 
 ### Fixed
 - **Applying a meta template overwrote every hand-written meta title and description.** `Force Template Over Existing Meta` is off by default and the live meta resolver honours it, but the Apply Now button and the cron applier both ignored it and wrote the rendered pattern over whatever the merchant had typed, across the whole catalogue, with no undo. Both paths now skip products and categories that already carry a value unless the setting is on.
