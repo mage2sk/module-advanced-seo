@@ -35,7 +35,7 @@
     <type name="Panth\AdvancedSEO\Model\Indexer\ResolvedMeta">
         <arguments>
             <argument name="seoDebugLogger" xsi:type="object">Panth\AdvancedSEO\Logger\Logger</argument>
-            <argument name="config" xsi:type="object">Panth\AdvancedSEO\Helper\Config</argument>
+            <argument name="seoConfig" xsi:type="object">Panth\AdvancedSEO\Helper\Config</argument>
         </arguments>
     </type>
     <!-- Interface bindings: new feature repositories -->

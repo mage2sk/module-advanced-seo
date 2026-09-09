@@ -4,6 +4,14 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.3.19] - 2026-09-09
+
+### Fixed
+- **The resolved-meta indexer never wrote a debug line.** `etc/di.xml` bound its config argument as `config`, but the constructor parameter is `$seoConfig`. Magento matches di.xml arguments by parameter name, so the binding was ignored and the nullable argument stayed `null`, which made the indexer's `debug()` return before doing anything. With the name corrected a full reindex now writes the trace it was always meant to. Same trap as the canonical view model in 1.3.18, one level up.
+
+### Added
+- A unit test walks every `<argument>` in the module's `di.xml` files and fails if its name is not a real constructor parameter of the target class, so a binding can no longer be silently ignored.
+
 ## [1.3.18] - 2026-09-09
 
 ### Added
