@@ -67,11 +67,27 @@ class Resolver implements CanonicalResolverInterface
         if ($robots !== '' && $this->config->isCanonicalDisabledForNoindex($storeId)
             && stripos($robots, 'noindex') !== false
         ) {
+            $this->debug('panth_seo: canonical.suppressed', [
+                'entity_type' => $entityType,
+                'entity_id' => $entityId,
+                'store_id' => $storeId,
+                'decision' => 'noindex_page',
+                'robots' => $robots,
+            ]);
+
             return '';
         }
 
         $currentPath = $params['current_path'] ?? '';
         if ($currentPath !== '' && $this->isIgnoredPage($currentPath, $storeId)) {
+            $this->debug('panth_seo: canonical.suppressed', [
+                'entity_type' => $entityType,
+                'entity_id' => $entityId,
+                'store_id' => $storeId,
+                'decision' => 'ignored_path',
+                'current_path' => $currentPath,
+            ]);
+
             return '';
         }
 
@@ -97,10 +113,27 @@ class Resolver implements CanonicalResolverInterface
                 'entity_id'   => $entityId,
                 'error'       => $e->getMessage(),
             ]);
+            $this->debug('panth_seo: canonical.suppressed', [
+                'entity_type' => $entityType,
+                'entity_id' => $entityId,
+                'store_id' => $storeId,
+                'decision' => 'build_failed',
+                'exception' => $e->getMessage(),
+                'class' => get_class($e),
+                'at' => $e->getFile() . ':' . $e->getLine(),
+            ]);
+
             return '';
         }
 
         if ($url === '') {
+            $this->debug('panth_seo: canonical.suppressed', [
+                'entity_type' => $entityType,
+                'entity_id' => $entityId,
+                'store_id' => $storeId,
+                'decision' => 'no_url_built',
+            ]);
+
             return '';
         }
 

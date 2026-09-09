@@ -4,6 +4,17 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.3.18] - 2026-09-09
+
+### Added
+- **A suppressed canonical now says why.** When no `<link rel="canonical">` is emitted, the reason is written to the module debug log as `panth_seo: canonical.suppressed` with a `decision` key. Until now an intentional suppression and a thrown exception were byte-for-byte identical from outside, and because this module also suppresses Magento's native canonical tag, a page could end up with no canonical from any source and no trace anywhere. Decisions reported: `noindex_page`, `ignored_path`, `noroute_noindex`, `canonical_disabled`, `no_url_built`, `build_failed`, `exception` and `is_enabled_threw`. An exception also carries its message, class, file and line, and the request URI.
+- The reasons are reported from both places that can decide it: `Model\Canonical\Resolver`, which is what runs for a product, category or CMS page, and `ViewModel\Canonical`, which runs for everything else. The resolver previously logged only its successful decisions.
+- Logging is behind the existing **Debug Logging** setting, so nothing is written on a production store with debug off. Emitted canonicals are unchanged in every case; this release adds no output and removes none.
+
+### Fixed
+- `ViewModel\Canonical` discarded every exception, so a failure anywhere inside it, a bad store, a broken custom-canonical row, a repository error, silently became "no canonical on this page". The exception is now logged before the empty string is returned. The same applied to `isEnabled()`, which turned a config read failure into canonicals being off sitewide with no trace.
+- `etc/di.xml` binds the debug logger into `ViewModel\Canonical`. Magento DI passes `null` for a nullable optional argument unless it is bound explicitly, so without this entry the new logging would never fire.
+
 ## [1.3.17] - 2026-09-09
 
 Replaces 1.3.16, which was withdrawn. The code is identical. The sample strings

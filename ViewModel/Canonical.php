@@ -12,6 +12,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Panth\AdvancedSEO\Api\CanonicalResolverInterface;
 use Panth\AdvancedSEO\Api\MetaResolverInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
+use Panth\AdvancedSEO\Logger\Logger as SeoDebugLogger;
 
 class Canonical implements ArgumentInterface
 {
@@ -24,15 +25,44 @@ class Canonical implements ArgumentInterface
         private readonly StoreManagerInterface $storeManager,
         private readonly SeoConfig $config,
         private readonly PageConfig $pageConfig,
-        private readonly AttributeCollectionFactory $attributeCollectionFactory
+        private readonly AttributeCollectionFactory $attributeCollectionFactory,
+        private readonly ?SeoDebugLogger $seoDebugLogger = null
     ) {
+    }
+
+    private function debug(string $message, array $context = []): void
+    {
+        if ($this->seoDebugLogger === null) {
+            return;
+        }
+        try {
+            if (!$this->config->isDebug()) {
+                return;
+            }
+            $this->seoDebugLogger->debug($message, $context);
+        } catch (\Throwable) {
+        }
+    }
+
+    private function suppressed(string $decision, array $context = []): string
+    {
+        $this->debug('panth_seo: canonical.suppressed', ['decision' => $decision] + $context);
+
+        return '';
     }
 
     public function isEnabled(): bool
     {
         try {
             return $this->config->isEnabled() && $this->config->isCanonicalEnabled();
-        } catch (\Throwable) {
+        } catch (\Throwable $e) {
+            $this->debug('panth_seo: canonical.suppressed', [
+                'decision' => 'is_enabled_threw',
+                'exception' => $e->getMessage(),
+                'class' => get_class($e),
+                'at' => $e->getFile() . ':' . $e->getLine(),
+            ]);
+
             return false;
         }
     }
@@ -40,7 +70,7 @@ class Canonical implements ArgumentInterface
     public function getCanonicalUrl(): string
     {
         if (!$this->isEnabled()) {
-            return '';
+            return $this->suppressed('canonical_disabled');
         }
 
         [$type, $id] = $this->detectEntity();
@@ -49,7 +79,7 @@ class Canonical implements ArgumentInterface
             $storeId = (int) $store->getId();
 
             if ($this->isNoRouteRequest() && $this->config->isNoindexNoRoute($storeId)) {
-                return '';
+                return $this->suppressed('noroute_noindex', ['store_id' => $storeId]);
             }
             $page    = (int) $this->request->getParam('p', 0);
 
@@ -90,10 +120,17 @@ class Canonical implements ArgumentInterface
             if ($this->config->isCanonicalDisabledForNoindex($storeId)
                 && $robots !== '' && stripos($robots, 'noindex') !== false
             ) {
-                return '';
+                return $this->suppressed('noindex_page', [
+                    'store_id' => $storeId,
+                    'robots' => $robots,
+                    'current_path' => $currentPath,
+                ]);
             }
             if ($this->isIgnoredRequestPath($currentPath, $storeId)) {
-                return '';
+                return $this->suppressed('ignored_path', [
+                    'store_id' => $storeId,
+                    'current_path' => $currentPath,
+                ]);
             }
 
             $baseUrl = rtrim((string) $store->getBaseUrl(), '/');
@@ -106,6 +143,25 @@ class Canonical implements ArgumentInterface
             $query = $this->buildFallbackQuery();
 
             return $this->canonicalResolver->normalize($baseUrl . $path . $query, $storeId);
+        } catch (\Throwable $e) {
+            $this->debug('panth_seo: canonical.suppressed', [
+                'decision' => 'exception',
+                'exception' => $e->getMessage(),
+                'class' => get_class($e),
+                'at' => $e->getFile() . ':' . $e->getLine(),
+                'request_uri' => $this->safeRequestUri(),
+                'entity_type' => $type,
+                'entity_id' => $id,
+            ]);
+
+            return '';
+        }
+    }
+
+    private function safeRequestUri(): string
+    {
+        try {
+            return (string) $this->request->getRequestUri();
         } catch (\Throwable) {
             return '';
         }

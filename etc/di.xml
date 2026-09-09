@@ -6,6 +6,11 @@
     <preference for="Panth\AdvancedSEO\Api\SeoScorerInterface" type="Panth\AdvancedSEO\Model\Score\Scorer"/>
     <preference for="Panth\AdvancedSEO\Api\MetaResolverInterface" type="Panth\AdvancedSEO\Model\Meta\Resolver"/>
     <preference for="Panth\AdvancedSEO\Api\CanonicalResolverInterface" type="Panth\AdvancedSEO\Model\Canonical\Resolver"/>
+    <type name="Panth\AdvancedSEO\ViewModel\Canonical">
+        <arguments>
+            <argument name="seoDebugLogger" xsi:type="object">Panth\AdvancedSEO\Logger\Logger</argument>
+        </arguments>
+    </type>
     <type name="Panth\AdvancedSEO\Model\Canonical\Resolver">
         <arguments>
             <argument name="customCanonicalRepository" xsi:type="object">Panth\AdvancedSEO\Model\Canonical\CustomCanonicalRepository</argument>
