@@ -10,6 +10,7 @@ use Magento\Framework\Registry;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\AdvancedSEO\Api\MetaResolverInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
+use Panth\AdvancedSEO\Model\Text\Truncator;
 
 class HeadPlugin
 {
@@ -21,7 +22,8 @@ class HeadPlugin
         private readonly Registry $registry,
         private readonly SeoConfig $seoConfig,
         private readonly RequestInterface $request,
-        private readonly AttributeCollectionFactory $attributeCollectionFactory
+        private readonly AttributeCollectionFactory $attributeCollectionFactory,
+        private readonly Truncator $truncator
     ) {
     }
 
@@ -54,24 +56,11 @@ class HeadPlugin
                         $storeName = '';
                     }
                     if ($storeName !== '' && !str_contains($title, $storeName)) {
-                        $maxLen = $this->seoConfig->getTitleMaxLength($storeId);
-                        $suffix = ' - ' . $storeName;
-                        $combined = $title . $suffix;
-                        if ($maxLen > 0
-                            && function_exists('mb_strlen')
-                            && mb_strlen($combined, 'UTF-8') > $maxLen
-                        ) {
-                            $budget = $maxLen - mb_strlen($suffix, 'UTF-8');
-                            if ($budget > 3) {
-                                $title = rtrim(mb_substr($title, 0, $budget - 3, 'UTF-8'))
-                                    . '...'
-                                    . $suffix;
-                            } else {
-                                $title = mb_substr($combined, 0, $maxLen, 'UTF-8');
-                            }
-                        } else {
-                            $title = $combined;
-                        }
+                        $title = $this->composeTitle(
+                            $title,
+                            $storeName,
+                            $this->seoConfig->getTitleMaxLength($storeId)
+                        );
                     }
                 }
                 $subject->getTitle()->set($title);
@@ -85,6 +74,23 @@ class HeadPlugin
         } catch (\Throwable) {
         }
         return [];
+    }
+
+    private function composeTitle(string $title, string $storeName, int $maxLen): string
+    {
+        $suffix = ' - ' . $storeName;
+        $combined = $title . $suffix;
+
+        if ($maxLen <= 0 || !function_exists('mb_strlen') || mb_strlen($combined, 'UTF-8') <= $maxLen) {
+            return $combined;
+        }
+
+        $budget = $maxLen - mb_strlen($suffix, 'UTF-8');
+        if ($budget <= 3) {
+            return mb_substr($combined, 0, $maxLen, 'UTF-8');
+        }
+
+        return $this->truncator->truncate($title, $budget) . $suffix;
     }
 
     private function detectEntity(): array

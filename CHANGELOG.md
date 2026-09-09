@@ -4,6 +4,21 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.3.16] - 2026-09-09
+
+### Fixed
+- **Meta titles and descriptions no longer cut a word in half.** Truncation kept a hard character count, so a title could end `... with Vacu...`. It now steps back to the last space, and only when that space keeps at least 60 per cent of the available room, so a long unbroken string still truncates instead of collapsing to a fragment. Trailing spaces and punctuation are trimmed before the ellipsis.
+- **Multibyte meta was truncated by bytes and could be cut to a third of its length.** After the character-length check passed, a second byte-length check ran on the same value, so a 47 character Devanagari title with a 60 character limit was cut to 24 characters, and the cut could land inside a character and emit invalid UTF-8. The byte-length path is now only used when the mbstring extension is missing.
+- The store name suffix path in the head plugin uses the same word-boundary rule, and the finished title still fits inside the configured title length.
+- Google Merchant and custom feed descriptions use the same rule, so a feed description no longer ends mid-word.
+
+### Changed
+- The truncation logic lived in five places and has moved into one `Model\Text\Truncator` service, injected where it is needed, so the call sites cannot drift apart.
+- `Plugin\PageConfig\HeadPlugin` builds the title through a `composeTitle` method instead of inline branching.
+
+### Added
+- Unit tests for the truncator and the head plugin title: word boundaries, an unbroken 200 character token, Devanagari, accented Latin and Japanese input, values under the limit, and a check that the title plus store name always fits the configured limit.
+
 ## [1.3.15] - 2026-08-18
 
 ### Fixed

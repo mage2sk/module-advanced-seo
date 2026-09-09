@@ -9,6 +9,7 @@ use Magento\Catalog\Model\Product;
 use Magento\CatalogInventory\Api\StockRegistryInterface;
 use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Panth\AdvancedSEO\Model\Text\Truncator;
 use Psr\Log\LoggerInterface;
 
 class FieldResolver
@@ -20,7 +21,8 @@ class FieldResolver
         private readonly StoreManagerInterface $storeManager,
         private readonly CategoryRepositoryInterface $categoryRepository,
         private readonly TimezoneInterface $timezone,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly Truncator $truncator
     ) {
     }
 
@@ -270,10 +272,6 @@ class FieldResolver
         $text = (string) preg_replace('/\s+/', ' ', $text);
         $text = trim($text);
 
-        if (mb_strlen($text) > self::DESCRIPTION_MAX_LENGTH) {
-            $text = mb_substr($text, 0, self::DESCRIPTION_MAX_LENGTH - 3) . '...';
-        }
-
-        return $text;
+        return $this->truncator->truncate($text, self::DESCRIPTION_MAX_LENGTH);
     }
 }

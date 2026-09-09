@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Panth\AdvancedSEO\Model\Meta;
 
+use Panth\AdvancedSEO\Model\Text\Truncator;
 use Psr\Log\LoggerInterface;
 
 class TemplateRenderer
@@ -12,7 +13,8 @@ class TemplateRenderer
 
     public function __construct(
         private readonly TokenRegistry $registry,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly Truncator $truncator
     ) {
     }
 
@@ -120,14 +122,7 @@ class TemplateRenderer
     {
         switch ($name) {
             case 'truncate':
-                $len = max(4, (int) ($arg ?? '60'));
-                if (function_exists('mb_strlen') && mb_strlen($value, 'UTF-8') > $len) {
-                    return rtrim(mb_substr($value, 0, $len - 3, 'UTF-8')) . '...';
-                }
-                if (strlen($value) > $len) {
-                    return rtrim(substr($value, 0, $len - 3)) . '...';
-                }
-                return $value;
+                return $this->truncator->truncate($value, max(4, (int) ($arg ?? '60')));
 
             case 'title':
                 return function_exists('mb_convert_case')

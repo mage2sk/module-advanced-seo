@@ -19,6 +19,7 @@ use Magento\Framework\Stdlib\DateTime\TimezoneInterface;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\AdvancedSEO\Helper\Config;
+use Panth\AdvancedSEO\Model\Text\Truncator;
 use Psr\Log\LoggerInterface;
 
 class GoogleMerchantFeedBuilder
@@ -39,7 +40,8 @@ class GoogleMerchantFeedBuilder
         private readonly ResourceConnection $resourceConnection,
         private readonly TimezoneInterface $timezone,
         private readonly Config $config,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly Truncator $truncator
     ) {
     }
 
@@ -325,11 +327,7 @@ class GoogleMerchantFeedBuilder
         $text = preg_replace('/\s+/', ' ', $text);
         $text = trim($text);
 
-        if (mb_strlen($text) > self::DESCRIPTION_MAX_LENGTH) {
-            $text = mb_substr($text, 0, self::DESCRIPTION_MAX_LENGTH - 3) . '...';
-        }
-
-        return $text;
+        return $this->truncator->truncate($text, self::DESCRIPTION_MAX_LENGTH);
     }
 
     private function getProductImageUrl(Product $product, StoreInterface $store): string

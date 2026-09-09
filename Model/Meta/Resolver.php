@@ -19,6 +19,7 @@ use Panth\AdvancedSEO\Api\RuleEvaluatorInterface;
 use Panth\AdvancedSEO\Helper\Config;
 use Panth\AdvancedSEO\Logger\Logger as SeoDebugLogger;
 use Panth\AdvancedSEO\Model\ResourceModel\Template\CollectionFactory as TemplateCollectionFactory;
+use Panth\AdvancedSEO\Model\Text\Truncator;
 use Psr\Log\LoggerInterface;
 
 class Resolver implements MetaResolverInterface
@@ -38,6 +39,7 @@ class Resolver implements MetaResolverInterface
         private readonly StoreManagerInterface $storeManager,
         private readonly Config $config,
         private readonly LoggerInterface $logger,
+        private readonly Truncator $truncator,
         private readonly ?SeoDebugLogger $seoDebugLogger = null
     ) {
     }
@@ -417,15 +419,7 @@ class Resolver implements MetaResolverInterface
             return $value;
         }
         $value = trim((string) preg_replace('/\s+/u', ' ', $value));
-        if ($max <= 3) {
-            return $value;
-        }
-        if (function_exists('mb_strlen') && mb_strlen($value, 'UTF-8') > $max) {
-            return rtrim(mb_substr($value, 0, $max - 3, 'UTF-8')) . '...';
-        }
-        if (strlen($value) > $max) {
-            return rtrim(substr($value, 0, $max - 3)) . '...';
-        }
-        return $value;
+
+        return $this->truncator->truncate($value, $max);
     }
 }
