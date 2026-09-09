@@ -4,6 +4,15 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.4.2] - 2026-09-09
+
+### Fixed
+- **The crawl audit spent most of its page budget on pages that can never rank.** The link extractor skipped `rel="nofollow"`, off-host links and assets, but nothing else, so it followed the storefront's own links into `/customer/account/*`, `/checkout/*` and every layered-navigation permutation. On a Luma-style theme the login link carries a base64 referer in the path, so **every crawled page produced a different `/customer/account/login/referer/<hash>/` URL** and the queue filled with them. Against a real storefront the crawler now queues 49% fewer URLs on the first three pages, and all of the ones it dropped were noindex by design.
+
+### Added
+- **`Crawl Exclude Paths`** under `Stores > Configuration > Panth Extensions > Advanced SEO > Reports & Diagnostics`. One path per line, `*` wildcards supported, pre-filled with the customer, checkout, wishlist, compare, search, newsletter and payment paths. Clear the field to crawl everything as before.
+- **`Follow Filtered And Sorted URLs`**, default No. Layered navigation, sorting and page-size URLs multiply without bound and are noindex by design, so they are skipped. Paging (`?p=`) is always followed.
+
 ## [1.4.1] - 2026-09-09
 
 ### Fixed

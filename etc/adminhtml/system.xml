@@ -187,6 +187,17 @@
                     <validate>validate-digits</validate>
                     <comment>Maximum number of pages to crawl per audit run. Default: 100.</comment>
                 </field>
+                <field id="crawl_exclude_paths" translate="label comment" type="textarea" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Crawl Exclude Paths (one per line)</label>
+                    <comment><![CDATA[URL paths the crawl audit must not follow. Customer, checkout and other private pages are noindex by design, so auditing them wastes the page budget. Wildcards supported: <code>*</code>. Clear the field to crawl everything.]]></comment>
+                    <depends><field id="enable_crawl_audit">1</field></depends>
+                </field>
+                <field id="crawl_follow_filtered" translate="label comment" type="select" sortOrder="24" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Follow Filtered And Sorted URLs</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Layered navigation, sorting and page-size URLs multiply without bound and are noindex by design. Leave off so the crawl budget is spent on indexable pages. Paging (<code>?p=</code>) is always followed.</comment>
+                    <depends><field id="enable_crawl_audit">1</field></depends>
+                </field>
                 <field id="seo_toolbar_enabled" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable SEO Toolbar</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>

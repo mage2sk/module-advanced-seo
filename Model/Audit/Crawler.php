@@ -6,6 +6,7 @@ namespace Panth\AdvancedSEO\Model\Audit;
 use Magento\Framework\HTTP\Client\Curl;
 use Magento\Framework\HTTP\Client\CurlFactory;
 use Magento\Store\Model\StoreManagerInterface;
+use Panth\AdvancedSEO\Helper\Config;
 use Psr\Log\LoggerInterface;
 
 class Crawler
@@ -18,6 +19,7 @@ class Crawler
     public function __construct(
         private readonly CurlFactory $curlFactory,
         private readonly StoreManagerInterface $storeManager,
+        private readonly Config $config,
         private readonly LoggerInterface $logger
     ) {
     }
@@ -34,6 +36,9 @@ class Crawler
         }
 
         $curl = $this->createCurl();
+
+        $excludePatterns = $this->getExcludePatterns($storeId);
+        $followFiltered  = $this->config->crawlFollowsFilteredUrls($storeId);
 
         $visited = [];
         $queue   = [$this->normalizeUrl($baseUrl, $baseUrl)];
@@ -71,7 +76,7 @@ class Crawler
                 continue;
             }
 
-            $links = $this->extractLinks($body, $url, $host, $baseUrl);
+            $links = $this->extractLinks($body, $url, $host, $baseUrl, $excludePatterns, $followFiltered);
             foreach ($links as $link) {
                 if (!isset($visited[$link]) && !in_array($link, $queue, true)) {
                     $queue[] = $link;
@@ -169,8 +174,14 @@ class Crawler
         ];
     }
 
-    private function extractLinks(string $body, string $pageUrl, string $host, string $baseUrl): array
-    {
+    private function extractLinks(
+        string $body,
+        string $pageUrl,
+        string $host,
+        string $baseUrl,
+        array $excludePatterns = [],
+        bool $followFiltered = false
+    ): array {
         $links = [];
         if (preg_match_all('/<a\b[^>]*\bhref\s*=\s*["\']([^"\']+)["\'][^>]*>/i', $body, $matches)) {
             foreach ($matches[1] as $index => $href) {
@@ -200,11 +211,76 @@ class Crawler
                     continue;
                 }
 
+                if ($this->isExcludedPath($path, $excludePatterns)) {
+                    continue;
+                }
+
+                if (!$followFiltered && $this->isFilteredUrl($normalized)) {
+                    continue;
+                }
+
                 $links[] = $normalized;
             }
         }
 
         return array_unique($links);
+    }
+
+    private function getExcludePatterns(int $storeId): array
+    {
+        $raw = $this->config->getCrawlExcludePaths($storeId);
+        if (trim($raw) === '') {
+            return [];
+        }
+
+        $patterns = preg_split('/\r\n|\r|\n|,/', $raw) ?: [];
+        $patterns = array_filter(array_map(
+            static fn ($pattern) => '/' . trim(trim((string) $pattern), '/'),
+            $patterns
+        ), static fn ($pattern) => $pattern !== '/');
+
+        return array_values(array_unique($patterns));
+    }
+
+    private function isExcludedPath(string $path, array $excludePatterns): bool
+    {
+        if ($excludePatterns === []) {
+            return false;
+        }
+
+        $normalized = '/' . ltrim($path, '/');
+
+        foreach ($excludePatterns as $pattern) {
+            if (str_contains($pattern, '*')) {
+                if (fnmatch($pattern, $normalized)) {
+                    return true;
+                }
+                continue;
+            }
+
+            if ($normalized === $pattern || str_starts_with($normalized, rtrim($pattern, '/') . '/')) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function isFilteredUrl(string $url): bool
+    {
+        $query = (string) parse_url($url, PHP_URL_QUERY);
+        if ($query === '') {
+            return false;
+        }
+
+        parse_str($query, $params);
+        foreach (array_keys($params) as $key) {
+            if (strtolower((string) $key) !== 'p') {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function resolveUrl(string $href, string $pageUrl): ?string

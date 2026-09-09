@@ -88,6 +88,24 @@
             <reports>
                 <enable_crawl_audit>0</enable_crawl_audit>
                 <crawl_depth>100</crawl_depth>
+                <crawl_follow_filtered>0</crawl_follow_filtered>
+                <crawl_exclude_paths>/customer/*
+/checkout
+/checkout/*
+/wishlist/*
+/catalog/product_compare/*
+/catalogsearch/*
+/sales/*
+/newsletter/*
+/review/customer/*
+/downloadable/customer/*
+/multishipping/*
+/paypal/*
+/vault/*
+/captcha/*
+/sendfriend/*
+/oauth/*
+/connect/*</crawl_exclude_paths>
                 <seo_toolbar_enabled>0</seo_toolbar_enabled>
                 <seo_toolbar_allowed_ips></seo_toolbar_allowed_ips>
             </reports>

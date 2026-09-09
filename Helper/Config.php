@@ -54,6 +54,8 @@ class Config
     public const XML_URL_AUTO_URL_KEY_FOR_EXISTING = 'panth_seo/url/auto_url_key_for_existing';
 
     public const XML_REPORTS_CRAWL_AUDIT_ENABLED = 'panth_seo/reports/enable_crawl_audit';
+    public const XML_REPORTS_CRAWL_EXCLUDE_PATHS   = 'panth_seo/reports/crawl_exclude_paths';
+    public const XML_REPORTS_CRAWL_FOLLOW_FILTERED = 'panth_seo/reports/crawl_follow_filtered';
     public const XML_REPORTS_CRAWL_DEPTH         = 'panth_seo/reports/crawl_depth';
     public const XML_REPORTS_TOOLBAR_ENABLED      = 'panth_seo/reports/seo_toolbar_enabled';
     public const XML_REPORTS_TOOLBAR_ALLOWED_IPS  = 'panth_seo/reports/seo_toolbar_allowed_ips';
@@ -298,6 +300,16 @@ class Config
     public function isCrawlAuditEnabled(?int $storeId = null): bool
     {
         return $this->flag(self::XML_REPORTS_CRAWL_AUDIT_ENABLED, $storeId);
+    }
+
+    public function getCrawlExcludePaths(?int $storeId = null): string
+    {
+        return (string) ($this->value(self::XML_REPORTS_CRAWL_EXCLUDE_PATHS, $storeId) ?? '');
+    }
+
+    public function crawlFollowsFilteredUrls(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_REPORTS_CRAWL_FOLLOW_FILTERED, $storeId);
     }
 
     public function getCrawlDepth(?int $storeId = null): int
