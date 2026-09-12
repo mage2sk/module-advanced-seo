@@ -13,6 +13,7 @@ use Panth\AdvancedSEO\Api\MetaResolverInterface;
 use Panth\AdvancedSEO\Api\Data\ResolvedMetaInterface;
 use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Panth\AdvancedSEO\Logger\Logger as SeoDebugLogger;
+use Panth\AdvancedSEO\Model\Maintenance\EntityTableMap;
 use Psr\Log\LoggerInterface;
 
 class ResolvedMeta implements IndexerActionInterface, MviewActionInterface
@@ -27,6 +28,7 @@ class ResolvedMeta implements IndexerActionInterface, MviewActionInterface
         private readonly MetaResolverInterface $metaResolver,
         private readonly Json $json,
         private readonly LoggerInterface $logger,
+        private readonly EntityTableMap $entityTableMap,
         private readonly ?SeoConfig $seoConfig = null,
         private readonly ?SeoDebugLogger $seoDebugLogger = null
     ) {
@@ -80,7 +82,7 @@ class ResolvedMeta implements IndexerActionInterface, MviewActionInterface
                 MetaResolverInterface::ENTITY_CATEGORY,
                 MetaResolverInterface::ENTITY_CMS,
             ] as $type) {
-                $this->reindexEntities($store, $type, array_map('intval', $ids));
+                $this->reindexEntities($store, $type, $this->entityTableMap->existingIds($type, $ids));
             }
         }
     }

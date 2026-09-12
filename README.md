@@ -148,6 +148,7 @@ Performance • SEO • Adobe Commerce Cloud
 - **Crawl audit** that checks pages for broken links, missing meta, and redirect chains. Depth and max pages are configurable.
 - **Background crawling**: the admin **Run Crawl** button queues the crawl and a dedicated cron group runs it out of process, with live progress on the page and a **Stop Crawl** button. Nothing blocks the admin request.
 - **CLI crawling**: `bin/magento panth:seo:crawl` (`--store`, `--limit`, `--dry-run`, `--force`), using the configured Crawl Depth by default.
+- **Automatic cleanup of deleted entities**: deleting a product, category or CMS page removes its score, embedding, resolved meta and link-graph rows, a daily cron job prunes anything left behind by imports and mass deletes, and `bin/magento panth:seo:prune` (`--dry-run`, `--include-authored`) cleans an install on demand. Scores and duplicate detection never count entities that no longer exist.
 - **SEO Toolbar** for the storefront (restricted to allowed IPs) showing on-page diagnostics without a full page reload.
 - **Missing Meta Report** under the admin menu showing entities with no title or description.
 - **Crawl Results grid** under Admin showing each crawled URL, its HTTP status, canonical, robots directive, and detected issues.
@@ -327,8 +328,9 @@ Go to **Stores -> Configuration -> Panth Extensions -> Advanced SEO**.
 4. **Canonical URLs** are built from the configuration settings and any per-entity override stored in `panth_seo_custom_canonical`.
 5. The **SEO scoring cron** runs against `panth_seo_score` and assigns each entity a 0-100 score based on length, duplicates, and readability checks. Results appear in the admin audit grid.
 6. The **crawl audit** runs in the `panth_advancedseo` cron group: the admin button queues a request per store view, a once-a-minute job picks it up in its own process, and results replace that store's rows in `panth_seo_crawl_result` in a single transaction. `bin/magento panth:seo:crawl` does the same thing from the shell.
-7. The **Google Merchant feed** is built by the `panth:seo:feed` command or the daily cron and written to `pub/media/panth_seo/google_feed_{store_code}.xml`, then served at `/panth_seo/feed/google`.
-8. **GA4 tracking** outputs the `gtag.js` snippet in the page head and fires structured ecommerce events from a ViewModel, with no jQuery dependency.
+7. **Rows for deleted entities are removed as they are deleted**: a delete observer clears that entity's rows from `panth_seo_score`, `panth_seo_meta_embedding`, `panth_seo_resolved` and `panth_seo_related`, a daily `panth_seo_prune_orphans` job sweeps up anything that bypassed the events, and the duplicate-detection lookup joins the catalog so a stale row can never affect a score.
+8. The **Google Merchant feed** is built by the `panth:seo:feed` command or the daily cron and written to `pub/media/panth_seo/google_feed_{store_code}.xml`, then served at `/panth_seo/feed/google`.
+9. **GA4 tracking** outputs the `gtag.js` snippet in the page head and fires structured ecommerce events from a ViewModel, with no jQuery dependency.
 
 ---
 
@@ -357,6 +359,9 @@ Yes, the hreflang group CRUD and the `panth_seo_hreflang` indexer are built into
 
 ### Can I run the SEO audit on demand?
 Yes. Use `bin/magento panth:seo:audit` or `bin/magento panth:seo:crawl` from the command line, or enable the crawl audit in configuration to run it on a schedule. In the admin, **Run Crawl** on the SEO Audit page queues a crawl that runs in the background through cron, so the admin request never waits for it. Results appear in Admin under Advanced SEO > Crawl Results.
+
+### What happens to SEO data when I delete a product or category?
+It is removed with the entity. The score, the duplicate-detection embedding, the resolved meta and the link-graph rows all go, so the audit reports only entities that exist and a deleted page can never be counted as a duplicate of a live one. A daily cron job also sweeps up rows left behind by anything that bypasses Magento's delete events, such as a CSV delete import, and `bin/magento panth:seo:prune --dry-run` shows you what it would remove. Per-entity SEO overrides and custom canonicals you typed yourself are kept unless you pass `--include-authored`.
 
 ### Does Panth Advanced SEO need Panth Core?
 Yes. `mage2kishan/module-core` is a free, required dependency that Composer installs for you automatically.

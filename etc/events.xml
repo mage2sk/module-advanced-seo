@@ -23,6 +23,18 @@
         <observer name="panth_seo_indexing_api_cms"
                   instance="Panth\AdvancedSEO\Observer\SearchConsole\EntityChangeObserver"/>
     </event>
+    <event name="catalog_product_delete_after">
+        <observer name="panth_seo_product_delete_after"
+                  instance="Panth\AdvancedSEO\Observer\Product\DeleteAfter"/>
+    </event>
+    <event name="catalog_category_delete_after">
+        <observer name="panth_seo_category_delete_after"
+                  instance="Panth\AdvancedSEO\Observer\Category\DeleteAfter"/>
+    </event>
+    <event name="cms_page_delete_after">
+        <observer name="panth_seo_cms_delete_after"
+                  instance="Panth\AdvancedSEO\Observer\Cms\DeleteAfter"/>
+    </event>
     <event name="catalog_category_move_after">
         <observer name="panth_seo_category_move_after"
                   instance="Panth\AdvancedSEO\Observer\Category\MoveAfter"/>

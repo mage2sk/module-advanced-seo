@@ -18,6 +18,7 @@ use Panth\AdvancedSEO\Api\MetaResolverInterface;
 use Panth\AdvancedSEO\Api\RuleEvaluatorInterface;
 use Panth\AdvancedSEO\Helper\Config;
 use Panth\AdvancedSEO\Logger\Logger as SeoDebugLogger;
+use Panth\AdvancedSEO\Model\Maintenance\EntityTableMap;
 use Panth\AdvancedSEO\Model\ResourceModel\Template\CollectionFactory as TemplateCollectionFactory;
 use Panth\AdvancedSEO\Model\Text\Truncator;
 use Psr\Log\LoggerInterface;
@@ -40,6 +41,7 @@ class Resolver implements MetaResolverInterface
         private readonly Config $config,
         private readonly LoggerInterface $logger,
         private readonly Truncator $truncator,
+        private readonly EntityTableMap $entityTableMap,
         private readonly ?SeoDebugLogger $seoDebugLogger = null
     ) {
     }
@@ -253,10 +255,11 @@ class Resolver implements MetaResolverInterface
         $connection = $this->resource->getConnection();
         $select = $connection->select()
             ->from($this->resource->getTableName('panth_seo_override'))
-            ->where('entity_type = ?', $entityType)
+            ->where('entity_type IN (?)', $this->entityTableMap->aliasesFor($entityType))
             ->where('entity_id = ?', $entityId)
             ->where('store_id IN (?)', [$storeId, 0])
             ->order(new \Zend_Db_Expr('store_id DESC'))
+            ->order(new \Zend_Db_Expr('override_id DESC'))
             ->limit(1);
         $row = $connection->fetchRow($select);
         return $row ?: null;

@@ -4,6 +4,20 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.7.0] - 2026-09-12
+
+### Fixed
+- **Scores and embeddings were kept forever for deleted products, categories and CMS pages.** Nothing removed them: there was no delete observer, no cron job pruned them, and neither table has a foreign key, so the database did not cascade either. `ScoreRecompute` iterates entities that still exist, so a row whose entity is gone was simply never visited again and kept its last score permanently. On a live store 13 of 84 `panth_seo_score` rows (15%) and 11 of 64 `panth_seo_meta_embedding` rows (17%) belonged to entities that no longer existed. Deleting a product, category or CMS page now clears its rows from `panth_seo_score`, `panth_seo_meta_embedding`, `panth_seo_resolved` and `panth_seo_related`, and invalidates its meta cache.
+- **Deleted entities were counted as duplicate-detection neighbours**, which silently distorted the heaviest check in the score. `EmbeddingIndex::findSimilar()` read the embedding table filtered only by entity type and store, with no check that the entity still existed, and `DuplicateCheck` scores **0** at similarity >= 0.9 and carries 2.5 of the 11.5 total weight - about 22% of the score. So a live page could be graded a near-duplicate of a product deleted months ago, with nothing in the admin to explain it. Verified on a dev store: a deleted product came back as the top neighbour at similarity **1.0000**; with the fix the same query returns 0.1243 and never returns the deleted row. The lookup now joins the catalog, so a stale row cannot affect a score even before it is pruned.
+- **The Low-scoring entities table listed entities that no longer exist.** They are graded `F`, so they sorted to the top of a merchant-facing report where they could not be actioned, fixed or dismissed. The table now filters to entities that still exist, so it stays correct even between a delete and the next prune - which matters because a CSV delete import bypasses Magento's delete events entirely.
+- **Saving one entity wrote index rows for two entities that may not exist.** The resolved-meta indexer fanned a single id list across *all three* entity types, so reindexing product 2141 also resolved and wrote rows for "category 2141" and "CMS page 2141". Where no such category or page existed those rows were pure garbage - and they were the main source of orphan growth in `panth_seo_resolved`. Each id is now only resolved for the types that actually own it, which also cuts the index writes per saved entity from six rows to two on a two-store site.
+- **SEO fields saved on a CMS page never reached the storefront.** The admin CMS form writes its override row with `entity_type = 'cms_page'` while the storefront resolves CMS pages as `'cms'`, so the Meta Robots and Hreflang Identifier entered on a CMS page were stored, shown back correctly in the form, and then ignored on every page load. The resolver now accepts both spellings, as the rule engine and score context builder already did. No data migration is needed - existing rows start working on upgrade.
+
+### Added
+- **`bin/magento panth:seo:prune`** deletes SEO rows belonging to entities that no longer exist, with `--dry-run` to report without deleting. Hand-entered rows - per-entity SEO overrides and custom canonicals - are **kept** unless `--include-authored` is passed, because an accidental product delete should not silently destroy meta a merchant typed.
+- **A daily `panth_seo_prune_orphans` cron job** so an install stays clean without anyone running anything, including after imports and mass deletes that skip Magento's delete events.
+- **A one-time prune on upgrade**, so installs already carrying orphan rows are cleaned without the merchant needing to know this happened.
+
 ## [1.6.1] - 2026-09-12
 
 ### Fixed

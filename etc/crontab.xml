@@ -20,6 +20,11 @@
              method="execute">
             <schedule>0 */2 * * *</schedule>
         </job>
+        <job name="panth_seo_prune_orphans"
+             instance="Panth\AdvancedSEO\Cron\PruneOrphans"
+             method="execute">
+            <schedule>25 2 * * *</schedule>
+        </job>
         <job name="panth_seo_google_feed"
              instance="Panth\AdvancedSEO\Cron\GenerateGoogleFeed"
              method="execute">

@@ -145,6 +145,7 @@
                 <item name="panth_seo_crawl" xsi:type="object">Panth\AdvancedSEO\Console\Command\CrawlCommand</item>
                 <item name="panth_seo_regenerate_urls" xsi:type="object">Panth\AdvancedSEO\Console\Command\RegenerateUrlRewritesCommand</item>
                 <item name="panth_seo_feed" xsi:type="object">Panth\AdvancedSEO\Console\Command\GenerateFeedCommand</item>
+                <item name="panth_seo_prune" xsi:type="object">Panth\AdvancedSEO\Console\Command\PruneCommand</item>
             </argument>
         </arguments>
     </type>

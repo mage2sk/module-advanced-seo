@@ -5,6 +5,7 @@ namespace Panth\AdvancedSEO\Model\Score;
 
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Stdlib\DateTime\DateTime;
+use Panth\AdvancedSEO\Model\Maintenance\EntityTableMap;
 use Psr\Log\LoggerInterface;
 
 class EmbeddingIndex
@@ -16,7 +17,8 @@ class EmbeddingIndex
     public function __construct(
         private readonly ResourceConnection $resource,
         private readonly DateTime $dateTime,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly EntityTableMap $entityTableMap
     ) {
     }
 
@@ -104,12 +106,14 @@ class EmbeddingIndex
         $connection = $this->resource->getConnection();
         $table = $this->resource->getTableName('panth_seo_meta_embedding');
         $select = $connection->select()
-            ->from($table, ['entity_type', 'entity_id', 'store_id', 'vector'])
-            ->where('entity_type = ?', $entityType)
-            ->where('store_id = ?', $storeId);
+            ->from(['embedding' => $table], ['entity_type', 'entity_id', 'store_id', 'vector'])
+            ->where('embedding.entity_type IN (?)', $this->entityTableMap->aliasesFor($entityType))
+            ->where('embedding.store_id = ?', $storeId);
         if ($excludeId > 0) {
-            $select->where('entity_id <> ?', $excludeId);
+            $select->where('embedding.entity_id <> ?', $excludeId);
         }
+
+        $this->entityTableMap->joinExisting($select, $entityType, 'embedding', 'entity_id');
 
         $select->limit(2000);
 

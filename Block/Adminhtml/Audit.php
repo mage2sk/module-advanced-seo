@@ -11,6 +11,7 @@ use Magento\Store\Api\StoreRepositoryInterface;
 use Panth\AdvancedSEO\Model\Audit\CrawlRunner;
 use Panth\AdvancedSEO\Model\Audit\CrawlState;
 use Panth\AdvancedSEO\Model\Audit\CronActivity;
+use Panth\AdvancedSEO\Model\Maintenance\EntityTableMap;
 
 class Audit extends Template
 {
@@ -26,6 +27,7 @@ class Audit extends Template
         private readonly StoreRepositoryInterface $storeRepository,
         private readonly CrawlState $crawlState,
         private readonly CronActivity $cronActivity,
+        private readonly EntityTableMap $entityTableMap,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -95,10 +97,11 @@ class Audit extends Template
         }
         $rows = $connection->fetchAll(
             $connection->select()
-                ->from($table)
-                ->where('store_id = ?', $this->getSelectedStoreId())
-                ->where('score < ?', 60)
-                ->order('score ASC')
+                ->from(['entity_score' => $table])
+                ->where('entity_score.store_id = ?', $this->getSelectedStoreId())
+                ->where('entity_score.score < ?', 60)
+                ->where($this->entityTableMap->existsCondition('entity_score', 'entity_type', 'entity_id'))
+                ->order('entity_score.score ASC')
                 ->limit($limit)
         );
 
