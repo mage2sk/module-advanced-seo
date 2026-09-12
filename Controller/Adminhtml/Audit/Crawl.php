@@ -5,13 +5,13 @@ namespace Panth\AdvancedSEO\Controller\Adminhtml\Audit;
 
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
-use Magento\Framework\App\ResourceConnection;
-use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\Store\Api\StoreRepositoryInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Panth\AdvancedSEO\Controller\Adminhtml\AbstractAction;
 use Panth\AdvancedSEO\Helper\Config;
-use Panth\AdvancedSEO\Model\Audit\Crawler;
-use Panth\AdvancedSEO\Model\Audit\IssueDetector;
+use Panth\AdvancedSEO\Model\Audit\CrawlRunner;
+use Panth\AdvancedSEO\Model\Audit\CrawlState;
+use Panth\AdvancedSEO\Model\Audit\CronActivity;
 
 class Crawl extends AbstractAction implements HttpPostActionInterface
 {
@@ -19,11 +19,11 @@ class Crawl extends AbstractAction implements HttpPostActionInterface
 
     public function __construct(
         Context $context,
-        private readonly Crawler $crawler,
-        private readonly IssueDetector $issueDetector,
+        private readonly CrawlRunner $crawlRunner,
+        private readonly CrawlState $crawlState,
+        private readonly CronActivity $cronActivity,
         private readonly StoreManagerInterface $storeManager,
-        private readonly ResourceConnection $resource,
-        private readonly DateTime $dateTime,
+        private readonly StoreRepositoryInterface $storeRepository,
         private readonly Config $config
     ) {
         parent::__construct($context);
@@ -32,84 +32,128 @@ class Crawl extends AbstractAction implements HttpPostActionInterface
     public function execute()
     {
         $resultRedirect = $this->resultRedirectFactory->create();
+        $storeId        = (int) $this->getRequest()->getParam('store', 0);
 
         try {
-            $storeId  = (int) $this->getRequest()->getParam('store', $this->storeManager->getStore()->getId());
+            $storeId  = $this->resolveStoreId($storeId);
+            $store    = $this->storeRepository->getById($storeId);
             $maxPages = $this->config->getCrawlDepth($storeId);
 
-            $rawResults = $this->crawler->crawl($storeId, $maxPages);
-            $analysis   = $this->issueDetector->analyse($rawResults);
+            $state = $this->crawlState->get($storeId);
 
-            $results = $analysis['results'];
-            $summary = $analysis['summary'];
-
-            $this->persistResults($storeId, $results);
-
-            $totalIssues = (int) array_sum($summary);
-            $connectionErrors = 0;
-            foreach ($results as $r) {
-                if ($r->statusCode === 0) {
-                    $connectionErrors++;
-                }
+            if ($state['status'] === CrawlState::STATUS_PENDING) {
+                $this->messageManager->addNoticeMessage(
+                    (string) __('A crawl of store view "%1" is already queued.', $store->getName())
+                );
+                return $resultRedirect->setPath('*/audit/index', ['store' => $storeId]);
             }
 
-            if ($connectionErrors > 0 && $connectionErrors === count($results)) {
-                $this->messageManager->addWarningMessage(
+            if ($state['status'] === CrawlState::STATUS_RUNNING && !$state['stale']) {
+                $this->messageManager->addNoticeMessage(
                     (string) __(
-                        'Crawl completed but could not connect to any pages (%1 failed). '
-                        . 'This usually happens in Docker/local environments where the store URL (%2) '
-                        . 'is not reachable from the server. The crawl works correctly on production servers.',
-                        $connectionErrors,
-                        $this->storeManager->getStore($storeId)->getBaseUrl()
+                        'A crawl of store view "%1" is already running (%2 of %3 pages).',
+                        $store->getName(),
+                        (int) $state['crawled'],
+                        (int) $state['max_pages']
                     )
                 );
-            } else {
+                return $resultRedirect->setPath('*/audit/index', ['store' => $storeId]);
+            }
+
+            if ($this->cronActivity->isActive()) {
+                $this->crawlState->queue($storeId, $maxPages, $this->currentUserName());
                 $this->messageManager->addSuccessMessage(
                     (string) __(
-                        'Crawl audit complete: %1 pages crawled, %2 issues found.',
-                        count($results),
-                        $totalIssues
+                        'Crawl of store view "%1" queued (up to %2 pages). It runs in the background within a minute; '
+                        . 'this page shows the progress.',
+                        $store->getName(),
+                        $maxPages
                     )
                 );
+
+                return $resultRedirect->setPath('*/audit/index', ['store' => $storeId]);
             }
+
+            $this->runSynchronously($storeId, (string) $store->getName(), $maxPages);
         } catch (\Throwable $e) {
             $this->messageManager->addErrorMessage(
                 (string) __('Crawl audit failed: %1', $e->getMessage())
             );
         }
 
-        return $resultRedirect->setPath('*/audit/index');
+        return $resultRedirect->setPath('*/audit/index', ['store' => $storeId]);
     }
 
-    private function persistResults(int $storeId, array $results): void
+    private function runSynchronously(int $storeId, string $storeName, int $maxPages): void
     {
-        $connection = $this->resource->getConnection();
-        $table      = $this->resource->getTableName('panth_seo_crawl_result');
+        $limit = min($maxPages, CrawlRunner::SYNC_PAGE_LIMIT);
 
-        if (!$connection->isTableExists($table)) {
+        $outcome = $this->crawlRunner->run($storeId, $limit);
+
+        $pages  = (int) $outcome['pages'];
+        $issues = (int) $outcome['issues'];
+
+        if ($pages === 0) {
+            $this->messageManager->addWarningMessage(
+                (string) __(
+                    'Crawl of store view "%1" could not reach any page. Check that %2 is reachable from this server; '
+                    . 'in a local container the store URL often is not.',
+                    $storeName,
+                    $this->storeManager->getStore($storeId)->getBaseUrl()
+                )
+            );
             return;
         }
 
-        $connection->delete($table, ['store_id = ?' => $storeId]);
+        if ($limit < $maxPages) {
+            $this->messageManager->addWarningMessage(
+                (string) __(
+                    'Magento cron does not appear to be running, so the crawl ran in this request and was capped at '
+                    . '%1 of %2 pages (%3 issues found). Enable cron for a full background crawl, or run '
+                    . 'bin/magento panth:seo:crawl --store=%4 on the server.',
+                    $pages,
+                    $maxPages,
+                    $issues,
+                    $storeId
+                )
+            );
+            return;
+        }
 
-        $now    = $this->dateTime->gmtDate();
-        $buffer = [];
+        $this->messageManager->addSuccessMessage(
+            (string) __(
+                'Crawl of store view "%1" complete: %2 pages crawled, %3 issues found.',
+                $storeName,
+                $pages,
+                $issues
+            )
+        );
+    }
 
-        foreach ($results as $result) {
-            $row               = $result->toArray();
-            $row['store_id']   = $storeId;
-            $row['crawled_at'] = $now;
+    private function resolveStoreId(int $requested): int
+    {
+        if ($requested > 0) {
+            return $requested;
+        }
 
-            $buffer[] = $row;
+        $current = (int) $this->storeManager->getStore()->getId();
+        if ($current > 0) {
+            return $current;
+        }
 
-            if (count($buffer) >= 100) {
-                $connection->insertMultiple($table, $buffer);
-                $buffer = [];
+        foreach ($this->storeRepository->getList() as $store) {
+            if ((int) $store->getId() > 0) {
+                return (int) $store->getId();
             }
         }
 
-        if ($buffer !== []) {
-            $connection->insertMultiple($table, $buffer);
-        }
+        throw new \RuntimeException((string) __('No store view is available to crawl.'));
+    }
+
+    private function currentUserName(): string
+    {
+        $user = $this->_auth->getUser();
+
+        return $user !== null ? (string) $user->getUserName() : '';
     }
 }

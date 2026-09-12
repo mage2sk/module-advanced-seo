@@ -3,24 +3,18 @@ declare(strict_types=1);
 
 namespace Panth\AdvancedSEO\Cron;
 
-use Magento\Framework\App\ResourceConnection;
-use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Store\Api\StoreRepositoryInterface;
 use Panth\AdvancedSEO\Helper\Config;
-use Panth\AdvancedSEO\Model\Audit\Crawler;
-use Panth\AdvancedSEO\Model\Audit\IssueDetector;
+use Panth\AdvancedSEO\Model\Audit\CrawlRunner;
+use Panth\AdvancedSEO\Model\Audit\CrawlState;
 use Psr\Log\LoggerInterface;
 
 class CrawlAudit
 {
-    private const BATCH_INSERT_SIZE = 100;
-
     public function __construct(
-        private readonly Crawler $crawler,
-        private readonly IssueDetector $issueDetector,
         private readonly StoreRepositoryInterface $storeRepository,
-        private readonly ResourceConnection $resource,
-        private readonly DateTime $dateTime,
+        private readonly CrawlRunner $crawlRunner,
+        private readonly CrawlState $crawlState,
         private readonly Config $config,
         private readonly LoggerInterface $logger
     ) {
@@ -38,9 +32,16 @@ class CrawlAudit
                 continue;
             }
 
+            if ($this->crawlState->isActive($storeId)) {
+                $this->logger->info(sprintf(
+                    'Panth SEO CrawlAudit: store %d already has a crawl queued or running, skipping the scheduled run.',
+                    $storeId
+                ));
+                continue;
+            }
+
             try {
-                $maxPages = $this->config->getCrawlDepth($storeId);
-                $this->runForStore($storeId, $maxPages);
+                $this->crawlRunner->run($storeId, $this->config->getCrawlDepth($storeId));
             } catch (\Throwable $e) {
                 $this->logger->error(sprintf(
                     'Panth SEO CrawlAudit: store %d failed: %s',
@@ -48,60 +49,6 @@ class CrawlAudit
                     $e->getMessage()
                 ));
             }
-        }
-    }
-
-    private function runForStore(int $storeId, int $maxPages): void
-    {
-        $this->logger->info(sprintf('Panth SEO CrawlAudit: starting crawl for store %d (max %d pages)', $storeId, $maxPages));
-
-        $rawResults = $this->crawler->crawl($storeId, $maxPages);
-        $analysis   = $this->issueDetector->analyse($rawResults, $this->crawler->getRedirectMap());
-
-        $results = $analysis['results'];
-        $summary = $analysis['summary'];
-
-        $this->persistResults($storeId, $results);
-
-        $totalIssues = (int) array_sum($summary);
-        $this->logger->info(sprintf(
-            'Panth SEO CrawlAudit: store %d complete - %d pages crawled, %d issues found',
-            $storeId,
-            count($results),
-            $totalIssues
-        ));
-    }
-
-    private function persistResults(int $storeId, array $results): void
-    {
-        $connection = $this->resource->getConnection();
-        $table      = $this->resource->getTableName('panth_seo_crawl_result');
-
-        if (!$connection->isTableExists($table)) {
-            $this->logger->warning('Panth SEO CrawlAudit: table ' . $table . ' does not exist, skipping persistence');
-            return;
-        }
-
-        $connection->delete($table, ['store_id = ?' => $storeId]);
-
-        $now    = $this->dateTime->gmtDate();
-        $buffer = [];
-
-        foreach ($results as $result) {
-            $row = $result->toArray();
-            $row['store_id']   = $storeId;
-            $row['crawled_at'] = $now;
-
-            $buffer[] = $row;
-
-            if (count($buffer) >= self::BATCH_INSERT_SIZE) {
-                $connection->insertMultiple($table, $buffer);
-                $buffer = [];
-            }
-        }
-
-        if ($buffer !== []) {
-            $connection->insertMultiple($table, $buffer);
         }
     }
 }

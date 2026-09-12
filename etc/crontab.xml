@@ -20,15 +20,22 @@
              method="execute">
             <schedule>0 */2 * * *</schedule>
         </job>
+        <job name="panth_seo_google_feed"
+             instance="Panth\AdvancedSEO\Cron\GenerateGoogleFeed"
+             method="execute">
+            <schedule>0 1 * * *</schedule>
+        </job>
+    </group>
+    <group id="panth_advancedseo">
         <job name="panth_seo_crawl_audit"
              instance="Panth\AdvancedSEO\Cron\CrawlAudit"
              method="execute">
             <schedule>0 3 * * *</schedule>
         </job>
-        <job name="panth_seo_google_feed"
-             instance="Panth\AdvancedSEO\Cron\GenerateGoogleFeed"
+        <job name="panth_seo_process_crawl_queue"
+             instance="Panth\AdvancedSEO\Cron\ProcessCrawlQueue"
              method="execute">
-            <schedule>0 1 * * *</schedule>
+            <schedule>* * * * *</schedule>
         </job>
     </group>
 </config>

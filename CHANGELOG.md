@@ -4,6 +4,25 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.6.0] - 2026-09-12
+
+### Changed
+- **"Run Crawl" in the admin no longer blocks the request.** It ran the whole crawl inline, so at the default depth of 100 pages the admin waited roughly a minute and a proxy or `max_execution_time` could kill it part way through, leaving a half-written grid and no message. The button now queues the crawl and a dedicated cron job runs it in its own process, while the page shows live progress (pages done, pages queued) and refreshes itself when the crawl finishes. A **Stop Crawl** button cancels a queued or running crawl; the pages already crawled stay in the grid.
+  - Where Magento cron has not run in the last hour the button cannot queue anything, so it falls back to crawling **up to 25 pages inside the request** and says so, naming the CLI command for a full crawl. No silent truncation.
+  - Crawl work moved into a shared `CrawlRunner`, so the admin, the daily cron and `bin/magento panth:seo:crawl` all run, persist and report the same way.
+  - The crawl jobs run in their own `panth_advancedseo` cron group with `use_separate_process`, so a long crawl no longer occupies the `default` group behind every other Magento job.
+- **The Crawl Audit page is now per store view.** The page crawled whatever store the admin session resolved to and then showed totals summed over *every* store, so a two-store site showed one store's crawl mixed into the other's summary. There is a store view selector, and the crawl, the summary, the low-scoring table and the duplicate table all follow it.
+- **`panth:seo:crawl` defaults to the configured Crawl Depth** instead of a hardcoded 100, so the CLI and the scheduled crawl audit agree. `--limit` still overrides it.
+
+### Fixed
+- **A failed crawl wiped the previous results.** Persistence deleted the store's rows and then inserted the new ones, so a crawl that reached nothing (an unreachable host, a cancelled run) left the Crawl Results grid empty and the earlier audit gone. Writes now happen in one transaction and an empty result set is never written at all.
+- **Two crawls of the same store could run at once** - cron, CLI and the admin button knew nothing about each other. Each store now has a single crawl state: the admin button and the scheduled audit stand down while a crawl is in flight, and the CLI says so and skips (`--force` overrides).
+- **An admin-triggered crawl lost its redirect findings.** The controller called the issue detector without the crawler's redirect map, so a `301` crawled from the admin was stored with no destination and no redirect-chain check, while the same crawl from the CLI reported both. All three entry points share one code path now.
+- **A crawl killed mid-run left the page claiming it was still running.** The worker heartbeats while it crawls; a run with no progress for 15 minutes is reported as stopped instead of hanging there forever.
+
+### Added
+- `bin/magento panth:seo:crawl --force` to crawl even when a crawl is already queued or running for that store.
+
 ## [1.5.2] - 2026-09-12
 
 ### Fixed

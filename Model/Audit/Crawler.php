@@ -35,7 +35,7 @@ class Crawler
         return $this->redirectMap;
     }
 
-    public function crawl(int $storeId, int $maxPages = 100): array
+    public function crawl(int $storeId, int $maxPages = 100, ?callable $onProgress = null): array
     {
         $this->redirectMap = [];
 
@@ -98,6 +98,17 @@ class Crawler
             }
 
             $visited[$url] = $result;
+
+            if ($onProgress !== null
+                && $onProgress(count($visited), max(0, count($queue) - $head)) === false
+            ) {
+                $this->logger->info(sprintf(
+                    'Panth SEO Crawler: crawl of store %d stopped on request after %d page(s).',
+                    $storeId,
+                    count($visited)
+                ));
+                break;
+            }
 
             if ($result->statusCode >= 300 && $result->statusCode < 400) {
                 $target = $this->resolveRedirectTarget($curl, $url);

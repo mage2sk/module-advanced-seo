@@ -146,6 +146,8 @@ Performance • SEO • Adobe Commerce Cloud
 - **0-100 score per entity** based on title length, description length, duplicates, and readability.
 - **Duplicate meta detection** using a content hash index stored in `panth_seo_duplicate`.
 - **Crawl audit** that checks pages for broken links, missing meta, and redirect chains. Depth and max pages are configurable.
+- **Background crawling**: the admin **Run Crawl** button queues the crawl and a dedicated cron group runs it out of process, with live progress on the page and a **Stop Crawl** button. Nothing blocks the admin request.
+- **CLI crawling**: `bin/magento panth:seo:crawl` (`--store`, `--limit`, `--dry-run`, `--force`), using the configured Crawl Depth by default.
 - **SEO Toolbar** for the storefront (restricted to allowed IPs) showing on-page diagnostics without a full page reload.
 - **Missing Meta Report** under the admin menu showing entities with no title or description.
 - **Crawl Results grid** under Admin showing each crawled URL, its HTTP status, canonical, robots directive, and detected issues.
@@ -324,8 +326,9 @@ Go to **Stores -> Configuration -> Panth Extensions -> Advanced SEO**.
 3. **Meta templates** are evaluated at index time with tokens replaced by live attribute values from the catalog.
 4. **Canonical URLs** are built from the configuration settings and any per-entity override stored in `panth_seo_custom_canonical`.
 5. The **SEO scoring cron** runs against `panth_seo_score` and assigns each entity a 0-100 score based on length, duplicates, and readability checks. Results appear in the admin audit grid.
-6. The **Google Merchant feed** is built by the `panth:seo:feed` command or the daily cron and written to `pub/media/panth_seo/google_feed_{store_code}.xml`, then served at `/panth_seo/feed/google`.
-7. **GA4 tracking** outputs the `gtag.js` snippet in the page head and fires structured ecommerce events from a ViewModel, with no jQuery dependency.
+6. The **crawl audit** runs in the `panth_advancedseo` cron group: the admin button queues a request per store view, a once-a-minute job picks it up in its own process, and results replace that store's rows in `panth_seo_crawl_result` in a single transaction. `bin/magento panth:seo:crawl` does the same thing from the shell.
+7. The **Google Merchant feed** is built by the `panth:seo:feed` command or the daily cron and written to `pub/media/panth_seo/google_feed_{store_code}.xml`, then served at `/panth_seo/feed/google`.
+8. **GA4 tracking** outputs the `gtag.js` snippet in the page head and fires structured ecommerce events from a ViewModel, with no jQuery dependency.
 
 ---
 
@@ -353,7 +356,7 @@ No. Advanced SEO works on its own for meta templates, canonicals, rules, scoring
 Yes, the hreflang group CRUD and the `panth_seo_hreflang` indexer are built into Advanced SEO. You create groups in the admin, map stores to locales, and the indexer pre-builds the alternate links. A dedicated companion module (`mage2kishan/module-hreflang`) is also available if you need a standalone version.
 
 ### Can I run the SEO audit on demand?
-Yes. Use `bin/magento panth:seo:audit` from the command line, or enable the crawl audit in configuration to run it on a schedule. Results appear in Admin under Advanced SEO > Crawl Results.
+Yes. Use `bin/magento panth:seo:audit` or `bin/magento panth:seo:crawl` from the command line, or enable the crawl audit in configuration to run it on a schedule. In the admin, **Run Crawl** on the SEO Audit page queues a crawl that runs in the background through cron, so the admin request never waits for it. Results appear in Admin under Advanced SEO > Crawl Results.
 
 ### Does Panth Advanced SEO need Panth Core?
 Yes. `mage2kishan/module-core` is a free, required dependency that Composer installs for you automatically.

@@ -1,31 +1,135 @@
 <?php
 /** @var \Panth\AdvancedSEO\Block\Adminhtml\Audit $block */
 
-$low   = $block->getLowScoringEntities();
-$dupes = $block->getDuplicates();
+$storeId      = $block->getSelectedStoreId();
+$storeOptions = $block->getStoreOptions();
+$low          = $block->getLowScoringEntities();
+$dupes        = $block->getDuplicates();
 $crawlSummary = $block->getLastCrawlSummary();
-$crawlUrl   = $block->getUrl('panth_seo/audit/crawl');
-$resultsUrl = $block->getUrl('panth_seo/audit/crawlResults');
-$formKey    = $block->getFormKey();
+$crawlState   = $block->getCrawlState();
+$crawlUrl     = $block->getUrl('panth_seo/audit/crawl');
+$cancelUrl    = $block->getUrl('panth_seo/audit/crawlCancel');
+$statusUrl    = $block->getUrl('panth_seo/audit/crawlStatus', ['store' => $storeId]);
+$indexUrl     = $block->getUrl('panth_seo/audit/index');
+$resultsUrl   = $block->getUrl('panth_seo/audit/crawlResults');
+$formKey      = $block->getFormKey();
+
+$crawlActive  = in_array($crawlState['status'], ['pending', 'running'], true) && !$crawlState['stale'];
+$cronActive   = $block->isCronActive();
 ?>
 <div class="panth-seo-audit">
     <h1><?= $block->escapeHtml(__('SEO Audit')) ?></h1>
 
-    <!-- Crawl Audit Section -->
     <div class="panth-seo-audit-crawl" style="margin-bottom:30px; padding:20px; background:#f8f8f8; border:1px solid #ddd; border-radius:4px;">
         <h2 style="margin-top:0;"><?= $block->escapeHtml(__('Crawl Audit')) ?></h2>
 
-        <div style="display:flex; gap:12px; align-items:center; margin-bottom:16px;">
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:16px;">
+            <?php if (count($storeOptions) > 1): ?>
+                <form method="get" action="<?= $block->escapeUrl($indexUrl) ?>" style="display:inline;">
+                    <label for="panth-seo-audit-store" style="margin-right:6px;"><?= $block->escapeHtml(__('Store View')) ?></label>
+                    <select id="panth-seo-audit-store" name="store" data-panth-seo-store-switch>
+                        <?php foreach ($storeOptions as $option): ?>
+                            <option value="<?= (int) $option['value'] ?>" <?= (int) $option['value'] === $storeId ? 'selected="selected"' : '' ?>>
+                                <?= $block->escapeHtml($option['label']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <noscript>
+                        <button type="submit" class="action-secondary"><span><?= $block->escapeHtml(__('Apply')) ?></span></button>
+                    </noscript>
+                </form>
+                <script type="text/x-magento-init">
+                {
+                    "[data-panth-seo-store-switch]": {
+                        "Panth_AdvancedSEO/js/store-switch": {}
+                    }
+                }
+                </script>
+            <?php endif; ?>
+
             <form method="post" action="<?= $block->escapeUrl($crawlUrl) ?>" style="display:inline;">
                 <input type="hidden" name="form_key" value="<?= $block->escapeHtmlAttr($formKey) ?>"/>
-                <button type="submit" class="action-primary" title="<?= $block->escapeHtmlAttr(__('Run Crawl')) ?>">
-                    <span><?= $block->escapeHtml(__('Run Crawl')) ?></span>
+                <input type="hidden" name="store" value="<?= (int) $storeId ?>"/>
+                <button type="submit" class="action-primary" <?= $crawlActive ? 'disabled="disabled"' : '' ?>
+                        title="<?= $block->escapeHtmlAttr(__('Run Crawl')) ?>">
+                    <span><?= $block->escapeHtml($crawlActive ? __('Crawl In Progress') : __('Run Crawl')) ?></span>
                 </button>
             </form>
+
+            <?php if ($crawlActive): ?>
+                <form method="post" action="<?= $block->escapeUrl($cancelUrl) ?>" style="display:inline;">
+                    <input type="hidden" name="form_key" value="<?= $block->escapeHtmlAttr($formKey) ?>"/>
+                    <input type="hidden" name="store" value="<?= (int) $storeId ?>"/>
+                    <button type="submit" class="action-secondary" title="<?= $block->escapeHtmlAttr(__('Stop Crawl')) ?>">
+                        <span><?= $block->escapeHtml(__('Stop Crawl')) ?></span>
+                    </button>
+                </form>
+            <?php endif; ?>
+
             <a href="<?= $block->escapeUrl($resultsUrl) ?>" class="action-secondary" title="<?= $block->escapeHtmlAttr(__('View Crawl Results')) ?>">
                 <span><?= $block->escapeHtml(__('View Crawl Results')) ?></span>
             </a>
         </div>
+
+        <?php if ($crawlActive): ?>
+            <div data-panth-seo-crawl-status style="margin-bottom:16px; padding:12px; background:#fff; border:1px solid #d6d6d6; border-radius:3px;">
+                <p data-panth-crawl-progress-text style="margin:0 0 8px; font-weight:600;">
+                    <?php if ($crawlState['cancel_requested']): ?>
+                        <?= $block->escapeHtml(__('Stopping - the crawl ends after the page it is on.')) ?>
+                    <?php elseif ($crawlState['status'] === 'pending'): ?>
+                        <?= $block->escapeHtml(__('Queued - the crawl starts on the next cron pass (within a minute).')) ?>
+                    <?php else: ?>
+                        <?= $block->escapeHtml(__(
+                            'Crawling: %1 of %2 pages done, %3 queued.',
+                            (int) $crawlState['crawled'],
+                            (int) $crawlState['max_pages'],
+                            (int) $crawlState['queued']
+                        )) ?>
+                    <?php endif; ?>
+                </p>
+                <div style="height:6px; background:#e4e4e4; border-radius:3px; overflow:hidden;">
+                    <div data-panth-crawl-progress-bar style="height:6px; width:0; background:#007bdb; transition:width .4s ease;"></div>
+                </div>
+                <p style="margin:8px 0 0; color:#666;">
+                    <?= $block->escapeHtml(__('This page refreshes itself when the crawl finishes. You can leave it at any time - the crawl runs on the server.')) ?>
+                </p>
+            </div>
+            <script type="text/x-magento-init">
+            {
+                "[data-panth-seo-crawl-status]": {
+                    "Panth_AdvancedSEO/js/crawl-status": <?= /* @noEscape */ json_encode([
+                        'statusUrl' => $statusUrl,
+                        'interval'  => 5000,
+                        'labels'    => [
+                            'pending' => (string) __('Queued - the crawl starts on the next cron pass (within a minute).'),
+                            'running'  => (string) __('Crawling: %1 of %2 pages done, %3 queued.'),
+                            'stopping' => (string) __('Stopping - the crawl ends after the page it is on.'),
+                        ],
+                    ], JSON_UNESCAPED_SLASHES) ?>
+                }
+            }
+            </script>
+        <?php elseif ($crawlState['status'] === 'failed'): ?>
+            <div class="message message-error" style="margin-bottom:16px;">
+                <?= $block->escapeHtml(__('The last crawl failed: %1', $crawlState['message'])) ?>
+            </div>
+        <?php elseif ($crawlState['status'] === 'cancelled'): ?>
+            <div class="message message-notice" style="margin-bottom:16px;">
+                <?= $block->escapeHtml(__('The last crawl was stopped after %1 page(s).', (int) $crawlState['pages'])) ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!$cronActive): ?>
+            <div class="message message-warning" style="margin-bottom:16px;">
+                <?= $block->escapeHtml(__(
+                    'Magento cron has not run in the last hour, so "Run Crawl" cannot queue a background crawl. '
+                    . 'It will crawl up to %1 pages inside this request instead. Enable cron, or run '
+                    . 'bin/magento panth:seo:crawl --store=%2 on the server for a full crawl.',
+                    $block->getSyncPageLimit(),
+                    $storeId
+                )) ?>
+            </div>
+        <?php endif; ?>
 
         <?php if ($crawlSummary !== null): ?>
             <h3><?= $block->escapeHtml(__('Last Crawl Summary')) ?></h3>
@@ -40,7 +144,7 @@ $formKey    = $block->getFormKey();
                         <td style="color:#185b00; font-weight:600;"><?= (int) ($crawlSummary['status_200'] ?? 0) ?></td>
                     </tr>
                     <tr>
-                        <td><strong><?= $block->escapeHtml(__('HTTP 301 (Redirect)')) ?></strong></td>
+                        <td><strong><?= $block->escapeHtml(__('HTTP 3xx (Redirect)')) ?></strong></td>
                         <td style="color:#b8860b; font-weight:600;"><?= (int) ($crawlSummary['status_301'] ?? 0) ?></td>
                     </tr>
                     <tr>
@@ -51,6 +155,12 @@ $formKey    = $block->getFormKey();
                         <td><strong><?= $block->escapeHtml(__('HTTP 5xx (Server Error)')) ?></strong></td>
                         <td style="color:#e22626; font-weight:600;"><?= (int) ($crawlSummary['status_5xx'] ?? 0) ?></td>
                     </tr>
+                    <?php if ((int) ($crawlSummary['failed'] ?? 0) > 0): ?>
+                        <tr>
+                            <td><strong><?= $block->escapeHtml(__('Unreachable')) ?></strong></td>
+                            <td style="color:#e22626; font-weight:600;"><?= (int) $crawlSummary['failed'] ?></td>
+                        </tr>
+                    <?php endif; ?>
                     <tr>
                         <td><strong><?= $block->escapeHtml(__('Pages with Issues')) ?></strong></td>
                         <td style="color:<?= ((int) ($crawlSummary['pages_with_issues'] ?? 0)) > 0 ? '#e22626' : '#185b00' ?>; font-weight:600;">
@@ -64,7 +174,7 @@ $formKey    = $block->getFormKey();
                 </tbody>
             </table>
         <?php else: ?>
-            <p><?= $block->escapeHtml(__('No crawl results yet. Click "Run Crawl" to start an audit.')) ?></p>
+            <p><?= $block->escapeHtml(__('No crawl results yet for this store view. Click "Run Crawl" to start an audit.')) ?></p>
         <?php endif; ?>
     </div>
 
