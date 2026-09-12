@@ -8,6 +8,10 @@ use Panth\AdvancedSEO\Model\Score\EmbeddingIndex;
 
 class DuplicateCheck implements CheckInterface
 {
+    private const SIMILARITY_SAFE = 0.7;
+
+    private const SIMILARITY_DUPLICATE = 0.9;
+
     public function __construct(
         private readonly EmbeddingIndex $embeddings
     ) {
@@ -30,8 +34,8 @@ class DuplicateCheck implements CheckInterface
         if ($text === '') {
             return [
                 'score' => 0.0,
-                'max' => 100.0,
-                'message' => 'Meta is empty - cannot evaluate duplication',
+                'max' => 0.0,
+                'message' => 'Meta is empty - duplication not evaluated',
             ];
         }
 
@@ -51,7 +55,7 @@ class DuplicateCheck implements CheckInterface
             }
         }
 
-        $score = max(0.0, min(100.0, (1.0 - $topSim) * 100.0));
+        $score = $this->similarityScore($topSim);
 
         $message = $dupes === []
             ? sprintf('No duplicates detected (highest similarity %.2f)', $topSim)
@@ -66,5 +70,20 @@ class DuplicateCheck implements CheckInterface
                 'duplicates' => $dupes,
             ],
         ];
+    }
+
+    private function similarityScore(float $similarity): float
+    {
+        if ($similarity <= self::SIMILARITY_SAFE) {
+            return 100.0;
+        }
+
+        if ($similarity >= self::SIMILARITY_DUPLICATE) {
+            return 0.0;
+        }
+
+        $span = self::SIMILARITY_DUPLICATE - self::SIMILARITY_SAFE;
+
+        return max(0.0, min(100.0, (1.0 - (($similarity - self::SIMILARITY_SAFE) / $span)) * 100.0));
     }
 }

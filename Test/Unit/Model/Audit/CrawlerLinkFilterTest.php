@@ -91,12 +91,28 @@ class CrawlerLinkFilterTest extends TestCase
         ];
     }
 
-    public function testPagingIsStillFollowed(): void
+    #[DataProvider('queryUrlProvider')]
+    public function testAnyQueryStringIsSkipped(string $href): void
     {
-        $this->assertSame(
-            ['https://example.com/gear/bags.html?p=2'],
-            $this->links(self::anchor('/gear/bags.html?p=2'))
-        );
+        $this->assertSame([], $this->links(self::anchor($href)), $href . ' should not be queued');
+    }
+
+    public static function queryUrlProvider(): array
+    {
+        return [
+            'paging' => ['/gear/bags.html?p=2'],
+            'attribute filter' => ['/gear/bags.html?price=20-30'],
+            'sort' => ['/gear/bags.html?product_list_order=price'],
+            'tracking parameter' => ['/gear/bags.html?utm_source=news'],
+            'empty-valued parameter' => ['/gear/bags.html?foo='],
+        ];
+    }
+
+    public function testQueryUrlsComeBackWhenFollowingIsTurnedOn(): void
+    {
+        $links = $this->links(self::anchor('/gear/bags.html?p=2'), self::EXCLUDES, true);
+
+        $this->assertSame(['https://example.com/gear/bags.html?p=2'], array_values($links));
     }
 
     public function testContentPagesAreStillFollowed(): void

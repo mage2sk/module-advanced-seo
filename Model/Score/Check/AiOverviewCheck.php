@@ -7,6 +7,10 @@ use Panth\AdvancedSEO\Model\Score\CheckInterface;
 
 class AiOverviewCheck implements CheckInterface
 {
+    private const MAX_POINTS = 100.0;
+
+    private const MIN_WORDS_TO_ASSESS = 120;
+
     private const SEMANTIC_MIN_WORDS = 134;
     private const SEMANTIC_MAX_WORDS = 167;
 
@@ -37,6 +41,19 @@ class AiOverviewCheck implements CheckInterface
     {
         $content = $this->resolveContent($context);
         $plainText = $this->stripToPlain($content);
+
+        $bodyWords = $this->countWords($plainText);
+        if ($bodyWords < self::MIN_WORDS_TO_ASSESS) {
+            return [
+                'score'   => 0.0,
+                'max'     => 0.0,
+                'message' => sprintf(
+                    'Only %d words of body content - too short to assess AI Overview readiness, not scored',
+                    $bodyWords
+                ),
+                'details' => ['body_words' => $bodyWords, 'minimum' => self::MIN_WORDS_TO_ASSESS],
+            ];
+        }
 
         $details = [];
         $total = 0.0;
@@ -69,7 +86,7 @@ class AiOverviewCheck implements CheckInterface
         $total += $comparisonResult['points'];
         $details['comparison'] = $comparisonResult;
 
-        $total = min(100.0, max(0.0, $total));
+        $total = min(self::MAX_POINTS, max(0.0, $total));
 
         $parts = [];
         if ($details['semantic_unit']['points'] > 0) {
@@ -102,7 +119,7 @@ class AiOverviewCheck implements CheckInterface
 
         return [
             'score'   => $total,
-            'max'     => 100.0,
+            'max'     => self::MAX_POINTS,
             'message' => $msg,
             'details' => $details,
         ];
@@ -153,7 +170,7 @@ class AiOverviewCheck implements CheckInterface
             if ($para === '') {
                 continue;
             }
-            $wordCount = str_word_count($para);
+            $wordCount = $this->countWords($para);
             if ($wordCount >= self::SEMANTIC_MIN_WORDS && $wordCount <= self::SEMANTIC_MAX_WORDS) {
                 $matchCount++;
             } elseif ($wordCount >= 100 && $wordCount <= 200) {
@@ -298,7 +315,7 @@ class AiOverviewCheck implements CheckInterface
             }
         }
 
-        $wordCount = str_word_count($firstLine);
+        $wordCount = $this->countWords($firstLine);
         if ($wordCount < 5) {
             return [
                 'points'  => 3.0,
@@ -382,5 +399,12 @@ class AiOverviewCheck implements CheckInterface
                 ? sprintf('Comparison signals: %s', implode(', ', $signalNames))
                 : 'No comparison signals',
         ];
+    }
+
+    private function countWords(string $text): int
+    {
+        $parts = preg_split('/[^\p{L}\p{N}]+/u', $text, -1, PREG_SPLIT_NO_EMPTY);
+
+        return is_array($parts) ? count($parts) : 0;
     }
 }

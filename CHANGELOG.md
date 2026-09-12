@@ -4,6 +4,29 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.5.0] - 2026-09-12
+
+### Fixed
+- **`panth:seo:crawl` never saved anything.** The CLI printed its findings and threw them away, so the Crawl Results grid still showed the last cron run, or nothing at all. A CLI run and the grid could disagree completely. The command now writes its results the same way the cron does, replacing the previous run for that store, and reports how many rows it saved. Pass `--dry-run` to print without saving.
+- **A redirect was recorded as a healthy page.** The crawler followed redirects internally, so a URL that answered `301` was stored against the original URL with the final page's `200` status, title and canonical. The audit could not tell you a single URL redirected. Redirects are now recorded as redirects, with the target, and the destination is queued so the crawl still reaches the content behind them.
+- **Redirect chains were never detected.** `IssueDetector::detectRedirectChains()` existed, was documented in the admin as something the audit checks, and was never called by anything. It now runs, and a chain longer than two hops is reported against the URL that starts it.
+- **Paginated category URLs ate the crawl budget.** `?p=2`, `?p=3` and so on were followed while other query URLs were skipped, so a single deep category could consume most of the page limit on repeats of one template. Any URL with a query string is now skipped by default; `Follow Filtered And Sorted URLs` brings them all back.
+
+### Fixed - SEO score accuracy
+The score did not describe the page a visitor or a crawler actually gets, and several checks could not be satisfied, so healthy pages graded F.
+
+- **The score now reads the meta the storefront actually serves.** It read raw `meta_title` and `meta_description` straight off the entity and ignored this module's own resolver, so a product whose title comes from a template, a rule or a fallback scored as if it had no title at all. On the test catalogue this alone moved products from 29-32 to 54-58.
+- **A page with no meta scored zero for duplication.** The duplicate check reported "cannot evaluate" and then returned 0 out of 100 at the heaviest weight in the system, punishing a page twice for one missing field. A check that cannot evaluate is now excluded from the average instead of scored as a failure.
+- **Duplicate scoring was a straight line from raw similarity**, so every product in a catalogue lost points simply for resembling other products. Similarity up to 0.7 now scores full marks and only falls away as it approaches the 0.9 duplicate threshold.
+- **Missing meta keywords cost 30 points.** Search engines have ignored that tag since 2009; the check pushed merchants toward it. Absence is no longer scored at all. Keywords that a merchant has set are still evaluated.
+- **The brand attribute was read from a data key that does not exist** on a standard install, so every product permanently reported "Missing: brand". It now uses the configured Brand Attribute, the same one the Merchant feed and structured data use.
+- **Non-English stores were scored with English-only tools.** Word counting used `str_word_count`, which counts nothing outside ASCII, so keyword density came out as a meaningless number and the AI Overview passage checks scored zero. Readability applied Flesch Reading Ease, which is defined for English, to any language. Word counting is now multibyte-aware, and readability is skipped with an explanation for non-Latin content and for text too short to measure.
+- **The AI Overview check could never score well on a product page.** It looks for 134-167 word passages, FAQ blocks and headings, which belong to long-form content, and it was weighted into every product's score. It is now skipped, with a message saying why, when there are fewer than 120 words of body content.
+- **The scorer emitted grade `E`,** which `SeoScorerInterface` does not define. The scale is now A, B, C, D, F as declared.
+- **The issues list was always empty.** Every check scoring below 60 is now reported there with its message.
+
+A deliberately well-optimised product page scored 91 before these changes and 99 after; the point is that the number now moves for the right reasons.
+
 ## [1.4.3] - 2026-09-12
 
 ### Fixed

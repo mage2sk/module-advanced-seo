@@ -7,6 +7,8 @@ use Panth\AdvancedSEO\Model\Score\CheckInterface;
 
 class ReadabilityCheck implements CheckInterface
 {
+    private const MIN_WORDS = 30;
+
     public function getCode(): string
     {
         return 'readability';
@@ -19,7 +21,23 @@ class ReadabilityCheck implements CheckInterface
             $text = trim((string)($context['meta']['description'] ?? ''));
         }
         if ($text === '') {
-            return ['score' => 0.0, 'max' => 100.0, 'message' => 'No content to analyse'];
+            return ['score' => 0.0, 'max' => 0.0, 'message' => 'No content to analyse - not scored'];
+        }
+
+        if (!$this->isLatinText($text)) {
+            return [
+                'score' => 0.0,
+                'max' => 0.0,
+                'message' => 'Content is not predominantly Latin script - Flesch Reading Ease does not apply',
+            ];
+        }
+
+        if ($this->countWords($text) < self::MIN_WORDS) {
+            return [
+                'score' => 0.0,
+                'max' => 0.0,
+                'message' => sprintf('Fewer than %d words - too short to score reliably', self::MIN_WORDS),
+            ];
         }
 
         $sentences = max(1, preg_match_all('/[.!?]+/u', $text));
@@ -79,5 +97,27 @@ class ReadabilityCheck implements CheckInterface
             return 50.0;
         }
         return 0.0;
+    }
+
+    private function countWords(string $text): int
+    {
+        $parts = preg_split('/\s+/u', trim($text), -1, PREG_SPLIT_NO_EMPTY);
+
+        return is_array($parts) ? count($parts) : 0;
+    }
+
+    private function isLatinText(string $text): bool
+    {
+        $letters = preg_match_all('/\p{L}/u', $text);
+        if ($letters === false || $letters === 0) {
+            return false;
+        }
+
+        $latin = preg_match_all('/\p{Latin}/u', $text);
+        if ($latin === false) {
+            return false;
+        }
+
+        return ($latin / $letters) >= 0.6;
     }
 }

@@ -11,10 +11,14 @@ use Psr\Log\LoggerInterface;
 
 class Crawler
 {
+    private array $redirectMap = [];
+
     private const TIMEOUT_SECONDS = 10;
     private const USER_AGENT      = 'PanthSEO-CrawlAudit/1.0';
 
     private const ENV_INTERNAL_HOST = 'PANTH_SEO_CRAWL_INTERNAL_HOST';
+
+    private const MAX_REDIRECT_HOPS = 5;
 
     public function __construct(
         private readonly CurlFactory $curlFactory,
@@ -24,8 +28,15 @@ class Crawler
     ) {
     }
 
+    public function getRedirectMap(): array
+    {
+        return $this->redirectMap;
+    }
+
     public function crawl(int $storeId, int $maxPages = 100): array
     {
+        $this->redirectMap = [];
+
         $store   = $this->storeManager->getStore($storeId);
         $baseUrl = rtrim((string) $store->getBaseUrl(), '/');
         $host    = (string) parse_url($baseUrl, PHP_URL_HOST);
@@ -68,6 +79,23 @@ class Crawler
 
             $visited[$url] = $result;
 
+            if ($result->statusCode >= 300 && $result->statusCode < 400) {
+                $target = $this->resolveRedirectTarget($curl, $url);
+                if ($target !== null) {
+                    $this->redirectMap[$url][] = $target;
+
+                    $sameHost = strcasecmp((string) parse_url($target, PHP_URL_HOST), $host) === 0;
+                    if ($sameHost
+                        && !isset($visited[$target])
+                        && !in_array($target, $queue, true)
+                        && count($this->redirectMap[$url]) <= self::MAX_REDIRECT_HOPS
+                    ) {
+                        $queue[] = $target;
+                    }
+                }
+                continue;
+            }
+
             if ($this->hasRobotsDirective($result->robots, 'nofollow')) {
                 continue;
             }
@@ -92,8 +120,7 @@ class Crawler
         $curl = $this->curlFactory->create();
         $curl->setTimeout(self::TIMEOUT_SECONDS);
         $curl->setOption(CURLOPT_CONNECTTIMEOUT, self::TIMEOUT_SECONDS);
-        $curl->setOption(CURLOPT_FOLLOWLOCATION, true);
-        $curl->setOption(CURLOPT_MAXREDIRS, 5);
+        $curl->setOption(CURLOPT_FOLLOWLOCATION, false);
         $curl->setOption(CURLOPT_ENCODING, '');
         $curl->setOption(CURLOPT_USERAGENT, self::USER_AGENT);
 
@@ -268,19 +295,31 @@ class Crawler
 
     private function isFilteredUrl(string $url): bool
     {
-        $query = (string) parse_url($url, PHP_URL_QUERY);
-        if ($query === '') {
-            return false;
+        return (string) parse_url($url, PHP_URL_QUERY) !== '';
+    }
+
+    private function resolveRedirectTarget(Curl $curl, string $pageUrl): ?string
+    {
+        try {
+            $headers = $curl->getHeaders();
+        } catch (\Throwable) {
+            return null;
         }
 
-        parse_str($query, $params);
-        foreach (array_keys($params) as $key) {
-            if (strtolower((string) $key) !== 'p') {
-                return true;
+        $location = '';
+        foreach ($headers as $name => $value) {
+            if (strcasecmp((string) $name, 'location') === 0) {
+                $location = is_array($value) ? (string) end($value) : (string) $value;
+                break;
             }
         }
 
-        return false;
+        $location = trim($location);
+        if ($location === '') {
+            return null;
+        }
+
+        return $this->resolveUrl($location, $pageUrl);
     }
 
     private function resolveUrl(string $href, string $pageUrl): ?string

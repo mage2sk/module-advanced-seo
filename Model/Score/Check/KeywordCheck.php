@@ -17,9 +17,9 @@ class KeywordCheck implements CheckInterface
         $keywords = trim((string)($context['meta']['keywords'] ?? ''));
         if ($keywords === '') {
             return [
-                'score' => 30.0,
-                'max' => 100.0,
-                'message' => 'No meta keywords defined',
+                'score' => 0.0,
+                'max' => 0.0,
+                'message' => 'No meta keywords set - not scored, search engines ignore this tag',
             ];
         }
 
@@ -27,14 +27,14 @@ class KeywordCheck implements CheckInterface
         $desc = mb_strtolower((string)($context['meta']['description'] ?? ''));
         $content = mb_strtolower(strip_tags((string)($context['content'] ?? '')));
 
-        $wordsInContent = max(1, str_word_count($content));
+        $wordsInContent = max(1, $this->countWords($content));
 
         $list = array_filter(array_map('trim', explode(',', mb_strtolower($keywords))));
         if ($list === []) {
             return [
-                'score' => 30.0,
-                'max' => 100.0,
-                'message' => 'No meta keywords defined',
+                'score' => 0.0,
+                'max' => 0.0,
+                'message' => 'No meta keywords set - not scored, search engines ignore this tag',
             ];
         }
 
@@ -47,7 +47,7 @@ class KeywordCheck implements CheckInterface
             $inTitle = str_contains($title, $kw);
             $inDesc = str_contains($desc, $kw);
             $occurrences = substr_count($content, $kw);
-            $density = ($occurrences * max(1, str_word_count($kw))) / $wordsInContent * 100.0;
+            $density = ($occurrences * max(1, $this->countWords($kw))) / $wordsInContent * 100.0;
 
             $kwScore = 0.0;
             if ($inTitle) {
@@ -81,5 +81,12 @@ class KeywordCheck implements CheckInterface
             'message' => sprintf('%d keyword(s) evaluated', count($list)),
             'details' => $details,
         ];
+    }
+
+    private function countWords(string $text): int
+    {
+        $parts = preg_split('/[^\p{L}\p{N}]+/u', $text, -1, PREG_SPLIT_NO_EMPTY);
+
+        return is_array($parts) ? count($parts) : 0;
     }
 }

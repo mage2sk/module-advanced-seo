@@ -195,7 +195,7 @@
                 <field id="crawl_follow_filtered" translate="label comment" type="select" sortOrder="24" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Follow Filtered And Sorted URLs</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment><![CDATA[Layered navigation, sorting and page-size URLs multiply without bound and are noindex by design. Leave off so the crawl budget is spent on indexable pages. Paging (<code>?p=</code>) is always followed.]]></comment>
+                    <comment><![CDATA[Any URL carrying a query string, so layered navigation, sorting, page size and paging. These multiply without bound and mostly repeat the same template, so leaving this off keeps the crawl budget on distinct indexable pages. Turn it on to audit filtered and paginated URLs too.]]></comment>
                     <depends><field id="enable_crawl_audit">1</field></depends>
                 </field>
                 <field id="seo_toolbar_enabled" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">

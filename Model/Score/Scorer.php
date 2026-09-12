@@ -13,6 +13,8 @@ use Psr\Log\LoggerInterface;
 
 class Scorer implements SeoScorerInterface
 {
+    private const ISSUE_THRESHOLD = 60.0;
+
     private array $checks;
 
     private array $weights;
@@ -37,6 +39,7 @@ class Scorer implements SeoScorerInterface
         $context = $this->contextBuilder->build($entityType, $entityId, $storeId);
 
         $breakdown = [];
+        $issues = [];
         $weightedSum = 0.0;
         $weightTotal = 0.0;
 
@@ -68,6 +71,14 @@ class Scorer implements SeoScorerInterface
                 'message' => (string)($result['message'] ?? ''),
                 'details' => $result['details'] ?? [],
             ];
+
+            if ($normalized < self::ISSUE_THRESHOLD) {
+                $issues[] = [
+                    'check' => $code,
+                    'score' => $normalized,
+                    'message' => (string)($result['message'] ?? ''),
+                ];
+            }
         }
 
         $overall = $weightTotal > 0 ? (int)round($weightedSum / $weightTotal) : 0;
@@ -82,7 +93,7 @@ class Scorer implements SeoScorerInterface
             ->setScore($overall)
             ->setGrade($grade)
             ->setBreakdown($breakdown)
-            ->setIssues([]);
+            ->setIssues($issues);
         return $dto;
     }
 
@@ -99,12 +110,11 @@ class Scorer implements SeoScorerInterface
     private function grade(int $score): string
     {
         return match (true) {
-            $score >= 90 => 'A',
-            $score >= 80 => 'B',
-            $score >= 70 => 'C',
-            $score >= 60 => 'D',
-            $score >= 40 => 'E',
-            default => 'F',
+            $score >= 90 => SeoScorerInterface::GRADE_A,
+            $score >= 80 => SeoScorerInterface::GRADE_B,
+            $score >= 70 => SeoScorerInterface::GRADE_C,
+            $score >= 60 => SeoScorerInterface::GRADE_D,
+            default => SeoScorerInterface::GRADE_F,
         };
     }
 

@@ -7,6 +7,8 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Magento\Cms\Api\PageRepositoryInterface;
 use Magento\Framework\App\ResourceConnection;
+use Panth\AdvancedSEO\Api\MetaResolverInterface;
+use Panth\AdvancedSEO\Helper\Config as SeoConfig;
 use Psr\Log\LoggerInterface;
 
 class ContextBuilder
@@ -52,8 +54,78 @@ class ContextBuilder
         private readonly CategoryRepositoryInterface $categoryRepository,
         private readonly PageRepositoryInterface $pageRepository,
         private readonly ResourceConnection $resource,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly MetaResolverInterface $metaResolver,
+        private readonly SeoConfig $seoConfig
     ) {
+    }
+
+    private function resolveBrand(mixed $product, int $storeId): string
+    {
+        $brand = trim((string) ($product->getData('brand') ?? ''));
+        if ($brand !== '') {
+            return $brand;
+        }
+
+        try {
+            $attribute = $this->seoConfig->getBrandAttribute($storeId);
+        } catch (\Throwable) {
+            $attribute = 'manufacturer';
+        }
+
+        if ($attribute === '') {
+            return '';
+        }
+
+        try {
+            $text = $product->getAttributeText($attribute);
+            if (is_string($text) && trim($text) !== '') {
+                return trim($text);
+            }
+        } catch (\Throwable) {
+        }
+
+        return trim((string) ($product->getData($attribute) ?? ''));
+    }
+
+    private function applyResolvedMeta(array &$ctx, string $entityType, int $entityId, int $storeId): void
+    {
+        $type = match ($entityType) {
+            'product' => MetaResolverInterface::ENTITY_PRODUCT,
+            'category' => MetaResolverInterface::ENTITY_CATEGORY,
+            'cms', 'cms_page' => MetaResolverInterface::ENTITY_CMS,
+            default => null,
+        };
+
+        if ($type === null) {
+            return;
+        }
+
+        try {
+            $resolved = $this->metaResolver->resolve($type, $entityId, $storeId);
+        } catch (\Throwable $e) {
+            $this->logger->warning('Panth SEO score: resolved meta unavailable', [
+                'entity_type' => $entityType,
+                'entity_id' => $entityId,
+                'error' => $e->getMessage(),
+            ]);
+            return;
+        }
+
+        $title = trim((string) ($resolved->getMetaTitle() ?? ''));
+        if ($title !== '') {
+            $ctx['meta']['title'] = $title;
+        }
+
+        $description = trim((string) ($resolved->getMetaDescription() ?? ''));
+        if ($description !== '') {
+            $ctx['meta']['description'] = $description;
+        }
+
+        $keywords = trim((string) ($resolved->getMetaKeywords() ?? ''));
+        if ($keywords !== '') {
+            $ctx['meta']['keywords'] = $keywords;
+        }
     }
 
     public function build(string $entityType, int $entityId, int $storeId): array
@@ -78,7 +150,7 @@ class ContextBuilder
                     $ctx['attributes'] = [
                         'name' => (string)$product->getName(),
                         'sku' => (string)$product->getSku(),
-                        'brand' => (string)($product->getData('brand') ?? ''),
+                        'brand' => $this->resolveBrand($product, $storeId),
                         'image' => (string)$product->getData('image'),
                         'price' => (float)$product->getPrice(),
                     ];
@@ -113,6 +185,8 @@ class ContextBuilder
         } catch (\Throwable $e) {
             $this->logger->warning('Panth SEO context build failed: ' . $e->getMessage());
         }
+
+        $this->applyResolvedMeta($ctx, $entityType, $entityId, $storeId);
 
         return $ctx;
     }

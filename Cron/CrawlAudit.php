@@ -56,7 +56,7 @@ class CrawlAudit
         $this->logger->info(sprintf('Panth SEO CrawlAudit: starting crawl for store %d (max %d pages)', $storeId, $maxPages));
 
         $rawResults = $this->crawler->crawl($storeId, $maxPages);
-        $analysis   = $this->issueDetector->analyse($rawResults);
+        $analysis   = $this->issueDetector->analyse($rawResults, $this->crawler->getRedirectMap());
 
         $results = $analysis['results'];
         $summary = $analysis['summary'];

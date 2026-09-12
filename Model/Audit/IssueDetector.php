@@ -9,9 +9,10 @@ class IssueDetector
     private const DESCRIPTION_MAX_LENGTH = 160;
     private const MAX_REDIRECT_HOPS      = 2;
 
-    public function analyse(array $results): array
+    public function analyse(array $results, array $redirectMap = []): array
     {
         $titleIndex = $this->buildTitleIndex($results);
+        $chainIssues = $this->detectRedirectChains($redirectMap);
 
         $enriched = [];
         $summary  = [
@@ -24,6 +25,8 @@ class IssueDetector
             'status_5xx'          => 0,
             'duplicate_titles'    => 0,
             'fetch_errors'        => 0,
+            'redirects'           => 0,
+            'redirect_chains'     => 0,
         ];
 
         foreach ($results as $result) {
@@ -38,6 +41,19 @@ class IssueDetector
             } elseif ($result->statusCode >= 500 && $result->statusCode < 600) {
                 $issues[] = sprintf('%d server error', $result->statusCode);
                 $summary['status_5xx']++;
+            }
+
+            if ($result->statusCode >= 300 && $result->statusCode < 400) {
+                $hops = $redirectMap[$result->url] ?? [];
+                $issues[] = $hops !== []
+                    ? sprintf('Redirects (%d) to %s', $result->statusCode, (string) end($hops))
+                    : sprintf('Redirects (%d)', $result->statusCode);
+                $summary['redirects']++;
+
+                if (isset($chainIssues[$result->url])) {
+                    $issues[] = $chainIssues[$result->url];
+                    $summary['redirect_chains']++;
+                }
             }
 
             if ($result->statusCode !== 200) {
