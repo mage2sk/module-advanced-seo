@@ -4,6 +4,18 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.6.1] - 2026-09-12
+
+### Fixed
+- **Alpine and Vue bound attributes were crawled as real URLs.** `<a :href="item.configure_url">` contains the literal text `href="item.configure_url"`, and the link extractor matched it, so every Hyva storefront produced phantom 404s for its JavaScript bindings - on this catalogue `/item.product_url` and `/item.configure_url`, reported on every page that renders a product card. An `href` is now only read when it stands as its own attribute, which also stops `x-bind:href`, `v-bind:href`, `[href]`, `data-href` and Knockout's `data-bind="attr: {href: ...}"` being mistaken for links.
+- **Links inside markup the browser never renders were crawled.** Anchors inside `<script type="text/x-magento-template">`, `<template>`, `<noscript>` and HTML comments were followed as though they were on the page. Those regions are now removed before links are read, and **nested** `<template>` elements are stripped whole - Hyva nests them several deep, and a single non-greedy match stopped at the first closing tag and leaked every link after it.
+- **Hrefs still holding an unrendered placeholder were crawled**, so `{{...}}`, `${...}`, `<%...%>`, `#{...}` and `[[...]]` produced a 404 each.
+
+Measured on a live catalogue, 40-page crawl, before and after: the only URLs that disappeared were the two phantoms, and the freed budget went to two real pages. Real 404s are still reported.
+
+### Changed
+- **The crawl settings are no longer hidden behind `Enable Crawl Audit`.** That toggle only gates the *scheduled* run, but **Run Crawl** and `bin/magento panth:seo:crawl` work regardless of it - and since it is off by default, Crawl Exclude Paths, Follow Filtered And Sorted URLs and Verify TLS Certificate were invisible to anyone using the crawl manually. A report came back saying the TLS field did not exist; it did, it was just hidden. The three fields are always shown now, and the toggle is labelled **Enable Scheduled Crawl Audit** so its scope is clear.
+
 ## [1.6.0] - 2026-09-12
 
 ### Changed

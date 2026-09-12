@@ -22,6 +22,8 @@ class Crawler
 
     private const MAX_CONSECUTIVE_FAILURES = 5;
 
+    private const MAX_TEMPLATE_PASSES = 10;
+
     public function __construct(
         private readonly CurlFactory $curlFactory,
         private readonly StoreManagerInterface $storeManager,
@@ -242,7 +244,9 @@ class Crawler
         bool $followFiltered = false
     ): array {
         $links = [];
-        if (preg_match_all('/<a\b[^>]*\bhref\s*=\s*["\']([^"\']+)["\'][^>]*>/i', $body, $matches)) {
+        $body  = $this->stripNonRenderedRegions($body);
+
+        if (preg_match_all('/<a\b[^>]*?\shref\s*=\s*["\']([^"\']+)["\'][^>]*>/i', $body, $matches)) {
             foreach ($matches[1] as $index => $href) {
                 $tag = $matches[0][$index];
                 if (preg_match('/\brel\s*=\s*["\'][^"\']*nofollow[^"\']*["\']/i', $tag)) {
@@ -270,6 +274,10 @@ class Crawler
                     continue;
                 }
 
+                if ($this->isTemplatePlaceholder($href)) {
+                    continue;
+                }
+
                 if ($this->isExcludedPath($path, $excludePatterns)) {
                     continue;
                 }
@@ -283,6 +291,55 @@ class Crawler
         }
 
         return array_unique($links);
+    }
+
+    private function stripNonRenderedRegions(string $body): string
+    {
+        $stripped = preg_replace(
+            [
+                '~<script\b[^>]*>.*?</script\s*>~is',
+                '~<noscript\b[^>]*>.*?</noscript\s*>~is',
+                '~<!--.*?-->~s',
+            ],
+            ' ',
+            $body
+        );
+
+        if (!is_string($stripped)) {
+            return $body;
+        }
+
+        return $this->stripTemplates($stripped);
+    }
+
+    private function stripTemplates(string $body): string
+    {
+        for ($pass = 0; $pass < self::MAX_TEMPLATE_PASSES; $pass++) {
+            $stripped = preg_replace(
+                '~<template\b[^>]*>(?:(?!<template\b).)*?</template\s*>~is',
+                ' ',
+                $body,
+                -1,
+                $count
+            );
+
+            if (!is_string($stripped)) {
+                return $body;
+            }
+
+            $body = $stripped;
+
+            if ($count === 0) {
+                break;
+            }
+        }
+
+        return $body;
+    }
+
+    private function isTemplatePlaceholder(string $href): bool
+    {
+        return preg_match('~\{\{|\}\}|\$\{|<%|%>|#\{|\[\[|\]\]~', $href) === 1;
     }
 
     private function isHttpScheme(string $href): bool

@@ -197,4 +197,115 @@ class CrawlerLinkFilterTest extends TestCase
 
         $this->assertSame([], $this->links(self::anchor('/cdn-cgi/l/email-protection'), $excludes));
     }
+
+    #[DataProvider('nonRenderedRegionProvider')]
+    public function testLinksInsideNonRenderedMarkupAreNotQueued(string $html): void
+    {
+        $this->assertSame([], $this->links($html), $html . ' is not rendered markup');
+    }
+
+    public static function nonRenderedRegionProvider(): array
+    {
+        $anchor = self::anchor('/item.product_url');
+
+        return [
+            'knockout template script' => ['<script type="text/x-magento-template">' . $anchor . '</script>'],
+            'plain script' => ['<script>var tpl = \'' . $anchor . '\';</script>'],
+            'template element' => ['<template x-for="item in items">' . $anchor . '</template>'],
+            'noscript' => ['<noscript>' . $anchor . '</noscript>'],
+            'html comment' => ['<!-- ' . $anchor . ' -->'],
+            'uppercase script tag' => ['<SCRIPT TYPE="text/x-magento-template">' . $anchor . '</SCRIPT>'],
+            'script with a trailing space in the close tag' => ['<script>' . $anchor . '</script >'],
+        ];
+    }
+
+    #[DataProvider('templatePlaceholderProvider')]
+    public function testUnrenderedPlaceholderHrefsAreNotQueued(string $href): void
+    {
+        $this->assertSame([], $this->links(self::anchor($href)), $href . ' is not a real url');
+    }
+
+    public static function templatePlaceholderProvider(): array
+    {
+        return [
+            'magento template token' => ['/catalog/{{product.url}}'],
+            'js interpolation' => ['/p/${id}.html'],
+            'underscore template' => ['/p/<%= slug %>.html'],
+            'ruby or alpine style' => ['/p/#{slug}.html'],
+            'double bracket' => ['/p/[[slug]].html'],
+        ];
+    }
+
+    public function testRealLinksAroundAScriptBlockSurvive(): void
+    {
+        $html = self::anchor('/before.html')
+            . '<script type="text/x-magento-template">' . self::anchor('/item.product_url') . '</script>'
+            . self::anchor('/after.html');
+
+        $this->assertSame(
+            ['https://example.com/before.html', 'https://example.com/after.html'],
+            array_values($this->links($html))
+        );
+    }
+
+    #[DataProvider('boundAttributeProvider')]
+    public function testFrameworkBoundHrefAttributesAreNotLinks(string $tag): void
+    {
+        $this->assertSame([], $this->links($tag), $tag . ' is a binding, not an href');
+    }
+
+    public static function boundAttributeProvider(): array
+    {
+        return [
+            'alpine shorthand'  => ['<a :href="item.configure_url" class="btn">configure</a>'],
+            'alpine x-bind'     => ['<a x-bind:href="item.configure_url">configure</a>'],
+            'vue v-bind'        => ['<a v-bind:href="item.url">go</a>'],
+            'angular bracket'   => ['<a [href]="item.url">go</a>'],
+            'data attribute'    => ['<a data-href="/catalog/thing.html">go</a>'],
+            'knockout bind'     => ['<a data-bind="attr: {href: item.url}">go</a>'],
+        ];
+    }
+
+    public function testARealHrefIsStillFoundWhateverTheWhitespace(): void
+    {
+        $html = "<a\n    class=\"btn\"\n    href=\"/keep.html\"\n    rel=\"noopener\">keep</a>";
+
+        $this->assertSame(['https://example.com/keep.html'], array_values($this->links($html)));
+    }
+
+    public function testABoundAndARealHrefOnTheSameTagKeepOnlyTheRealOne(): void
+    {
+        $html = '<a :href="item.configure_url" href="/real.html">both</a>';
+
+        $this->assertSame(['https://example.com/real.html'], array_values($this->links($html)));
+    }
+
+    public function testNestedTemplatesAreStrippedWhole(): void
+    {
+        $html = '<template x-for="item in items">'
+            . '<template x-if="item.options"><dl><dd>x</dd></dl></template>'
+            . self::anchor('/inside-outer-template.html')
+            . '</template>'
+            . self::anchor('/after.html');
+
+        $this->assertSame(['https://example.com/after.html'], array_values($this->links($html)));
+    }
+
+    public function testDeeplyNestedTemplatesDoNotLeakLinks(): void
+    {
+        $html = '<template x-for="a in b"><template x-if="c"><template x-for="d in e">'
+            . self::anchor('/deep.html')
+            . '</template></template></template>'
+            . self::anchor('/kept.html');
+
+        $this->assertSame(['https://example.com/kept.html'], array_values($this->links($html)));
+    }
+
+    public function testADottedPathInRenderedMarkupIsStillReported(): void
+    {
+        $this->assertSame(
+            ['https://example.com/item.product_url'],
+            array_values($this->links(self::anchor('/item.product_url')))
+        );
+    }
 }

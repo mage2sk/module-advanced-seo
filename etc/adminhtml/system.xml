@@ -178,31 +178,28 @@
             <group id="reports" translate="label" sortOrder="75" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Reports &amp; Diagnostics</label>
                 <field id="enable_crawl_audit" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Enable Crawl Audit</label>
+                    <label>Enable Scheduled Crawl Audit</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Enables periodic site crawl audits that check for broken links, missing meta tags, and redirect chains. Resource intensive on large catalogs.</comment>
+                    <comment><![CDATA[Runs the crawl audit once a day by cron, checking for broken links, missing meta and redirect chains. Resource intensive on large catalogues. This controls the <strong>scheduled</strong> run only - <strong>Run Crawl</strong> on the SEO Audit page and <code>bin/magento panth:seo:crawl</code> work either way, and the settings below apply to all three.]]></comment>
                 </field>
                 <field id="crawl_depth" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Crawl Depth (max pages)</label>
                     <validate>validate-digits</validate>
-                    <comment>Maximum number of pages to crawl per audit run. Default: 100.</comment>
+                    <comment><![CDATA[Maximum number of pages to crawl per run, for the scheduled audit, <strong>Run Crawl</strong> and the CLI alike. Default: 100. A crawl started from the admin while cron is not running is capped at 25 pages.]]></comment>
                 </field>
                 <field id="crawl_exclude_paths" translate="label comment" type="textarea" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Crawl Exclude Paths (one per line)</label>
                     <comment><![CDATA[URL paths the crawl audit must not follow. Customer, checkout and other private pages are noindex by design, so auditing them wastes the page budget. Wildcards supported: <code>*</code>. Clear the field to crawl everything.]]></comment>
-                    <depends><field id="enable_crawl_audit">1</field></depends>
                 </field>
                 <field id="crawl_follow_filtered" translate="label comment" type="select" sortOrder="24" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Follow Filtered And Sorted URLs</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment><![CDATA[Any URL carrying a query string, so layered navigation, sorting, page size and paging. These multiply without bound and mostly repeat the same template, so leaving this off keeps the crawl budget on distinct indexable pages. Turn it on to audit filtered and paginated URLs too.]]></comment>
-                    <depends><field id="enable_crawl_audit">1</field></depends>
                 </field>
                 <field id="crawl_verify_tls" translate="label comment" type="select" sortOrder="26" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Verify TLS Certificate While Crawling</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Leave on. Turn it off only on a local or staging site using a self-signed certificate, where the crawl would otherwise fail to connect.</comment>
-                    <depends><field id="enable_crawl_audit">1</field></depends>
                 </field>
                 <field id="seo_toolbar_enabled" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Enable SEO Toolbar</label>

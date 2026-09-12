@@ -296,7 +296,7 @@ Go to **Stores -> Configuration -> Panth Extensions -> Advanced SEO**.
 | Auto-Generate URL Key on Product Creation | URL Key Automation | No | Generates a URL key from a template when a new product has no key set. |
 | URL Key Template | URL Key Automation | - | Tokens: `{{name}}`, `{{sku}}`, `{{attribute:code}}`. |
 | Also Apply to Existing Products on Save | URL Key Automation | No | Re-applies the URL key template every time an existing product is saved. |
-| Enable Crawl Audit | Reports & Diagnostics | No | Runs periodic site crawl audits. Resource intensive on large catalogs. |
+| Enable Scheduled Crawl Audit | Reports & Diagnostics | No | Runs the daily cron crawl audit. Resource intensive on large catalogs. **Run Crawl** and `bin/magento panth:seo:crawl` work regardless of this toggle. |
 | Crawl Depth (max pages) | Reports & Diagnostics | 100 | Maximum pages per audit run. |
 | Enable SEO Toolbar | Reports & Diagnostics | No | Shows an on-page SEO diagnostics toolbar on the storefront for allowed IPs. |
 | SEO Toolbar Allowed IPs | Reports & Diagnostics | - | Comma-separated IPs or CIDR ranges. Disables FPC for matched requests. |
