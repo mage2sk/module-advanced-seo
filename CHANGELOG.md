@@ -4,6 +4,11 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.4.3] - 2026-09-12
+
+### Fixed
+- **1.4.2 broke every `bin/magento` command.** The `Follow Filtered And Sorted URLs` comment added in 1.4.2 contained a raw `<code>` tag outside a CDATA block, which Magento's `system.xsd` rejects with `Element 'code': This element is not expected`. Because the config structure is read during console bootstrap, the CLI aborted before running any command and the admin configuration section could not be opened. The comment is now wrapped in CDATA. Anyone on 1.4.2 should upgrade immediately.
+
 ## [1.4.2] - 2026-09-09
 
 ### Fixed
