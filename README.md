@@ -275,7 +275,8 @@ Go to **Stores -> Configuration -> Panth Extensions -> Advanced SEO**.
 | Force Template Over Existing Meta | Meta Tags | No | When on, templates override manually written meta on products and categories. |
 | Store view scope switcher | Bulk Meta Editor, Missing Meta Report | All Store Views | Choose which store view the grid reads and the inline editor writes. |
 | Crawl Exclude Paths | Reports & Diagnostics | customer, checkout, wishlist, compare, search, newsletter, payment paths | URL paths the crawl audit must not follow, one per line, `*` wildcards supported. |
-| Follow Filtered And Sorted URLs | Reports & Diagnostics | No | Whether the crawl audit follows layered-navigation, sorting and page-size URLs. Paging is always followed. |
+| Follow Filtered And Sorted URLs | Reports & Diagnostics | No | Whether the crawl audit follows URLs carrying a query string, including layered navigation, sorting and paging. |
+| Verify TLS Certificate While Crawling | Reports & Diagnostics | Yes | Turn off only for a local or staging site using a self-signed certificate. |
 | Noindex 404 (No-Route) Page | Meta Tags | Yes | The 404 no-route page gets robots `noindex,follow` and emits no canonical tag. |
 | Emit Canonical Tag | Canonical URLs | Yes | Outputs `rel="canonical"` on all pages. |
 | Strip Query String | Canonical URLs | No | Removes all query parameters from canonical URLs. |

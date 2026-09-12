@@ -20,6 +20,8 @@ class Crawler
 
     private const MAX_REDIRECT_HOPS = 5;
 
+    private const MAX_CONSECUTIVE_FAILURES = 5;
+
     public function __construct(
         private readonly CurlFactory $curlFactory,
         private readonly StoreManagerInterface $storeManager,
@@ -46,7 +48,7 @@ class Crawler
             return [];
         }
 
-        $curl = $this->createCurl();
+        $curl = $this->createCurl($storeId);
 
         $excludePatterns = $this->getExcludePatterns($storeId);
         $followFiltered  = $this->config->crawlFollowsFilteredUrls($storeId);
@@ -56,6 +58,7 @@ class Crawler
         $head    = 0;
 
         $firstRequest = true;
+        $consecutiveFailures = 0;
 
         while ($head < count($queue) && count($visited) < $maxPages) {
             $url = $queue[$head++];
@@ -76,6 +79,23 @@ class Crawler
                 return [];
             }
             $firstRequest = false;
+
+            if ($result->statusCode === 0) {
+                $consecutiveFailures++;
+                if ($consecutiveFailures >= self::MAX_CONSECUTIVE_FAILURES) {
+                    $this->logger->warning(sprintf(
+                        'Panth SEO Crawler: %d consecutive unreachable responses for store %d, stopping after %d page(s). '
+                        . 'The host stopped answering part way through the crawl.',
+                        $consecutiveFailures,
+                        $storeId,
+                        count($visited)
+                    ));
+                    $visited[$url] = $result;
+                    break;
+                }
+            } else {
+                $consecutiveFailures = 0;
+            }
 
             $visited[$url] = $result;
 
@@ -115,7 +135,7 @@ class Crawler
         return array_values($visited);
     }
 
-    private function createCurl(): Curl
+    private function createCurl(int $storeId): Curl
     {
         $curl = $this->curlFactory->create();
         $curl->setTimeout(self::TIMEOUT_SECONDS);
@@ -124,8 +144,9 @@ class Crawler
         $curl->setOption(CURLOPT_ENCODING, '');
         $curl->setOption(CURLOPT_USERAGENT, self::USER_AGENT);
 
-        $curl->setOption(CURLOPT_SSL_VERIFYPEER, false);
-        $curl->setOption(CURLOPT_SSL_VERIFYHOST, false);
+        $verify = $this->config->crawlVerifiesTls($storeId);
+        $curl->setOption(CURLOPT_SSL_VERIFYPEER, $verify);
+        $curl->setOption(CURLOPT_SSL_VERIFYHOST, $verify ? 2 : 0);
 
         return $curl;
     }
@@ -234,7 +255,7 @@ class Crawler
                     continue;
                 }
 
-                if (str_starts_with($href, '#') || str_starts_with($href, 'javascript:') || str_starts_with($href, 'mailto:')) {
+                if (str_starts_with($href, '#') || !$this->isHttpScheme($href)) {
                     continue;
                 }
 
@@ -251,6 +272,21 @@ class Crawler
         }
 
         return array_unique($links);
+    }
+
+    private function isHttpScheme(string $href): bool
+    {
+        $href = trim($href);
+
+        if (str_starts_with($href, '//')) {
+            return true;
+        }
+
+        if (preg_match('~^([a-z][a-z0-9+.\-]*):~i', $href, $m) !== 1) {
+            return true;
+        }
+
+        return in_array(strtolower($m[1]), ['http', 'https'], true);
     }
 
     private function getExcludePatterns(int $storeId): array

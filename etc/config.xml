@@ -89,12 +89,14 @@
                 <enable_crawl_audit>0</enable_crawl_audit>
                 <crawl_depth>100</crawl_depth>
                 <crawl_follow_filtered>0</crawl_follow_filtered>
+                <crawl_verify_tls>1</crawl_verify_tls>
                 <crawl_exclude_paths>/customer/*
 /checkout
 /checkout/*
 /wishlist/*
 /catalog/product_compare/*
 /catalogsearch/*
+/cdn-cgi/*
 /sales/*
 /newsletter/*
 /review/customer/*

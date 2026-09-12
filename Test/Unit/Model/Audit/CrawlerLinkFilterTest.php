@@ -155,4 +155,46 @@ class CrawlerLinkFilterTest extends TestCase
 
         $this->assertSame(['https://example.com/keep-me.html'], array_values($this->links($html)));
     }
+
+    #[DataProvider('nonHttpSchemeProvider')]
+    public function testOnlyHttpSchemesAreCrawled(string $href): void
+    {
+        $this->assertSame([], $this->links(self::anchor($href)), $href . ' is not a page');
+    }
+
+    public static function nonHttpSchemeProvider(): array
+    {
+        return [
+            'tel' => ['tel:01482653790'],
+            'tel with spaces' => ['tel:+44 1482 653790'],
+            'sms with a numeric path' => ['sms:12345'],
+            'callto' => ['callto:12345'],
+            'whatsapp' => ['whatsapp://send?phone=123'],
+            'skype' => ['skype:live.someone?call'],
+            'data uri' => ['data:text/html;base64,PGh0bWw+'],
+            'mailto' => ['mailto:someone@example.com'],
+            'javascript' => ['javascript:void(0)'],
+            'ftp' => ['ftp://files.example.com/x'],
+        ];
+    }
+
+    public function testProtocolRelativeAndRelativeLinksAreStillFollowed(): void
+    {
+        $this->assertSame(
+            ['https://example.com/keep.html'],
+            array_values($this->links(self::anchor('/keep.html')))
+        );
+
+        $this->assertSame(
+            ['https://example.com/proto.html'],
+            array_values($this->links(self::anchor('//example.com/proto.html')))
+        );
+    }
+
+    public function testCdnCgiIsExcludedByDefaultList(): void
+    {
+        $excludes = self::EXCLUDES . "\n/cdn-cgi/*";
+
+        $this->assertSame([], $this->links(self::anchor('/cdn-cgi/l/email-protection'), $excludes));
+    }
 }

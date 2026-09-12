@@ -27,6 +27,7 @@ class IssueDetector
             'fetch_errors'        => 0,
             'redirects'           => 0,
             'redirect_chains'     => 0,
+            'noindex_pages'       => 0,
         ];
 
         foreach ($results as $result) {
@@ -58,6 +59,14 @@ class IssueDetector
 
             if ($result->statusCode !== 200) {
                 $enriched[] = $result->withIssues(array_diff($issues, $result->issues));
+                continue;
+            }
+
+            if ($this->isNoindex($result->robots)) {
+                $summary['noindex_pages']++;
+                $enriched[] = $result->withIssues(
+                    array_diff(array_merge($issues, ['Noindex page - content checks skipped']), $result->issues)
+                );
                 continue;
             }
 
@@ -109,6 +118,11 @@ class IssueDetector
         ];
     }
 
+    private function isNoindex(string $robots): bool
+    {
+        return $robots !== '' && stripos($robots, 'noindex') !== false;
+    }
+
     public function detectRedirectChains(array $redirectMap): array
     {
         $issues = [];
@@ -127,6 +141,11 @@ class IssueDetector
 
     private function buildTitleIndex(array $results): array
     {
+        $results = array_filter(
+            $results,
+            fn ($r): bool => !$this->isNoindex($r->robots)
+        );
+
         $index = [];
         foreach ($results as $result) {
             if ($result->title === '' || $result->statusCode !== 200) {

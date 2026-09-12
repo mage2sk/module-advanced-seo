@@ -97,4 +97,45 @@ class IssueDetectorTest extends TestCase
         $this->assertSame(1, $summary['status_404']);
         $this->assertSame(1, $summary['status_5xx']);
     }
+
+    public function testNoindexPagesAreBucketedNotCountedAsIssues(): void
+    {
+        [$issues, $summary] = $this->issuesFor([
+            new CrawlResult(
+                url: 'https://example.com/cat.html?colour=red',
+                statusCode: 200,
+                title: 'Shared Title',
+                description: '',
+                canonical: '',
+                robots: 'noindex,follow'
+            ),
+        ]);
+
+        $this->assertSame(1, $summary['noindex_pages']);
+        $this->assertSame(0, $summary['missing_description']);
+        $this->assertSame(0, $summary['missing_canonical']);
+        $this->assertStringContainsString('Noindex page', implode(' ', $issues['https://example.com/cat.html?colour=red']));
+    }
+
+    public function testNoindexPagesDoNotCreateDuplicateTitleNoise(): void
+    {
+        [, $summary] = $this->issuesFor([
+            new CrawlResult(url: 'https://example.com/a?colour=red', statusCode: 200, title: 'Same', description: 'd', canonical: 'c', robots: 'noindex,follow'),
+            new CrawlResult(url: 'https://example.com/b?colour=blue', statusCode: 200, title: 'Same', description: 'd', canonical: 'c', robots: 'noindex,follow'),
+            new CrawlResult(url: 'https://example.com/real.html', statusCode: 200, title: 'Same', description: 'd', canonical: 'c', robots: 'index,follow'),
+        ]);
+
+        $this->assertSame(2, $summary['noindex_pages']);
+        $this->assertSame(0, $summary['duplicate_titles'], 'faceted noindex URLs must not inflate duplicate-title counts');
+    }
+
+    public function testIndexablePagesAreStillFullyChecked(): void
+    {
+        [, $summary] = $this->issuesFor([
+            new CrawlResult(url: 'https://example.com/p', statusCode: 200, title: '', description: '', canonical: '', robots: 'index,follow'),
+        ]);
+
+        $this->assertSame(0, $summary['noindex_pages']);
+        $this->assertSame(1, $summary['missing_title']);
+    }
 }

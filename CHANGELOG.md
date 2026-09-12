@@ -4,6 +4,24 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.5.1] - 2026-09-12
+
+Follow-up to the live-store verification of 1.5.0.
+
+### Fixed
+- **`tel:` links were crawled as pages.** A header phone link was resolved against the base URL and fetched as `https://<store>/tel:01234567890`, producing a phantom 404 in every report, and re-resolved relative to other directories for more of the same. The check only skipped `#`, `javascript:` and `mailto:`. Any href whose scheme is not `http` or `https` is now rejected, which also covers `sms:`, `callto:`, `whatsapp:`, `skype:`, `ftp:` and `data:` URIs. Scheme detection no longer relies on `parse_url()`, which reads `sms:12345` as a host and port rather than a scheme.
+- **Cloudflare's `/cdn-cgi/l/email-protection` link was crawled** and reported as a 404. `/cdn-cgi/*` is now in the default Crawl Exclude Paths.
+- **Faceted and other `noindex` URLs inflated the issue counts.** On a live catalogue a 500-page crawl reported 337 missing canonicals and 382 duplicate titles, nearly all of them filter URLs the storefront already marks `noindex`. A page whose own robots meta says `noindex` is now counted in its own `noindex_pages` bucket, skipped for content checks, and excluded from duplicate-title matching, so the findings that matter are no longer buried.
+- **The unreachable-host guard only checked the first URL.** If the host stopped answering part way through a run, every remaining URL paid a full 10 second timeout — roughly 17 minutes at the default depth. The crawl now stops after five consecutive unreachable responses and logs why.
+- **The Crawl Results grid showed an issue count, not the issues.** `issues_json` already held readable text but the column rendered only a number, so a merchant saw `1` with no way to learn what it was. The column now renders the issue labels, with the remainder in the hover tooltip.
+- **`Crawl Depth` was default-scope only** while `Enable Crawl Audit` was store-view scoped, so a store view could switch the audit on but its depth field simply vanished. Both are store-view scoped now.
+
+### Added
+- **`Verify TLS Certificate While Crawling`**, default Yes. Certificate verification was disabled unconditionally, which a security review will flag. Turn it off only for a local or staging site with a self-signed certificate.
+
+### Known issue
+- The Crawl Results grid can render rows with no cells. Reproduced locally; the data reaches the browser correctly and there are no JavaScript errors. Column definitions, `dataType`, filters, `selectionsColumn`, saved bookmarks, the admin secret key and the `styles` layout handle have all been ruled out. Not yet resolved. The SEO Audit summary screen and the CLI output both report the same data correctly in the meantime.
+
 ## [1.5.0] - 2026-09-12
 
 ### Fixed
