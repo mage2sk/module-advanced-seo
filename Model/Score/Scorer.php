@@ -27,6 +27,7 @@ class Scorer implements SeoScorerInterface
         private readonly DateTime $dateTime,
         private readonly LoggerInterface $logger,
         private readonly SeoScoreFactory $seoScoreFactory,
+        private readonly GradeCalculator $gradeCalculator,
         array $checks = [],
         array $weights = []
     ) {
@@ -109,13 +110,7 @@ class Scorer implements SeoScorerInterface
 
     private function grade(int $score): string
     {
-        return match (true) {
-            $score >= 90 => SeoScorerInterface::GRADE_A,
-            $score >= 80 => SeoScorerInterface::GRADE_B,
-            $score >= 70 => SeoScorerInterface::GRADE_C,
-            $score >= 60 => SeoScorerInterface::GRADE_D,
-            default => SeoScorerInterface::GRADE_F,
-        };
+        return $this->gradeCalculator->forScore($score);
     }
 
     private function persist(

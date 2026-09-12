@@ -112,7 +112,7 @@ class CategorySeoScorePlugin
 
     private function gradeColor(string $grade): string
     {
-        return match (strtoupper($grade)) {
+        return match (strtoupper(trim($grade))) {
             'A' => '#2e7d32',
             'B' => '#1565c0',
             'C' => '#f9a825',

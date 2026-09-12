@@ -11,6 +11,7 @@ use Panth\AdvancedSEO\Api\SeoScorerInterface;
 use Panth\AdvancedSEO\Model\ResourceModel\Score as ScoreResource;
 use Panth\AdvancedSEO\Model\Score\CheckInterface;
 use Panth\AdvancedSEO\Model\Score\ContextBuilder;
+use Panth\AdvancedSEO\Model\Score\GradeCalculator;
 use Panth\AdvancedSEO\Model\Score\Scorer;
 use Panth\AdvancedSEO\Model\Score\SeoScore;
 use Panth\AdvancedSEO\Model\Score\SeoScoreFactory;
@@ -49,6 +50,7 @@ class ScorerGradingTest extends TestCase
             $this->createStub(DateTime::class),
             $this->createStub(LoggerInterface::class),
             $factory,
+            new GradeCalculator(),
             $checks,
             $weights
         );

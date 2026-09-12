@@ -16,6 +16,7 @@ class Audit extends Template
         Context $context,
         private readonly ResourceConnection $resource,
         private readonly FormKeyModel $formKeyModel,
+        private readonly \Panth\AdvancedSEO\Model\Score\GradeCalculator $gradeCalculator,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -33,13 +34,19 @@ class Audit extends Template
         if (!$connection->isTableExists($table)) {
             return [];
         }
-        return $connection->fetchAll(
+        $rows = $connection->fetchAll(
             $connection->select()
                 ->from($table)
                 ->where('score < ?', 60)
                 ->order('score ASC')
                 ->limit($limit)
         );
+
+        foreach ($rows as &$row) {
+            $row['grade'] = $this->gradeCalculator->forScore((int) ($row['score'] ?? 0));
+        }
+
+        return $rows;
     }
 
     public function getDuplicates(int $limit = 50): array

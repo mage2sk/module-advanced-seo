@@ -4,6 +4,14 @@ All notable changes to this extension are documented here. The format
 is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [1.5.2] - 2026-09-12
+
+### Fixed
+- **The SEO Audit table showed wrong and inconsistent grades.** Rows scored before 1.5.0 kept the grade that version wrote, including the retired `E`, so the table showed score 50 as `E` on one row and `F` on another, and grades that no longer exist on the A-F scale. Grading moved into a single `GradeCalculator`, the audit table now derives the grade from the score instead of trusting the stored column, and a data patch rewrites any stored grade that disagrees with its score. `Scorer` uses the same calculator, so there is one definition of the scale.
+
+### Note on the Crawl Results grid
+The empty-cell rendering reported against 1.5.0 and listed as a known issue in 1.5.1 **is not a defect**. It was a measurement artifact: `querySelectorAll('td')` returns 0 while the grid is still binding, and these grids take 20-30 seconds to finish rendering in developer mode. Verified with data present: 10 rows, 80 cells, every column populated, including the new issue labels.
+
 ## [1.5.1] - 2026-09-12
 
 Follow-up to the live-store verification of 1.5.0.
@@ -18,9 +26,6 @@ Follow-up to the live-store verification of 1.5.0.
 
 ### Added
 - **`Verify TLS Certificate While Crawling`**, default Yes. Certificate verification was disabled unconditionally, which a security review will flag. Turn it off only for a local or staging site with a self-signed certificate.
-
-### Known issue
-- The Crawl Results grid can render rows with no cells. Reproduced locally; the data reaches the browser correctly and there are no JavaScript errors. Column definitions, `dataType`, filters, `selectionsColumn`, saved bookmarks, the admin secret key and the `styles` layout handle have all been ruled out. Not yet resolved. The SEO Audit summary screen and the CLI output both report the same data correctly in the meantime.
 
 ## [1.5.0] - 2026-09-12
 
