@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_seo_template_form.panth_seo_template_form_data_source</item>
+        </item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="delete" class="Panth\AdvancedSEO\Block\Adminhtml\GenericDeleteButton"/>
+            <button name="apply" class="Panth\AdvancedSEO\Block\Adminhtml\Template\Edit\ApplyButton"/>
+            <button name="save_and_continue" class="Panth\AdvancedSEO\Block\Adminhtml\Template\Edit\SaveAndContinueButton"/>
+            <button name="save" class="Panth\AdvancedSEO\Block\Adminhtml\Template\Edit\SaveButton"/>
+            <button name="back" class="Panth\AdvancedSEO\Block\Adminhtml\Template\Edit\BackButton"/>
+        </buttons>
+        <namespace>panth_seo_template_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>panth_seo_template_form.panth_seo_template_form_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="panth_seo_template_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="panth_seo/template/save"/>
+        </settings>
+        <dataProvider class="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\TemplateFormDataProvider" name="panth_seo_template_form_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>template_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <!-- ========== General ========== -->
+    <fieldset name="general" sortOrder="10">
+        <settings>
+            <label translate="true">General</label>
+        </settings>
+        <field name="template_id" formElement="input">
+            <settings>
+                <visible>false</visible>
+                <dataType>text</dataType>
+            </settings>
+        </field>
+        <field name="name" formElement="input" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Name</label>
+                <dataScope>name</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+        </field>
+        <field name="entity_type" formElement="select" sortOrder="20">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Entity Type</label>
+                <dataScope>entity_type</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="product" xsi:type="array">
+                                <item name="value" xsi:type="string">product</item>
+                                <item name="label" xsi:type="string" translate="true">Product</item>
+                            </option>
+                            <option name="category" xsi:type="array">
+                                <item name="value" xsi:type="string">category</item>
+                                <item name="label" xsi:type="string" translate="true">Category</item>
+                            </option>
+                            <option name="cms_page" xsi:type="array">
+                                <item name="value" xsi:type="string">cms_page</item>
+                                <item name="label" xsi:type="string" translate="true">CMS Page</item>
+                            </option>
+                        </options>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="store_id" formElement="select" sortOrder="25">
+            <settings>
+                <dataType>int</dataType>
+                <label translate="true">Store View</label>
+                <dataScope>store_id</dataScope>
+                <notice translate="true">Select "All Store Views" to apply globally (store ID 0), or choose a specific store view.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\Cms\Ui\Component\Listing\Column\Cms\Options"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="is_active" formElement="checkbox" sortOrder="28">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="number">1</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Active</label>
+                <dataScope>is_active</dataScope>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <prefer>toggle</prefer>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="priority" formElement="input" sortOrder="29">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Priority</label>
+                <dataScope>priority</dataScope>
+                <notice translate="true">Lower number = higher priority. When multiple templates match, the highest priority wins.</notice>
+            </settings>
+        </field>
+    </fieldset>
+
+    <!-- ========== Meta Patterns ========== -->
+    <fieldset name="meta_patterns" sortOrder="20">
+        <settings>
+            <label translate="true">Meta Patterns</label>
+        </settings>
+        <field name="seo_name" formElement="input" sortOrder="5">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">SEO Name Pattern</label>
+                <dataScope>seo_name</dataScope>
+                <notice translate="true">Overrides product/category name for SEO output. Leave blank to keep original name.</notice>
+            </settings>
+        </field>
+        <field name="meta_title" formElement="input" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Meta Title Pattern</label>
+                <dataScope>meta_title</dataScope>
+            </settings>
+        </field>
+        <field name="meta_description" formElement="textarea" sortOrder="20">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Meta Description Pattern</label>
+                <dataScope>meta_description</dataScope>
+            </settings>
+        </field>
+        <field name="meta_keywords" formElement="input" sortOrder="30">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Meta Keywords Pattern</label>
+                <dataScope>meta_keywords</dataScope>
+            </settings>
+        </field>
+        <field name="robots" formElement="select" sortOrder="40">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Robots Directive</label>
+                <dataScope>robots</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="skip" xsi:type="array">
+                                <item name="value" xsi:type="string"></item>
+                                <item name="label" xsi:type="string" translate="true">-- Do Not Update --</item>
+                            </option>
+                            <option name="index_follow" xsi:type="array">
+                                <item name="value" xsi:type="string">INDEX,FOLLOW</item>
+                                <item name="label" xsi:type="string">INDEX,FOLLOW</item>
+                            </option>
+                            <option name="noindex_follow" xsi:type="array">
+                                <item name="value" xsi:type="string">NOINDEX,FOLLOW</item>
+                                <item name="label" xsi:type="string">NOINDEX,FOLLOW</item>
+                            </option>
+                            <option name="index_nofollow" xsi:type="array">
+                                <item name="value" xsi:type="string">INDEX,NOFOLLOW</item>
+                                <item name="label" xsi:type="string">INDEX,NOFOLLOW</item>
+                            </option>
+                            <option name="noindex_nofollow" xsi:type="array">
+                                <item name="value" xsi:type="string">NOINDEX,NOFOLLOW</item>
+                                <item name="label" xsi:type="string">NOINDEX,NOFOLLOW</item>
+                            </option>
+                        </options>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="url_key_template" formElement="input" sortOrder="50">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">URL Key Template</label>
+                <dataScope>url_key_template</dataScope>
+                <notice translate="true">Pattern for auto-generating URL keys (e.g. {{name}}-{{sku}}). Leave blank to skip.</notice>
+            </settings>
+        </field>
+    </fieldset>
+
+    <!-- ========== Open Graph & Social ========== -->
+    <fieldset name="open_graph" sortOrder="30">
+        <settings>
+            <label translate="true">Open Graph &amp; Social</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="og_title" formElement="input" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">OG Title Pattern</label>
+                <dataScope>og_title</dataScope>
+            </settings>
+        </field>
+        <field name="og_description" formElement="textarea" sortOrder="20">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">OG Description Pattern</label>
+                <dataScope>og_description</dataScope>
+            </settings>
+        </field>
+        <field name="og_image" formElement="input" sortOrder="30">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">OG Image Pattern</label>
+                <dataScope>og_image</dataScope>
+                <notice translate="true">Use {{image}} for product image. Leave blank to use default product image.</notice>
+            </settings>
+        </field>
+        <field name="twitter_card" formElement="select" sortOrder="40">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Twitter Card Type</label>
+                <dataScope>twitter_card</dataScope>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="skip" xsi:type="array">
+                                <item name="value" xsi:type="string"></item>
+                                <item name="label" xsi:type="string" translate="true">-- Do Not Update --</item>
+                            </option>
+                            <option name="summary" xsi:type="array">
+                                <item name="value" xsi:type="string">summary</item>
+                                <item name="label" xsi:type="string">summary</item>
+                            </option>
+                            <option name="summary_large_image" xsi:type="array">
+                                <item name="value" xsi:type="string">summary_large_image</item>
+                                <item name="label" xsi:type="string">summary_large_image</item>
+                            </option>
+                        </options>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
+
+    <!-- ========== Apply Conditions ========== -->
+    <fieldset name="conditions" sortOrder="40">
+        <settings>
+            <label translate="true">Apply Conditions (Optional)</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="condition_attribute" formElement="select" sortOrder="10">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Restrict to</label>
+                <notice translate="true">Only apply this template to entities matching this condition. Leave "Apply to All" to apply globally.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options>
+                            <option name="none" xsi:type="array">
+                                <item name="value" xsi:type="string"></item>
+                                <item name="label" xsi:type="string" translate="true">-- Apply to All --</item>
+                            </option>
+                            <option name="product_ids" xsi:type="array">
+                                <item name="value" xsi:type="string">entity_id</item>
+                                <item name="label" xsi:type="string" translate="true">Product IDs (comma-separated)</item>
+                            </option>
+                            <option name="skus" xsi:type="array">
+                                <item name="value" xsi:type="string">sku</item>
+                                <item name="label" xsi:type="string" translate="true">SKUs (comma-separated)</item>
+                            </option>
+                            <option name="attribute_set" xsi:type="array">
+                                <item name="value" xsi:type="string">attribute_set_id</item>
+                                <item name="label" xsi:type="string" translate="true">Attribute Set ID</item>
+                            </option>
+                            <option name="category" xsi:type="array">
+                                <item name="value" xsi:type="string">category_ids</item>
+                                <item name="label" xsi:type="string" translate="true">Category IDs (comma-separated)</item>
+                            </option>
+                            <option name="type" xsi:type="array">
+                                <item name="value" xsi:type="string">type_id</item>
+                                <item name="label" xsi:type="string" translate="true">Product Type (simple, configurable, etc.)</item>
+                            </option>
+                            <option name="visibility" xsi:type="array">
+                                <item name="value" xsi:type="string">visibility</item>
+                                <item name="label" xsi:type="string" translate="true">Visibility (1=Not Visible, 2=Catalog, 3=Search, 4=Both)</item>
+                            </option>
+                        </options>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="condition_value" formElement="input" sortOrder="20">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Match Value</label>
+                <dataScope>condition_value</dataScope>
+                <notice translate="true">Enter the value to match. For multiple values, use comma-separated list (e.g. 1,2,3 for Product IDs, SKU-001,SKU-002 for SKUs).</notice>
+            </settings>
+        </field>
+        <field name="conditions_serialized" formElement="input" sortOrder="30">
+            <settings>
+                <visible>false</visible>
+                <dataType>text</dataType>
+                <dataScope>conditions_serialized</dataScope>
+            </settings>
+        </field>
+    </fieldset>
+
+    <!-- ========== Scheduling ========== -->
+    <fieldset name="scheduling" sortOrder="50">
+        <settings>
+            <label translate="true">Scheduling</label>
+            <collapsible>true</collapsible>
+        </settings>
+        <field name="is_cron_enabled" formElement="checkbox" sortOrder="10">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="default" xsi:type="number">0</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>boolean</dataType>
+                <label translate="true">Enable Cron Auto-Apply</label>
+                <dataScope>is_cron_enabled</dataScope>
+                <notice translate="true">When enabled, this template will be applied automatically by the scheduled cron job.</notice>
+            </settings>
+            <formElements>
+                <checkbox>
+                    <settings>
+                        <prefer>toggle</prefer>
+                        <valueMap>
+                            <map name="false" xsi:type="number">0</map>
+                            <map name="true" xsi:type="number">1</map>
+                        </valueMap>
+                    </settings>
+                </checkbox>
+            </formElements>
+        </field>
+        <field name="last_applied_at" formElement="input" sortOrder="20">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Last Applied At</label>
+                <dataScope>last_applied_at</dataScope>
+                <disabled>true</disabled>
+                <notice translate="true">Timestamp of the last application. Read-only.</notice>
+            </settings>
+        </field>
+        <field name="apply_count" formElement="input" sortOrder="30">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Apply Count</label>
+                <dataScope>apply_count</dataScope>
+                <disabled>true</disabled>
+                <notice translate="true">Number of times this template has been applied. Read-only.</notice>
+            </settings>
+        </field>
+    </fieldset>
+
+    <!-- ========== Available Template Variables Reference ========== -->
+    <htmlContent name="variables_reference" sortOrder="60">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="label" xsi:type="string" translate="true">Available Template Variables</item>
+                <item name="collapsible" xsi:type="boolean">true</item>
+                <item name="opened" xsi:type="boolean">false</item>
+            </item>
+        </argument>
+        <block class="Panth\AdvancedSEO\Block\Adminhtml\Template\Edit\VariablesReference" name="panth_seo_variables_reference"/>
+    </htmlContent>
+</form>

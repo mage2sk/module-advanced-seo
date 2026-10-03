@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Example Extension</title>
+<link rel="canonical" href="https://example.com/example-extension.html">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+ {"@type":"Organization","@id":"https://example.com/#organization","name":"Example Store","url":"https://example.com/"},
+ {"@type":"Product","@id":"https://example.com/example-extension.html#product","name":"Example Extension","sku":"EX-1",
+  "datePublished":"2024-01-10T08:00:00+00:00","dateModified":"2025-02-11T09:30:00+00:00",
+  "offers":{"@type":"Offer","price":"0.00","priceCurrency":"USD","availability":"https://schema.org/InStock"}}
+]}
+</script>
+<script type="application/ld+json">{"@type":"BreadcrumbList","itemListElement":[]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Product","name":"Broken" </script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Product","name":"No merchant data","sku":"EX-2"}</script>
+</head>
+<body><main><h1>Example Extension</h1><p>Product page.</p></main></body>
+</html>

@@ -1,0 +1,167 @@
+<?php
+declare(strict_types=1);
+
+namespace Panth\AdvancedSEO\Controller\Feed;
+
+use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\App\CacheInterface;
+use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\Result\RawFactory;
+use Magento\Framework\Controller\ResultInterface;
+use Magento\Store\Model\StoreManagerInterface;
+use Panth\AdvancedSEO\Helper\Config;
+use Panth\AdvancedSEO\Model\Feed\GoogleMerchantFeedBuilder;
+use Panth\AdvancedSEO\Model\Feed\ProfileBasedFeedBuilder;
+
+class Google implements HttpGetActionInterface
+{
+    private const CACHE_PREFIX = 'panth_seo_google_feed_';
+    private const CACHE_TTL = 3600;
+    private const CACHE_TAG = 'PANTH_SEO_GOOGLE_FEED';
+
+    public function __construct(
+        private readonly RawFactory $rawFactory,
+        private readonly GoogleMerchantFeedBuilder $feedBuilder,
+        private readonly ProfileBasedFeedBuilder $profileFeedBuilder,
+        private readonly StoreManagerInterface $storeManager,
+        private readonly CacheInterface $cache,
+        private readonly Config $config,
+        private readonly DirectoryList $directoryList,
+        private readonly RequestInterface $request
+    ) {
+    }
+
+    public function execute(): ResponseInterface|ResultInterface
+    {
+        $result = $this->rawFactory->create();
+        $storeId = (int) $this->storeManager->getStore()->getId();
+
+        if (!$this->config->isEnabled($storeId) || !$this->config->isMerchantFeedEnabled($storeId)) {
+            $result->setHttpResponseCode(404);
+            $result->setHeader('Content-Type', 'text/plain; charset=utf-8', true);
+            $result->setContents('Feed not available.');
+            return $result;
+        }
+
+        $feedId = (int) $this->request->getParam('id', 0);
+
+        if ($feedId > 0) {
+            return $this->serveProfileFeed($result, $feedId, $storeId);
+        }
+
+        return $this->serveLegacyFeed($result, $storeId);
+    }
+
+    private function serveProfileFeed(
+        \Magento\Framework\Controller\Result\Raw $result,
+        int $feedId,
+        int $storeId
+    ): ResponseInterface|ResultInterface {
+        $profile = $this->profileFeedBuilder->loadProfile($feedId);
+
+        if ($profile === null || !(int) ($profile['is_active'] ?? 0)) {
+            $result->setHttpResponseCode(404);
+            $result->setHeader('Content-Type', 'text/plain; charset=utf-8', true);
+            $result->setContents('Feed not found or inactive.');
+            return $result;
+        }
+
+        if ((int) ($profile['store_id'] ?? 0) !== $storeId) {
+            $result->setHttpResponseCode(404);
+            $result->setHeader('Content-Type', 'text/plain; charset=utf-8', true);
+            $result->setContents('Feed not available for this store.');
+            return $result;
+        }
+
+        $filename = (string) ($profile['filename'] ?? '');
+        $format = (string) ($profile['output_format'] ?? 'xml');
+        $compress = trim((string) ($profile['compress'] ?? ''));
+        if ($compress === 'gzip') {
+            $filename .= '.gz';
+        } elseif ($compress === 'zip') {
+            $filename .= '.zip';
+        }
+        $mediaDir = $this->directoryList->getPath(DirectoryList::MEDIA);
+
+        $filename = basename($filename);
+        if ($filename === '' || $filename === '.' || $filename === '..') {
+            $result->setHttpResponseCode(400);
+            $result->setContents('Invalid filename.');
+            return $result;
+        }
+        $filePath = $mediaDir . '/panth_seo/feeds/' . $filename;
+
+        $realBase = realpath($mediaDir . '/panth_seo/feeds');
+        if ($realBase !== false && file_exists($filePath)) {
+            $realFile = realpath($filePath);
+            if ($realFile === false || strpos($realFile, $realBase) !== 0) {
+                $result->setHttpResponseCode(403);
+                $result->setContents('Access denied.');
+                return $result;
+            }
+        }
+
+        if (!file_exists($filePath)) {
+            try {
+                $this->profileFeedBuilder->generate($profile, false);
+            } catch (\Throwable) {
+                $result->setHttpResponseCode(500);
+                $result->setHeader('Content-Type', 'text/plain; charset=utf-8', true);
+                $result->setContents('Feed generation failed.');
+                return $result;
+            }
+        }
+
+        if (!file_exists($filePath)) {
+            $result->setHttpResponseCode(404);
+            $result->setHeader('Content-Type', 'text/plain; charset=utf-8', true);
+            $result->setContents('Feed file not found.');
+            return $result;
+        }
+
+        if ($compress === 'gzip') {
+            $contentType = 'application/gzip';
+        } elseif ($compress === 'zip') {
+            $contentType = 'application/zip';
+        } elseif ($format === 'csv') {
+            $contentType = 'text/csv; charset=utf-8';
+        } else {
+            $contentType = 'application/xml; charset=utf-8';
+        }
+
+        $result->setHeader('Content-Type', $contentType, true);
+        $result->setHeader('X-Content-Type-Options', 'nosniff', true);
+        $result->setHeader('Content-Length', (string) filesize($filePath), true);
+        $result->setContents(file_get_contents($filePath));
+
+        return $result;
+    }
+
+    private function serveLegacyFeed(
+        \Magento\Framework\Controller\Result\Raw $result,
+        int $storeId
+    ): ResponseInterface|ResultInterface {
+        $cacheKey = self::CACHE_PREFIX . $storeId;
+        $cached = $this->cache->load($cacheKey);
+
+        if ($cached !== false && $cached !== '') {
+            $xmlContent = $cached;
+        } else {
+            $xmlContent = $this->feedBuilder->build($storeId);
+            $this->cache->save(
+                $xmlContent,
+                $cacheKey,
+                [self::CACHE_TAG],
+                self::CACHE_TTL
+            );
+        }
+
+        $result->setHeader('Content-Type', 'application/xml; charset=utf-8', true);
+        $result->setHeader('X-Content-Type-Options', 'nosniff', true);
+        $result->setContents($xmlContent);
+
+        return $result;
+    }
+}

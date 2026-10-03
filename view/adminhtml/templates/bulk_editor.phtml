@@ -1,0 +1,32 @@
+<?php
+/** @var \Panth\AdvancedSEO\Block\Adminhtml\BulkEditor $block */
+
+$rows = $block->getProducts();
+?>
+<div class="panth-seo-bulk-editor">
+    <h1><?= $block->escapeHtml(__('Bulk Meta Editor')) ?></h1>
+    <form method="post" action="<?= $block->escapeUrl($block->getSaveUrl()) ?>">
+        <?= /* @noEscape */ $block->getBlockHtml('formkey') ?>
+        <table class="data-table">
+            <thead><tr>
+                <th><?= $block->escapeHtml(__('ID')) ?></th>
+                <th><?= $block->escapeHtml(__('SKU')) ?></th>
+                <th><?= $block->escapeHtml(__('Name')) ?></th>
+                <th><?= $block->escapeHtml(__('Meta Title')) ?></th>
+                <th><?= $block->escapeHtml(__('Meta Description')) ?></th>
+            </tr></thead>
+            <tbody>
+            <?php foreach ($rows as $i => $row): ?>
+                <tr>
+                    <td><?= /* @noEscape */ (int)$row['entity_id'] ?><input type="hidden" name="rows[<?= /* @noEscape */ (int)$i ?>][entity_id]" value="<?= /* @noEscape */ (int)$row['entity_id'] ?>"/></td>
+                    <td><?= $block->escapeHtml((string)$row['sku']) ?></td>
+                    <td><?= $block->escapeHtml((string)$row['name']) ?></td>
+                    <td><input type="text" name="rows[<?= /* @noEscape */ (int)$i ?>][meta_title]" value="<?= $block->escapeHtmlAttr((string)$row['meta_title']) ?>"/></td>
+                    <td><textarea name="rows[<?= /* @noEscape */ (int)$i ?>][meta_description]"><?= $block->escapeHtml((string)$row['meta_description']) ?></textarea></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+        <button type="submit" class="action-primary"><?= $block->escapeHtml(__('Save All')) ?></button>
+    </form>
+</div>

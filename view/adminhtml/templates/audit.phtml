@@ -1,0 +1,345 @@
+<?php
+/** @var \Panth\AdvancedSEO\Block\Adminhtml\Audit $block */
+
+$storeId      = $block->getSelectedStoreId();
+$storeOptions = $block->getStoreOptions();
+$low          = $block->getLowScoringEntities();
+$dupes        = $block->getDuplicates();
+$crawlSummary = $block->getLastCrawlSummary();
+$crawlState   = $block->getCrawlState();
+$crawlUrl     = $block->getUrl('panth_seo/audit/crawl');
+$cancelUrl    = $block->getUrl('panth_seo/audit/crawlCancel');
+$statusUrl    = $block->getUrl('panth_seo/audit/crawlStatus', ['store' => $storeId]);
+$indexUrl     = $block->getUrl('panth_seo/audit/index');
+$resultsUrl   = $block->getUrl('panth_seo/audit/crawlResults');
+$formKey      = $block->getFormKey();
+
+$crawlActive  = in_array($crawlState['status'], ['pending', 'running'], true) && !$crawlState['stale'];
+$cronActive   = $block->isCronActive();
+?>
+<div class="panth-seo-audit">
+
+    <div class="panth-seo-audit-crawl" style="margin-bottom:30px; padding:20px; background:#f8f8f8; border:1px solid #ddd; border-radius:4px;">
+        <h2 style="margin-top:0;"><?= $block->escapeHtml(__('Crawl Audit')) ?></h2>
+
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:16px;">
+            <?php if (count($storeOptions) > 1): ?>
+                <form method="get" action="<?= $block->escapeUrl($indexUrl) ?>" style="display:inline;">
+                    <label for="panth-seo-audit-store" style="margin-right:6px;"><?= $block->escapeHtml(__('Store View')) ?></label>
+                    <select id="panth-seo-audit-store" name="store" data-panth-seo-store-switch>
+                        <?php foreach ($storeOptions as $option): ?>
+                            <option value="<?= (int) $option['value'] ?>" <?= (int) $option['value'] === $storeId ? 'selected="selected"' : '' ?>>
+                                <?= $block->escapeHtml($option['label']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                    <noscript>
+                        <button type="submit" class="action-secondary"><span><?= $block->escapeHtml(__('Apply')) ?></span></button>
+                    </noscript>
+                </form>
+                <script type="text/x-magento-init">
+                {
+                    "[data-panth-seo-store-switch]": {
+                        "Panth_AdvancedSEO/js/store-switch": {}
+                    }
+                }
+                </script>
+            <?php endif; ?>
+
+            <form method="post" action="<?= $block->escapeUrl($crawlUrl) ?>" style="display:inline;">
+                <input type="hidden" name="form_key" value="<?= $block->escapeHtmlAttr($formKey) ?>"/>
+                <input type="hidden" name="store" value="<?= (int) $storeId ?>"/>
+                <button type="submit" class="action-primary" <?= $crawlActive ? 'disabled="disabled"' : '' ?>
+                        title="<?= $block->escapeHtmlAttr(__('Run Crawl')) ?>">
+                    <span><?= $block->escapeHtml($crawlActive ? __('Crawl In Progress') : __('Run Crawl')) ?></span>
+                </button>
+            </form>
+
+            <?php if ($crawlActive): ?>
+                <form method="post" action="<?= $block->escapeUrl($cancelUrl) ?>" style="display:inline;">
+                    <input type="hidden" name="form_key" value="<?= $block->escapeHtmlAttr($formKey) ?>"/>
+                    <input type="hidden" name="store" value="<?= (int) $storeId ?>"/>
+                    <button type="submit" class="action-secondary" title="<?= $block->escapeHtmlAttr(__('Stop Crawl')) ?>">
+                        <span><?= $block->escapeHtml(__('Stop Crawl')) ?></span>
+                    </button>
+                </form>
+            <?php endif; ?>
+
+            <a href="<?= $block->escapeUrl($resultsUrl) ?>" class="action-secondary" title="<?= $block->escapeHtmlAttr(__('View Crawl Results')) ?>">
+                <span><?= $block->escapeHtml(__('View Crawl Results')) ?></span>
+            </a>
+        </div>
+
+        <?php if ($crawlActive): ?>
+            <div data-panth-seo-crawl-status style="margin-bottom:16px; padding:12px; background:#fff; border:1px solid #d6d6d6; border-radius:3px;">
+                <p data-panth-crawl-progress-text style="margin:0 0 8px; font-weight:600;">
+                    <?php if ($crawlState['cancel_requested']): ?>
+                        <?= $block->escapeHtml(__('Stopping - the crawl ends after the page it is on.')) ?>
+                    <?php elseif ($crawlState['status'] === 'pending'): ?>
+                        <?= $block->escapeHtml(__('Queued - the crawl starts on the next cron pass (within a minute).')) ?>
+                    <?php else: ?>
+                        <?= $block->escapeHtml(__(
+                            'Crawling: %1 of %2 pages done, %3 queued.',
+                            (int) $crawlState['crawled'],
+                            (int) $crawlState['max_pages'],
+                            (int) $crawlState['queued']
+                        )) ?>
+                    <?php endif; ?>
+                </p>
+                <div style="height:6px; background:#e4e4e4; border-radius:3px; overflow:hidden;">
+                    <div data-panth-crawl-progress-bar style="height:6px; width:0; background:#007bdb; transition:width .4s ease;"></div>
+                </div>
+                <p style="margin:8px 0 0; color:#666;">
+                    <?= $block->escapeHtml(__('This page refreshes itself when the crawl finishes. You can leave it at any time - the crawl runs on the server.')) ?>
+                </p>
+            </div>
+            <script type="text/x-magento-init">
+            {
+                "[data-panth-seo-crawl-status]": {
+                    "Panth_AdvancedSEO/js/crawl-status": <?= /* @noEscape */ json_encode([
+                        'statusUrl' => $statusUrl,
+                        'interval'  => 5000,
+                        'labels'    => [
+                            'pending' => (string) __('Queued - the crawl starts on the next cron pass (within a minute).'),
+                            'running'  => (string) __('Crawling: %1 of %2 pages done, %3 queued.'),
+                            'stopping' => (string) __('Stopping - the crawl ends after the page it is on.'),
+                        ],
+                    ], JSON_UNESCAPED_SLASHES) ?>
+                }
+            }
+            </script>
+        <?php elseif ($crawlState['status'] === 'failed'): ?>
+            <div class="message message-error" style="margin-bottom:16px;">
+                <?= $block->escapeHtml(__('The last crawl failed: %1', $crawlState['message'])) ?>
+            </div>
+        <?php elseif ($crawlState['status'] === 'cancelled'): ?>
+            <div class="message message-notice" style="margin-bottom:16px;">
+                <?= $block->escapeHtml(__('The last crawl was stopped after %1 page(s).', (int) $crawlState['pages'])) ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!$cronActive): ?>
+            <div class="message message-warning" style="margin-bottom:16px;">
+                <?= $block->escapeHtml(__(
+                    'Magento cron has not run in the last hour, so "Run Crawl" cannot queue a background crawl. '
+                    . 'It will crawl up to %1 pages inside this request instead. Enable cron, or run '
+                    . 'bin/magento panth:seo:crawl --store=%2 on the server for a full crawl.',
+                    $block->getSyncPageLimit(),
+                    $storeId
+                )) ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($crawlSummary !== null): ?>
+            <h3><?= $block->escapeHtml(__('Last Crawl Summary')) ?></h3>
+            <table class="data-table" style="max-width:500px;">
+                <tbody>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('Pages Crawled')) ?></strong></td>
+                        <td><?= (int) ($crawlSummary['total_pages'] ?? 0) ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('HTTP 200 (OK)')) ?></strong></td>
+                        <td style="color:#185b00; font-weight:600;"><?= (int) ($crawlSummary['status_200'] ?? 0) ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('HTTP 3xx (Redirect)')) ?></strong></td>
+                        <td style="color:#7a5800; font-weight:600;"><?= (int) ($crawlSummary['status_301'] ?? 0) ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('HTTP 404 (Not Found)')) ?></strong></td>
+                        <td style="color:#b30000; font-weight:600;"><?= (int) ($crawlSummary['status_404'] ?? 0) ?></td>
+                    </tr>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('HTTP 5xx (Server Error)')) ?></strong></td>
+                        <td style="color:#b30000; font-weight:600;"><?= (int) ($crawlSummary['status_5xx'] ?? 0) ?></td>
+                    </tr>
+                    <?php if ((int) ($crawlSummary['failed'] ?? 0) > 0): ?>
+                        <tr>
+                            <td><strong><?= $block->escapeHtml(__('Unreachable')) ?></strong></td>
+                            <td style="color:#b30000; font-weight:600;"><?= (int) $crawlSummary['failed'] ?></td>
+                        </tr>
+                    <?php endif; ?>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('Pages with Issues')) ?></strong></td>
+                        <td style="color:<?= ((int) ($crawlSummary['pages_with_issues'] ?? 0)) > 0 ? '#b30000' : '#185b00' ?>; font-weight:600;">
+                            <?= (int) ($crawlSummary['pages_with_issues'] ?? 0) ?>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong><?= $block->escapeHtml(__('Last Crawled')) ?></strong></td>
+                        <td><?= $block->escapeHtml((string) ($crawlSummary['last_crawled_at'] ?? __('N/A'))) ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        <?php else: ?>
+            <p><?= $block->escapeHtml(__('No crawl results yet for this store view. Click "Run Crawl" to start an audit.')) ?></p>
+        <?php endif; ?>
+    </div>
+
+    <?php $issueReport = $block->getIssueReport(); ?>
+    <div id="panth-seo-issues" class="panth-seo-audit-issues" style="margin-bottom:30px; padding:20px; background:#fff; border:1px solid #ddd; border-radius:4px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <h2 style="margin:0;"><?= $block->escapeHtml(__('Site Audit Issues')) ?></h2>
+            <?php if ($issueReport !== null): ?>
+                <a href="<?= $block->escapeUrl($block->getIssueExportUrl()) ?>" class="action-secondary" title="<?= $block->escapeHtmlAttr(__('Export CSV')) ?>">
+                    <span><?= $block->escapeHtml(__('Export CSV')) ?></span>
+                </a>
+            <?php endif; ?>
+        </div>
+        <?php if ($issueReport === null): ?>
+            <p><?= $block->escapeHtml(__('No Site Audit issues saved yet for this store view. Run a crawl to check it.')) ?></p>
+        <?php else: ?>
+            <p style="color:#666; margin:8px 0 16px;">
+                <?= $block->escapeHtml(__(
+                    'Run #%1 (%2). Compared with %3.',
+                    (int) $issueReport['run_id'],
+                    (string) ($issueReport['created_at'] ?? ''),
+                    (int) $issueReport['previous_run_id'] > 0 ? __('run #%1', (int) $issueReport['previous_run_id']) : __('no previous run')
+                )) ?>
+                <?= $block->escapeHtml(__('Behind a CDN, purge its cache after fixing issues so the next crawl sees the change.')) ?>
+            </p>
+            <div class="panth-seo-issue-tabs" style="display:flex; gap:6px; margin-bottom:12px; flex-wrap:wrap;">
+                <?php foreach (['error' => __('Errors'), 'warning' => __('Warnings'), 'notice' => __('Notices')] as $sev => $label): ?>
+                    <?php $isActive = $issueReport['severity'] === $sev; ?>
+                    <a href="<?= $block->escapeUrl($block->getIssueFilterUrl($sev)) ?>"
+                       style="padding:8px 14px; border:1px solid #adadad; border-radius:3px; text-decoration:none; <?= $isActive ? 'background:#514943; color:#fff;' : 'background:#f8f8f8; color:#303030;' ?>">
+                        <?= $block->escapeHtml($label) ?> (<?= (int) ($issueReport['counts'][$sev] ?? 0) ?>)
+                    </a>
+                <?php endforeach; ?>
+            </div>
+            <div class="panth-seo-issue-categories" style="display:flex; gap:6px; margin-bottom:16px; flex-wrap:wrap; align-items:center;">
+                <span style="color:#666;"><?= $block->escapeHtml(__('Category:')) ?></span>
+                <a href="<?= $block->escapeUrl($block->getIssueFilterUrl($issueReport['severity'])) ?>"
+                   style="<?= $issueReport['category'] === '' ? 'font-weight:600;' : '' ?>"><?= $block->escapeHtml(__('All')) ?></a>
+                <?php foreach ($issueReport['categories'] as $cat => $catCount): ?>
+                    <a href="<?= $block->escapeUrl($block->getIssueFilterUrl($issueReport['severity'], (string) $cat)) ?>"
+                       style="<?= $issueReport['category'] === $cat ? 'font-weight:600;' : '' ?>">
+                        <?= $block->escapeHtml($block->getCategoryLabel((string) $cat)) ?> (<?= (int) $catCount ?>)
+                    </a>
+                <?php endforeach; ?>
+            </div>
+            <?php if ($issueReport['groups'] === []): ?>
+                <p><?= $block->escapeHtml(__('No issues of this severity.')) ?></p>
+            <?php else: ?>
+                <table class="data-grid" style="width:100%;">
+                    <thead>
+                        <tr>
+                            <th class="data-grid-th"><?= $block->escapeHtml(__('Issue')) ?></th>
+                            <th class="data-grid-th"><?= $block->escapeHtml(__('Category')) ?></th>
+                            <th class="data-grid-th"><?= $block->escapeHtml(__('Pages')) ?></th>
+                            <th class="data-grid-th"><?= $block->escapeHtml(__('Compare with previous run')) ?></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($issueReport['groups'] as $group): ?>
+                        <tr>
+                            <td>
+                                <strong><?= $block->escapeHtml($group['title']) ?></strong>
+                                <code style="margin-left:6px; color:#666;"><?= $block->escapeHtml($group['code']) ?></code>
+                                <?php if ($group['hint'] !== ''): ?>
+                                    <span title="<?= $block->escapeHtmlAttr($group['hint']) ?>" style="margin-left:6px; border-bottom:1px dotted #007bdb; color:#007bdb; cursor:help;">
+                                        <?= $block->escapeHtml(__('How to fix')) ?>
+                                    </span>
+                                <?php endif; ?>
+                                <details style="margin-top:6px;">
+                                    <summary style="cursor:pointer; color:#007bdb;">
+                                        <?= $block->escapeHtml(__('%1 pages', (int) $group['pages'])) ?>
+                                    </summary>
+                                    <?php if ($group['hint'] !== ''): ?>
+                                        <p style="margin:8px 0; padding:8px; background:#fffbbb; border:1px solid #e3d99b;">
+                                            <strong><?= $block->escapeHtml(__('How to fix:')) ?></strong>
+                                            <?= $block->escapeHtml($group['hint']) ?>
+                                        </p>
+                                    <?php endif; ?>
+                                    <table class="data-table" style="width:100%; margin-top:6px;">
+                                        <thead><tr>
+                                            <th><?= $block->escapeHtml(__('URL')) ?></th>
+                                            <th><?= $block->escapeHtml(__('Element')) ?></th>
+                                            <th><?= $block->escapeHtml(__('Detail')) ?></th>
+                                            <th><?= $block->escapeHtml(__('Status')) ?></th>
+                                        </tr></thead>
+                                        <tbody>
+                                        <?php foreach (array_merge($group['rows'], $group['fixed_rows']) as $row): ?>
+                                            <tr>
+                                                <td style="word-break:break-all;"><?= $block->escapeHtml((string) $row['url']) ?></td>
+                                                <td style="word-break:break-all;"><code><?= $block->escapeHtml((string) $row['element']) ?></code></td>
+                                                <td><?= $block->escapeHtml((string) $row['detail']) ?></td>
+                                                <td><?= $block->escapeHtml(ucfirst((string) $row['compare'])) ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                    <?php if ($group['total'] > count($group['rows'])): ?>
+                                        <p style="color:#666;"><?= $block->escapeHtml(__('Showing %1 of %2 rows. Export CSV for all of them.', count($group['rows']), (int) $group['total'])) ?></p>
+                                    <?php endif; ?>
+                                </details>
+                            </td>
+                            <td><?= $block->escapeHtml($block->getCategoryLabel($group['category'])) ?></td>
+                            <td><?= (int) $group['pages'] ?></td>
+                            <td>
+                                <?= $block->escapeHtml(__(
+                                    '%1 new, %2 fixed, %3 unchanged',
+                                    (int) $group['new'],
+                                    (int) $group['fixed'],
+                                    (int) $group['unchanged']
+                                )) ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
+        <?php endif; ?>
+    </div>
+
+    <h2><?= $block->escapeHtml(__('Low-scoring entities')) ?></h2>
+    <?php if (!$low): ?>
+        <p><?= $block->escapeHtml(__('No low-scoring entities - nice!')) ?></p>
+    <?php else: ?>
+        <table class="data-table">
+            <thead><tr>
+                <th><?= $block->escapeHtml(__('Type')) ?></th>
+                <th><?= $block->escapeHtml(__('Entity ID')) ?></th>
+                <th><?= $block->escapeHtml(__('Store')) ?></th>
+                <th><?= $block->escapeHtml(__('Score')) ?></th>
+                <th><?= $block->escapeHtml(__('Grade')) ?></th>
+            </tr></thead>
+            <tbody>
+            <?php foreach ($low as $row): ?>
+                <tr>
+                    <td><?= $block->escapeHtml((string)($row['entity_type'] ?? '')) ?></td>
+                    <td><?= (int)($row['entity_id'] ?? 0) ?></td>
+                    <td><?= (int)($row['store_id'] ?? 0) ?></td>
+                    <td><?= (int)($row['score'] ?? 0) ?></td>
+                    <td><?= $block->escapeHtml((string)($row['grade'] ?? '')) ?></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
+
+    <h2><?= $block->escapeHtml(__('Near-duplicate meta')) ?></h2>
+    <?php if (!$dupes): ?>
+        <p><?= $block->escapeHtml(__('No duplicates found.')) ?></p>
+    <?php else: ?>
+        <table class="data-table">
+            <thead><tr>
+                <th><?= $block->escapeHtml(__('Field')) ?></th>
+                <th><?= $block->escapeHtml(__('Store')) ?></th>
+                <th><?= $block->escapeHtml(__('Hash')) ?></th>
+                <th><?= $block->escapeHtml(__('Count')) ?></th>
+            </tr></thead>
+            <tbody>
+            <?php foreach ($dupes as $row): ?>
+                <tr>
+                    <td><?= $block->escapeHtml((string)($row['field'] ?? '')) ?></td>
+                    <td><?= (int)($row['store_id'] ?? 0) ?></td>
+                    <td><?= $block->escapeHtml(substr((string)($row['hash'] ?? ''), 0, 12)) ?></td>
+                    <td><?= (int)($row['count'] ?? 0) ?></td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+    <?php endif; ?>
+</div>

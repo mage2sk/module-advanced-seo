@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!--
+    Hyva compatibility marker for Panth_AdvancedSEO.
+
+    This module ships only server-rendered output (meta tags, JSON-LD, canonical,
+    hreflang, robots headers). It does NOT register a requirejs-config.js for the
+    frontend, does NOT depend on jQuery widgets, and does NOT pull in any
+    `mage/*` JS. As a result it is fully compatible with the Hyva frontend.
+
+    See: https://docs.hyva.io/hyva-themes/compat-module/index.html
+-->
+<hyva/>

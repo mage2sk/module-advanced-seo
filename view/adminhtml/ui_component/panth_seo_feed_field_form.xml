@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">panth_seo_feed_field_form.panth_seo_feed_field_form_data_source</item>
+        </item>
+        <item name="template" xsi:type="string">templates/form/collapsible</item>
+    </argument>
+    <settings>
+        <buttons>
+            <button name="back" class="Panth\AdvancedSEO\Block\Adminhtml\Feed\FieldBackButton"/>
+            <button name="save" class="Panth\AdvancedSEO\Block\Adminhtml\Feed\FieldSaveButton"/>
+        </buttons>
+        <namespace>panth_seo_feed_field_form</namespace>
+        <dataScope>data</dataScope>
+        <deps>
+            <dep>panth_seo_feed_field_form.panth_seo_feed_field_form_data_source</dep>
+        </deps>
+    </settings>
+    <dataSource name="panth_seo_feed_field_form_data_source">
+        <argument name="data" xsi:type="array">
+            <item name="js_config" xsi:type="array">
+                <item name="component" xsi:type="string">Magento_Ui/js/form/provider</item>
+            </item>
+        </argument>
+        <settings>
+            <submitUrl path="panth_seo/feed/saveField"/>
+        </settings>
+        <dataProvider class="Panth\AdvancedSEO\Ui\Component\Form\DataProvider\FeedFieldFormDataProvider" name="panth_seo_feed_field_form_data_source">
+            <settings>
+                <requestFieldName>field_id</requestFieldName>
+                <primaryFieldName>field_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+    <fieldset name="general">
+        <settings>
+            <label translate="true">Field Mapping</label>
+        </settings>
+        <field name="field_id" formElement="input">
+            <settings>
+                <visible>false</visible>
+                <dataType>text</dataType>
+            </settings>
+        </field>
+        <field name="feed_id" formElement="input">
+            <settings>
+                <visible>false</visible>
+                <dataType>text</dataType>
+            </settings>
+        </field>
+        <field name="feed_field" sortOrder="10" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Feed Field Name</label>
+                <dataScope>feed_field</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <notice translate="true">The output field name in the feed (e.g. "g:title", "g:price", "g:brand").</notice>
+            </settings>
+        </field>
+        <field name="source_type" sortOrder="20" formElement="select">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Source Type</label>
+                <dataScope>source_type</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <notice translate="true">How to resolve the value: attribute (product attribute code), static (fixed value), template (computed token), parent_attribute (parent product attribute).</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Panth\AdvancedSEO\Model\Config\Source\FeedFieldSourceType"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+        <field name="source_value" sortOrder="30" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Source Value</label>
+                <dataScope>source_value</dataScope>
+                <validation>
+                    <rule name="required-entry" xsi:type="boolean">true</rule>
+                </validation>
+                <notice translate="true">Attribute code (e.g. "name", "sku"), static text (e.g. "new"), or template token (e.g. "product_url", "product_price").</notice>
+            </settings>
+        </field>
+        <field name="default_value" sortOrder="40" formElement="input">
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Default Value</label>
+                <dataScope>default_value</dataScope>
+                <notice translate="true">Fallback value if the source is empty for a product.</notice>
+            </settings>
+        </field>
+        <field name="sort_order" sortOrder="50" formElement="input">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Sort Order</label>
+                <dataScope>sort_order</dataScope>
+                <validation>
+                    <rule name="validate-digits" xsi:type="boolean">true</rule>
+                </validation>
+                <notice translate="true">Controls the order of fields in the feed output.</notice>
+            </settings>
+        </field>
+        <field name="is_required" sortOrder="60" formElement="select">
+            <settings>
+                <dataType>number</dataType>
+                <label translate="true">Is Required</label>
+                <dataScope>is_required</dataScope>
+                <notice translate="true">If Yes, products without a value for this field will be skipped in the feed.</notice>
+            </settings>
+            <formElements>
+                <select>
+                    <settings>
+                        <options class="Magento\Config\Model\Config\Source\Yesno"/>
+                    </settings>
+                </select>
+            </formElements>
+        </field>
+    </fieldset>
+</form>

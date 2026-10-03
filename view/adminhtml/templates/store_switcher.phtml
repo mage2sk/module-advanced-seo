@@ -1,0 +1,30 @@
+<?php
+/** @var \Magento\Backend\Block\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+
+/** @var \Panth\AdvancedSEO\ViewModel\StoreScopeSwitcher $viewModel */
+$viewModel = $block->getData('view_model');
+if (!$viewModel instanceof \Panth\AdvancedSEO\ViewModel\StoreScopeSwitcher) {
+    return;
+}
+
+$current = $viewModel->getCurrentStoreId();
+$options = $viewModel->getStoreOptions();
+?>
+<div class="panth-seo-store-scope">
+    <span class="panth-seo-store-scope__label"><?= $escaper->escapeHtml(__('Scope')) ?></span>
+    <?php foreach ($options as $option): ?>
+        <?php $isCurrent = (int) $option['value'] === $current; ?>
+        <?php if ($isCurrent): ?>
+            <strong class="panth-seo-store-scope__current"><?= $escaper->escapeHtml($option['label']) ?></strong>
+        <?php else: ?>
+            <a class="panth-seo-store-scope__link"
+               href="<?= $escaper->escapeUrl($viewModel->getSwitchUrl((int) $option['value'])) ?>">
+                <?= $escaper->escapeHtml($option['label']) ?>
+            </a>
+        <?php endif; ?>
+    <?php endforeach; ?>
+    <span class="panth-seo-store-scope__hint">
+        <?= $escaper->escapeHtml(__('Values are read and saved in the selected scope.')) ?>
+    </span>
+</div>

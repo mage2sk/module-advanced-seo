@@ -1,0 +1,1521 @@
+<?php
+/**
+ * Panth SEO Toolbar -- floating diagnostic drawer.
+ *
+ * Rendered by \Panth\AdvancedSEO\Plugin\Frontend\SeoToolbarPlugin via a
+ * scoped include, NOT by Magento's layout system, so the following two
+ * locals are provided by the caller:
+ *
+ * @var array<string,mixed> $data    Payload from SeoToolbar::getData()
+ * @var \Panth\AdvancedSEO\Plugin\Frontend\SeoToolbarPlugin $helper
+ *
+ * All output is escaped via $helper->esc() / $helper->escJson() which delegate
+ * to htmlspecialchars(). The MEQP sniffer does not recognise these as safe, so
+ * every short-echo tag carries a @noEscape annotation.
+ *
+ * The entire markup -- CSS, HTML, JS -- is inlined so the toolbar works on
+ * Hyva (Alpine) and Luma (RequireJS) without any module loader. All values
+ * are escaped with $helper->esc() before reaching the DOM. JSON-LD blocks
+ * and the page-state dataset are passed to JS via a <script type="application/json">
+ * element (NOT eval, NOT inline literal) and read back via textContent.
+ */
+
+// ---------------------------------------------------------------------------
+// Normalise data
+// ---------------------------------------------------------------------------
+$identity     = is_array($data['identity'] ?? null) ? $data['identity'] : [];
+$meta         = is_array($data['meta'] ?? null) ? $data['meta'] : [];
+$ogTags       = is_array($data['og_tags'] ?? null) ? $data['og_tags'] : [];
+$twitterTags  = is_array($data['twitter_tags'] ?? null) ? $data['twitter_tags'] : [];
+$hreflang     = is_array($data['hreflang'] ?? null) ? $data['hreflang'] : [];
+$jsonldBlocks = is_array($data['jsonld'] ?? null) ? $data['jsonld'] : [];
+$jsonldWarns  = is_array($data['jsonld_warnings'] ?? null) ? $data['jsonld_warnings'] : [];
+$headers      = is_array($data['headers'] ?? null) ? $data['headers'] : [];
+$cookies      = is_array($data['cookies'] ?? null) ? $data['cookies'] : [];
+$score        = is_array($data['score'] ?? null) ? $data['score'] : null;
+
+$title        = (string) ($meta['title'] ?? '');
+$titleLen     = (int)    ($meta['title_length'] ?? 0);
+$desc         = (string) ($meta['description'] ?? '');
+$descLen      = (int)    ($meta['description_length'] ?? 0);
+$canonical    = (string) ($meta['canonical'] ?? '');
+$robots       = (string) ($meta['robots'] ?? '');
+$keywords     = (string) ($meta['keywords'] ?? '');
+$baseUrl      = (string) ($meta['base_url'] ?? '');
+
+$titleStatus  = $helper->statusClass($titleLen, 30, 60);
+$descStatus   = $helper->statusClass($descLen, 70, 160);
+$titlePct     = max(0, min(100, (int) round($titleLen / 60 * 100)));
+$descPct      = max(0, min(100, (int) round($descLen / 160 * 100)));
+
+$scoreValue = $score !== null ? (int) ($score['score'] ?? 0) : -1;
+$scoreGrade = $score !== null ? (string) ($score['grade'] ?? 'F') : '';
+$scoreDeg   = max(0, min(360, (int) round($scoreValue / 100 * 360)));
+$scoreClass = 'g';
+if ($scoreValue >= 0 && $scoreValue < 50) {
+    $scoreClass = 'r';
+} elseif ($scoreValue >= 50 && $scoreValue < 80) {
+    $scoreClass = 'y';
+}
+
+$robotsClass = 'g';
+$robotsLc = strtolower($robots);
+if (str_contains($robotsLc, 'noindex')) {
+    $robotsClass = 'y';
+}
+if (str_contains($robotsLc, 'none')) {
+    $robotsClass = 'r';
+}
+
+// JSON-LD type list (for the header badge)
+$jsonldTypeList = [];
+foreach ($jsonldBlocks as $blk) {
+    if (isset($blk['types']) && is_array($blk['types'])) {
+        foreach ($blk['types'] as $t) {
+            $jsonldTypeList[] = (string) $t;
+        }
+    }
+}
+$jsonldTypeList = array_values(array_unique($jsonldTypeList));
+?>
+<!-- Panth_AdvancedSEO: SEO Toolbar (visible to whitelisted IPs only) -->
+<div id="pseo-toolbar" data-pseo-toolbar role="complementary" aria-label="Panth SEO Toolbar">
+<style>
+/* Aggressive CSS isolation: Luma + Hyvä both have global resets that
+   strip backgrounds, borders, and font sizes off arbitrary elements.
+   We use html-body-id triple specificity AND !important on every
+   visual property that the host theme might touch. */
+html body #pseo-toolbar,
+html body #pseo-toolbar *,
+html body #pseo-toolbar *::before,
+html body #pseo-toolbar *::after{
+  box-sizing:border-box !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 none;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif !important;
+  font-size:13px;
+  line-height:1.5;
+  letter-spacing:normal;
+  color:#F1F5F9;
+  text-transform:none;
+  text-decoration:none;
+  text-shadow:none;
+  background:transparent none;
+  box-shadow:none;
+  list-style:none;
+  vertical-align:baseline;
+  float:none;
+  outline:none;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+html body #pseo-toolbar{
+  --pseo-bg:#0B1220;
+  --pseo-card:#172033;
+  --pseo-card-2:#1E293B;
+  --pseo-border:#2C3A52;
+  --pseo-border-strong:#3F4D66;
+  --pseo-fg:#F1F5F9;
+  --pseo-fg-strong:#FFFFFF;
+  --pseo-muted:#94A3B8;
+  --pseo-muted-soft:#64748B;
+  --pseo-accent:#38BDF8;
+  --pseo-accent-2:#A78BFA;
+  --pseo-g:#10B981;
+  --pseo-y:#F59E0B;
+  --pseo-r:#EF4444;
+  --pseo-v:#8B5CF6;
+  --pseo-grad:linear-gradient(135deg,#0EA5E9 0%,#8B5CF6 50%,#EC4899 100%);
+  position:fixed !important;
+  bottom:0 !important;
+  right:0 !important;
+  z-index:2147483646 !important;
+  text-align:left;
+  pointer-events:none;
+}
+html body #pseo-toolbar > *{pointer-events:auto;}
+html body #pseo-toolbar button,
+html body #pseo-toolbar [role="button"]{
+  background:transparent none !important;
+  border:0 none !important;
+  color:#F1F5F9 !important;
+  cursor:pointer;
+  font:inherit !important;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+  border-radius:0;
+  text-transform:none !important;
+}
+html body #pseo-toolbar a{
+  color:#38BDF8 !important;
+  text-decoration:none !important;
+  word-break:break-all;
+}
+html body #pseo-toolbar a:hover{text-decoration:underline !important;}
+html body #pseo-toolbar svg{fill:currentColor;}
+
+/* Collapsed floating badge - LOCKED visuals so Luma can't strip them.
+   Bottom offset is intentionally large so we sit ABOVE the WhatsApp /
+   live-chat / scroll-to-top FAB column most stores park in the bottom-right
+   corner. WhatsApp/zopim/tawk are typically ~24-72px from the bottom; we
+   sit at 156px so we land on top of any 1-2 stacked chat icons without
+   overlapping them. */
+html body #pseo-toolbar .pseo-badge{
+  position:fixed !important;
+  right:24px !important;
+  bottom:156px !important;
+  width:56px !important;
+  height:56px !important;
+  border-radius:16px !important;
+  background:linear-gradient(135deg,#0EA5E9 0%,#8B5CF6 50%,#EC4899 100%) !important;
+  background-color:#0EA5E9 !important;
+  color:#FFFFFF !important;
+  font-weight:800 !important;
+  font-size:13px !important;
+  letter-spacing:1px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  cursor:pointer !important;
+  box-shadow:
+    0 20px 48px -12px rgba(14,165,233,.55),
+    0 8px 24px -8px rgba(139,92,246,.4),
+    0 0 0 1px rgba(255,255,255,.12) inset,
+    0 1px 0 0 rgba(255,255,255,.25) inset !important;
+  transition:transform .25s cubic-bezier(.16,1,.3,1),box-shadow .25s !important;
+  z-index:2147483646 !important;
+  user-select:none !important;
+  text-transform:uppercase !important;
+  text-shadow:0 1px 2px rgba(0,0,0,.25) !important;
+  border:0 none !important;
+  -webkit-appearance:none !important;
+  appearance:none !important;
+}
+html body #pseo-toolbar .pseo-badge::before{
+  content:"" !important;
+  position:absolute !important;
+  inset:-2px !important;
+  border-radius:18px !important;
+  background:linear-gradient(135deg,rgba(14,165,233,.6),rgba(139,92,246,.6),rgba(236,72,153,.6)) !important;
+  filter:blur(14px) !important;
+  opacity:.55 !important;
+  z-index:-1 !important;
+}
+html body #pseo-toolbar .pseo-badge:hover{
+  transform:translateY(-3px) scale(1.06) !important;
+  box-shadow:
+    0 28px 56px -12px rgba(14,165,233,.7),
+    0 12px 32px -8px rgba(139,92,246,.55),
+    0 0 0 1px rgba(255,255,255,.18) inset !important;
+}
+html body #pseo-toolbar .pseo-badge:focus-visible{
+  outline:2px solid #38BDF8 !important;
+  outline-offset:3px !important;
+}
+
+/* Expanded panel - bottom offset matches the badge so it slides up from
+   the same spot. Large enough to clear bottom-right WhatsApp / chat FABs. */
+html body #pseo-toolbar .pseo-panel{
+  position:fixed !important;
+  right:24px !important;
+  bottom:24px !important;
+  max-height:calc(100vh - 48px) !important;
+  width:min(520px,calc(100vw - 48px)) !important;
+  max-height:82vh !important;
+  background:linear-gradient(180deg,#0F172A 0%,#0B1220 100%) !important;
+  background-color:#0B1220 !important;
+  border-radius:18px !important;
+  box-shadow:
+    0 32px 64px -16px rgba(0,0,0,.75),
+    0 16px 40px -12px rgba(14,165,233,.18),
+    0 0 0 1px rgba(255,255,255,.06) inset,
+    0 1px 0 0 rgba(255,255,255,.08) inset !important;
+  display:none;
+  flex-direction:column;
+  overflow:hidden;
+  animation:pseoSlide .35s cubic-bezier(.16,1,.3,1);
+  min-width:340px;
+  min-height:220px;
+  color:#F1F5F9 !important;
+}
+html body #pseo-toolbar .pseo-panel.pseo-visible{display:flex !important;}
+@keyframes pseoSlide{
+  from{opacity:0;transform:translateY(24px) scale(.97);}
+  to{opacity:1;transform:translateY(0) scale(1);}
+}
+
+/* Decorative aurora glow above the header */
+html body #pseo-toolbar .pseo-panel::before{
+  content:"" !important;
+  position:absolute !important;
+  top:-40% !important;
+  left:-20% !important;
+  right:-20% !important;
+  height:240px !important;
+  background:radial-gradient(60% 80% at 30% 100%,rgba(56,189,248,.18),transparent 70%),
+             radial-gradient(50% 60% at 80% 80%,rgba(167,139,250,.15),transparent 70%);
+  pointer-events:none !important;
+  z-index:0 !important;
+}
+
+/* Header (drag handle) */
+html body #pseo-toolbar .pseo-head{
+  display:flex !important;
+  align-items:center !important;
+  gap:14px !important;
+  padding:18px 20px !important;
+  background:linear-gradient(180deg,rgba(30,41,59,.85) 0%,rgba(15,23,42,.4) 100%) !important;
+  border-bottom:1px solid #2C3A52 !important;
+  cursor:move !important;
+  user-select:none !important;
+  flex-shrink:0 !important;
+  position:relative !important;
+  z-index:1 !important;
+  backdrop-filter:blur(8px);
+}
+html body #pseo-toolbar .pseo-head-title{
+  display:flex !important;
+  flex-direction:column !important;
+  gap:3px !important;
+  flex:1 !important;
+  min-width:0 !important;
+}
+html body #pseo-toolbar .pseo-head-logo{
+  font-weight:800 !important;
+  font-size:14px !important;
+  letter-spacing:1.2px !important;
+  background:linear-gradient(135deg,#38BDF8 0%,#A78BFA 50%,#F472B6 100%) !important;
+  -webkit-background-clip:text !important;
+  background-clip:text !important;
+  -webkit-text-fill-color:transparent !important;
+  color:transparent !important;
+  text-transform:uppercase !important;
+}
+html body #pseo-toolbar .pseo-head-sub{
+  font-size:11px !important;
+  color:#94A3B8 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.08em !important;
+  font-weight:500 !important;
+}
+html body #pseo-toolbar .pseo-head-spacer{flex:1 !important;}
+html body #pseo-toolbar .pseo-head-btn{
+  width:32px !important;
+  height:32px !important;
+  border-radius:10px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  color:#94A3B8 !important;
+  font-size:18px !important;
+  background:rgba(255,255,255,.04) !important;
+  border:1px solid rgba(255,255,255,.06) !important;
+  transition:all .2s !important;
+}
+html body #pseo-toolbar .pseo-head-btn:hover{
+  background:rgba(56,189,248,.12) !important;
+  border-color:rgba(56,189,248,.3) !important;
+  color:#F1F5F9 !important;
+}
+html body #pseo-toolbar .pseo-head-btn:focus-visible{outline:2px solid #38BDF8 !important;outline-offset:1px !important;}
+
+/* Body (scroll area) */
+html body #pseo-toolbar .pseo-body{
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  flex:1 !important;
+  padding:16px 20px 20px !important;
+  position:relative !important;
+  z-index:1 !important;
+}
+html body #pseo-toolbar .pseo-body::-webkit-scrollbar{width:10px;}
+html body #pseo-toolbar .pseo-body::-webkit-scrollbar-track{background:transparent;}
+html body #pseo-toolbar .pseo-body::-webkit-scrollbar-thumb{background:#2C3A52;border-radius:10px;border:2px solid #0B1220;}
+html body #pseo-toolbar .pseo-body::-webkit-scrollbar-thumb:hover{background:#3F4D66;}
+
+/* Section card */
+html body #pseo-toolbar .pseo-section{
+  background:linear-gradient(180deg,rgba(30,41,59,.7) 0%,rgba(23,32,51,.7) 100%) !important;
+  background-color:#172033 !important;
+  border:1px solid #2C3A52 !important;
+  border-radius:12px !important;
+  margin-bottom:12px !important;
+  overflow:hidden !important;
+  transition:border-color .2s,box-shadow .2s !important;
+}
+html body #pseo-toolbar .pseo-section:hover{
+  border-color:#3F4D66 !important;
+  box-shadow:0 4px 12px -4px rgba(0,0,0,.4) !important;
+}
+html body #pseo-toolbar .pseo-section[data-open="true"]{
+  border-color:rgba(56,189,248,.35) !important;
+  box-shadow:0 0 0 1px rgba(56,189,248,.15),0 4px 16px -4px rgba(56,189,248,.15) !important;
+}
+html body #pseo-toolbar .pseo-section-head{
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  padding:14px 16px !important;
+  cursor:pointer !important;
+  user-select:none !important;
+  width:100% !important;
+  text-align:left !important;
+  background:transparent !important;
+}
+html body #pseo-toolbar .pseo-section-head:hover{background:rgba(56,189,248,.04) !important;}
+html body #pseo-toolbar .pseo-section-head:focus-visible{outline:2px solid #38BDF8 !important;outline-offset:-2px !important;}
+html body #pseo-toolbar .pseo-section-icon{
+  width:28px !important;
+  height:28px !important;
+  border-radius:8px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  background:linear-gradient(135deg,rgba(56,189,248,.14),rgba(167,139,250,.14)) !important;
+  border:1px solid rgba(56,189,248,.2) !important;
+  font-size:14px !important;
+  color:#38BDF8 !important;
+  flex-shrink:0 !important;
+}
+html body #pseo-toolbar .pseo-section-title{
+  font-size:12px !important;
+  text-transform:uppercase !important;
+  letter-spacing:.1em !important;
+  font-weight:700 !important;
+  color:#F1F5F9 !important;
+  flex:1 !important;
+}
+html body #pseo-toolbar .pseo-section-count{
+  font-size:11px !important;
+  padding:3px 9px !important;
+  border-radius:999px !important;
+  background:rgba(56,189,248,.14) !important;
+  color:#38BDF8 !important;
+  font-weight:700 !important;
+  border:1px solid rgba(56,189,248,.25) !important;
+  min-width:24px !important;
+  text-align:center !important;
+}
+html body #pseo-toolbar .pseo-section-caret{
+  color:#94A3B8 !important;
+  transition:transform .25s cubic-bezier(.16,1,.3,1) !important;
+  font-size:14px !important;
+  width:16px !important;
+  text-align:center !important;
+}
+html body #pseo-toolbar .pseo-section[data-open="true"] .pseo-section-caret{transform:rotate(90deg);}
+html body #pseo-toolbar .pseo-section-body{
+  display:none;
+  padding:4px 16px 16px !important;
+  border-top:1px solid rgba(56,189,248,.1) !important;
+  background:rgba(11,18,32,.4) !important;
+}
+html body #pseo-toolbar .pseo-section[data-open="true"] .pseo-section-body{display:block !important;}
+
+/* Rows */
+html body #pseo-toolbar .pseo-row{
+  display:flex !important;
+  align-items:baseline !important;
+  gap:14px !important;
+  padding:10px 0 !important;
+  border-top:1px solid rgba(255,255,255,.05) !important;
+}
+html body #pseo-toolbar .pseo-row:first-child{border-top:0 !important;}
+html body #pseo-toolbar .pseo-label{
+  font-size:10px !important;
+  text-transform:uppercase !important;
+  letter-spacing:.08em !important;
+  color:#94A3B8 !important;
+  flex:0 0 120px !important;
+  font-weight:600 !important;
+  padding-top:1px !important;
+}
+html body #pseo-toolbar .pseo-value{
+  font-size:13px !important;
+  color:#F1F5F9 !important;
+  flex:1 !important;
+  word-break:break-word !important;
+  min-width:0 !important;
+  font-weight:500 !important;
+  line-height:1.55 !important;
+}
+html body #pseo-toolbar .pseo-value.pseo-mono{
+  font-family:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace !important;
+  font-size:12px !important;
+  color:#CBD5E1 !important;
+}
+html body #pseo-toolbar .pseo-muted{color:#94A3B8 !important;font-style:italic !important;}
+html body #pseo-toolbar .pseo-value-actions{display:inline-flex !important;gap:6px !important;margin-left:6px !important;}
+html body #pseo-toolbar .pseo-copy{
+  padding:3px 8px !important;
+  font-size:10px !important;
+  font-weight:600 !important;
+  border-radius:6px !important;
+  background:rgba(255,255,255,.05) !important;
+  border:1px solid #2C3A52 !important;
+  color:#94A3B8 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.04em !important;
+  transition:all .15s !important;
+}
+html body #pseo-toolbar .pseo-copy:hover{
+  background:rgba(56,189,248,.12) !important;
+  color:#38BDF8 !important;
+  border-color:rgba(56,189,248,.4) !important;
+}
+
+/* Progress bar (char counters) */
+html body #pseo-toolbar .pseo-bar{
+  margin-top:8px !important;
+  height:6px !important;
+  background:rgba(255,255,255,.06) !important;
+  border-radius:999px !important;
+  position:relative !important;
+  overflow:hidden !important;
+}
+html body #pseo-toolbar .pseo-bar-fill{
+  position:absolute !important;
+  top:0 !important;
+  left:0 !important;
+  bottom:0 !important;
+  border-radius:999px !important;
+  transition:width .4s cubic-bezier(.16,1,.3,1) !important;
+  box-shadow:0 0 12px currentColor !important;
+}
+html body #pseo-toolbar .pseo-bar-fill.pseo-g{background:linear-gradient(90deg,#10B981,#34D399) !important;color:rgba(16,185,129,.5);}
+html body #pseo-toolbar .pseo-bar-fill.pseo-y{background:linear-gradient(90deg,#F59E0B,#FBBF24) !important;color:rgba(245,158,11,.5);}
+html body #pseo-toolbar .pseo-bar-fill.pseo-r{background:linear-gradient(90deg,#EF4444,#F87171) !important;color:rgba(239,68,68,.5);}
+
+/* Status pill */
+html body #pseo-toolbar .pseo-pill{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:5px !important;
+  padding:3px 10px !important;
+  border-radius:999px !important;
+  font-size:10px !important;
+  font-weight:700 !important;
+  letter-spacing:.04em !important;
+  text-transform:uppercase !important;
+  border:1px solid transparent !important;
+}
+html body #pseo-toolbar .pseo-pill.pseo-g{background:rgba(16,185,129,.14) !important;color:#34D399 !important;border-color:rgba(16,185,129,.3) !important;}
+html body #pseo-toolbar .pseo-pill.pseo-y{background:rgba(245,158,11,.14) !important;color:#FBBF24 !important;border-color:rgba(245,158,11,.3) !important;}
+html body #pseo-toolbar .pseo-pill.pseo-r{background:rgba(239,68,68,.14) !important;color:#F87171 !important;border-color:rgba(239,68,68,.3) !important;}
+html body #pseo-toolbar .pseo-pill.pseo-b{background:rgba(56,189,248,.14) !important;color:#38BDF8 !important;border-color:rgba(56,189,248,.3) !important;}
+html body #pseo-toolbar .pseo-pill.pseo-v{background:rgba(167,139,250,.14) !important;color:#A78BFA !important;border-color:rgba(167,139,250,.3) !important;}
+
+/* JSON-LD pretty print */
+html body #pseo-toolbar .pseo-json{
+  margin-top:8px !important;
+  padding:14px 16px !important;
+  border-radius:10px !important;
+  background:#020617 !important;
+  border:1px solid #1E293B !important;
+  font-family:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace !important;
+  font-size:11px !important;
+  line-height:1.65 !important;
+  color:#CBD5E1 !important;
+  white-space:pre-wrap !important;
+  word-break:break-word !important;
+  max-height:280px !important;
+  overflow:auto !important;
+}
+html body #pseo-toolbar .pseo-json::-webkit-scrollbar{width:8px;height:8px;}
+html body #pseo-toolbar .pseo-json::-webkit-scrollbar-thumb{background:#2C3A52;border-radius:999px;}
+
+/* JSON-LD block header */
+html body #pseo-toolbar .pseo-jsonld-block{margin-bottom:10px !important;}
+html body #pseo-toolbar .pseo-jsonld-block:last-child{margin-bottom:0 !important;}
+html body #pseo-toolbar .pseo-jsonld-head{
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  padding:8px 0 !important;
+  cursor:pointer !important;
+  font-size:11px !important;
+  color:#94A3B8 !important;
+  user-select:none !important;
+  font-weight:600 !important;
+}
+html body #pseo-toolbar .pseo-jsonld-head .pseo-pill{background:rgba(167,139,250,.14) !important;color:#A78BFA !important;}
+html body #pseo-toolbar .pseo-jsonld-block[data-open="true"] .pseo-json{display:block !important;}
+html body #pseo-toolbar .pseo-jsonld-block .pseo-json{display:none !important;}
+html body #pseo-toolbar .pseo-jsonld-block[data-open="true"] .pseo-json{display:block !important;}
+
+/* Image preview */
+html body #pseo-toolbar .pseo-img-preview{
+  display:block !important;
+  max-width:100% !important;
+  max-height:160px !important;
+  border-radius:10px !important;
+  margin-top:8px !important;
+  border:1px solid #2C3A52 !important;
+  background:#020617 !important;
+}
+
+/* Action buttons */
+html body #pseo-toolbar .pseo-actions{display:flex !important;flex-wrap:wrap !important;gap:8px !important;}
+html body #pseo-toolbar .pseo-action{
+  padding:8px 14px !important;
+  font-size:11px !important;
+  font-weight:700 !important;
+  border-radius:8px !important;
+  background:linear-gradient(180deg,rgba(255,255,255,.04) 0%,rgba(255,255,255,.02) 100%) !important;
+  border:1px solid #2C3A52 !important;
+  color:#F1F5F9 !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:6px !important;
+  text-transform:uppercase !important;
+  letter-spacing:.04em !important;
+  transition:all .2s !important;
+  cursor:pointer !important;
+}
+html body #pseo-toolbar .pseo-action:hover{
+  background:rgba(56,189,248,.1) !important;
+  border-color:rgba(56,189,248,.4) !important;
+  transform:translateY(-1px) !important;
+  box-shadow:0 6px 16px -6px rgba(56,189,248,.4) !important;
+}
+html body #pseo-toolbar .pseo-action.pseo-primary{
+  background:linear-gradient(135deg,#0EA5E9 0%,#8B5CF6 100%) !important;
+  border-color:transparent !important;
+  color:#FFFFFF !important;
+  box-shadow:0 8px 20px -8px rgba(14,165,233,.5) !important;
+}
+html body #pseo-toolbar .pseo-action.pseo-primary:hover{
+  filter:brightness(1.12) !important;
+  box-shadow:0 12px 28px -8px rgba(14,165,233,.6) !important;
+}
+
+/* List */
+html body #pseo-toolbar .pseo-list{list-style:none !important;padding:0 !important;margin:6px 0 0 !important;}
+html body #pseo-toolbar .pseo-list li{
+  padding:6px 0 !important;
+  font-size:12px !important;
+  color:#CBD5E1 !important;
+  border-top:1px solid rgba(255,255,255,.05) !important;
+}
+html body #pseo-toolbar .pseo-list li:first-child{border-top:0 !important;}
+html body #pseo-toolbar .pseo-list li.pseo-mono{
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace !important;
+  font-size:11px !important;
+  color:#94A3B8 !important;
+}
+
+/* Resize handle */
+html body #pseo-toolbar .pseo-resize{
+  position:absolute !important;
+  left:0 !important;
+  bottom:0 !important;
+  width:18px !important;
+  height:18px !important;
+  cursor:nwse-resize !important;
+  opacity:.5 !important;
+  transform:scaleX(-1) !important;
+  z-index:2 !important;
+}
+html body #pseo-toolbar .pseo-resize::before{
+  content:"" !important;
+  position:absolute !important;
+  right:3px !important;
+  bottom:3px !important;
+  width:10px !important;
+  height:10px !important;
+  border-right:2px solid #94A3B8 !important;
+  border-bottom:2px solid #94A3B8 !important;
+}
+html body #pseo-toolbar .pseo-resize:hover{opacity:1 !important;}
+
+/* Score ring in header */
+html body #pseo-toolbar .pseo-ring{
+  width:44px !important;
+  height:44px !important;
+  border-radius:50% !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:13px !important;
+  font-weight:800 !important;
+  flex-shrink:0 !important;
+  background:conic-gradient(#38BDF8 var(--pseo-ring-deg,0deg),#172033 0) !important;
+  position:relative !important;
+  box-shadow:0 0 0 1px rgba(255,255,255,.06),0 4px 12px -4px rgba(0,0,0,.4) !important;
+}
+html body #pseo-toolbar .pseo-ring.pseo-g{background:conic-gradient(#10B981 var(--pseo-ring-deg,0deg),#172033 0) !important;}
+html body #pseo-toolbar .pseo-ring.pseo-y{background:conic-gradient(#F59E0B var(--pseo-ring-deg,0deg),#172033 0) !important;}
+html body #pseo-toolbar .pseo-ring.pseo-r{background:conic-gradient(#EF4444 var(--pseo-ring-deg,0deg),#172033 0) !important;}
+html body #pseo-toolbar .pseo-ring::before{
+  content:"" !important;
+  position:absolute !important;
+  inset:4px !important;
+  border-radius:50% !important;
+  background:#0B1220 !important;
+}
+html body #pseo-toolbar .pseo-ring span{
+  position:relative !important;
+  z-index:1 !important;
+  color:#F1F5F9 !important;
+}
+
+/* Header bar row (sub-metrics) */
+html body #pseo-toolbar .pseo-hdr-pills{
+  display:flex !important;
+  flex-wrap:wrap !important;
+  gap:6px !important;
+  padding:12px 20px 0 !important;
+  position:relative !important;
+  z-index:1 !important;
+}
+
+/* Toast */
+html body #pseo-toolbar .pseo-toast{
+  position:fixed !important;
+  right:24px !important;
+  bottom:228px !important;
+  background:linear-gradient(135deg,#10B981,#059669) !important;
+  border:1px solid rgba(255,255,255,.15) !important;
+  border-radius:10px !important;
+  padding:10px 18px !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+  color:#FFFFFF !important;
+  display:none;
+  z-index:2147483647 !important;
+  box-shadow:0 16px 32px -8px rgba(16,185,129,.5) !important;
+  text-transform:uppercase !important;
+  letter-spacing:.04em !important;
+}
+html body #pseo-toolbar .pseo-toast.pseo-visible{display:block !important;animation:pseoSlide .2s ease-out !important;}
+
+@media(max-width:560px){
+  html body #pseo-toolbar .pseo-panel{
+    right:12px !important;
+    left:12px !important;
+    width:auto !important;
+    max-width:none !important;
+    bottom:12px !important;
+  }
+  html body #pseo-toolbar .pseo-label{flex-basis:96px !important;}
+  html body #pseo-toolbar .pseo-badge{
+    right:16px !important;
+    bottom:148px !important;
+  }
+}
+</style>
+
+<!-- Server-side JSON payload that JS consumes. Safe to embed because it is
+     type="application/json" (not executed) and inner </script> already
+     escaped by escJson(). -->
+<script type="application/json" id="pseo-jsonld-data"><?= /* @noEscape */ $helper->escJson((string) json_encode([
+    'blocks' => $jsonldBlocks,
+    'warnings' => $jsonldWarns,
+])) ?></script>
+
+<!-- Collapsed badge -->
+<button type="button" class="pseo-badge" id="pseo-badge"
+        aria-label="Open SEO toolbar" aria-expanded="false"
+        aria-controls="pseo-panel" title="Panth SEO (Ctrl+Shift+S)">SEO</button>
+
+<!-- Expanded panel -->
+<section class="pseo-panel" id="pseo-panel"
+         role="dialog" aria-label="Panth SEO Toolbar Details" aria-hidden="true">
+  <header class="pseo-head" id="pseo-drag">
+    <?php if ($scoreValue >= 0): ?>
+      <div class="pseo-ring pseo-<?= /* @noEscape */ $helper->esc($scoreClass) ?>"
+           style="--pseo-ring-deg:<?= /* @noEscape */ (int) $scoreDeg ?>deg"
+           aria-label="SEO score <?= /* @noEscape */ (int) $scoreValue ?> of 100">
+        <span><?= /* @noEscape */ (int) $scoreValue ?></span>
+      </div>
+    <?php endif; ?>
+    <div>
+      <div class="pseo-head-logo">PANTH SEO</div>
+      <div style="font-size:10px;color:var(--pseo-muted);text-transform:uppercase;letter-spacing:.08em;">
+        <?= /* @noEscape */ $helper->esc((string) ($identity['entity_type'] ?? 'unknown')) ?>
+        <?php if (!empty($identity['entity_id'])): ?>
+          #<?= /* @noEscape */ (int) $identity['entity_id'] ?>
+        <?php endif; ?>
+      </div>
+    </div>
+    <div class="pseo-head-spacer"></div>
+    <button type="button" class="pseo-head-btn" id="pseo-refresh"
+            aria-label="Refresh client-side metrics" title="Refresh metrics">&#8635;</button>
+    <button type="button" class="pseo-head-btn" id="pseo-close"
+            aria-label="Close toolbar" title="Close (Ctrl+Shift+S)">&times;</button>
+  </header>
+
+  <!-- Quick status pills -->
+  <div class="pseo-hdr-pills">
+    <span class="pseo-pill pseo-<?= /* @noEscape */ $helper->esc($titleStatus) ?>">Title <?= /* @noEscape */ (int) $titleLen ?></span>
+    <span class="pseo-pill pseo-<?= /* @noEscape */ $helper->esc($descStatus) ?>">Desc <?= /* @noEscape */ (int) $descLen ?></span>
+    <span class="pseo-pill pseo-<?= /* @noEscape */ $helper->esc($robotsClass) ?>"><?= /* @noEscape */ $helper->esc($robots !== '' ? $robots : 'index,follow') ?></span>
+    <span class="pseo-pill pseo-b">JSON-LD <?= /* @noEscape */ count($jsonldBlocks) ?></span>
+    <span class="pseo-pill pseo-v">OG <?= /* @noEscape */ count($ogTags) ?></span>
+    <span class="pseo-pill pseo-b">Hreflang <?= /* @noEscape */ count($hreflang) ?></span>
+    <span class="pseo-pill pseo-b" id="pseo-pill-h1">H1 <span id="pseo-pill-h1-count">?</span></span>
+  </div>
+
+  <div class="pseo-body">
+
+    <!-- 1. Page Identity -->
+    <div class="pseo-section" data-open="true">
+      <button type="button" class="pseo-section-head" aria-expanded="true">
+        <span class="pseo-section-title">Page Identity</span>
+        <span class="pseo-section-caret">&#9656;</span>
+      </button>
+      <div class="pseo-section-body">
+        <div class="pseo-row">
+          <div class="pseo-label">Entity</div>
+          <div class="pseo-value pseo-mono"><?= /* @noEscape */ $helper->esc((string) ($identity['entity_type'] ?? 'unknown')) ?><?php if (!empty($identity['entity_id'])): ?> #<?= /* @noEscape */ (int) $identity['entity_id'] ?><?php endif; ?></div>
+        </div>
+        <div class="pseo-row">
+          <div class="pseo-label">Store</div>
+          <div class="pseo-value"><?= /* @noEscape */ $helper->esc((string) ($identity['store_name'] ?? '')) ?> <span class="pseo-muted">(id <?= /* @noEscape */ (int) ($identity['store_id'] ?? 0) ?>)</span></div>
+        </div>
+        <div class="pseo-row">
+          <div class="pseo-label">Theme</div>
+          <div class="pseo-value pseo-mono"><?= /* @noEscape */ $helper->esc((string) ($identity['theme_name'] ?? '')) ?></div>
+        </div>
+        <div class="pseo-row">
+          <div class="pseo-label">Route</div>
+          <div class="pseo-value pseo-mono"><?= /* @noEscape */ $helper->esc((string) ($identity['full_action'] ?? '')) ?></div>
+        </div>
+        <div class="pseo-row">
+          <div class="pseo-label">Method</div>
+          <div class="pseo-value pseo-mono"><?= /* @noEscape */ $helper->esc((string) ($identity['request_method'] ?? 'GET')) ?></div>
+        </div>
+        <div class="pseo-row">
+          <div class="pseo-label">URL</div>
+          <div class="pseo-value pseo-mono" data-copy="<?= /* @noEscape */ $helper->esc((string) ($identity['current_url'] ?? '')) ?>"><?= /* @noEscape */ $helper->esc((string) ($identity['current_url'] ?? '')) ?></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Meta Tags -->
+    <div class="pseo-section" data-open="true">
+      <button type="button" class="pseo-section-head" aria-expanded="true">
+        <span class="pseo-section-title">Meta Tags</span>
+        <span class="pseo-section-caret">&#9656;</span>
+      </button>
+      <div class="pseo-section-body">
+        <div class="pseo-row">
+          <div class="pseo-label">Title</div>
+          <div class="pseo-value">
+            <?= /* @noEscape */ $title !== '' ? $helper->esc($title) : '<span class="pseo-muted">Not set</span>' ?>
+            <div class="pseo-bar"><div class="pseo-bar-fill pseo-<?= /* @noEscape */ $helper->esc($titleStatus) ?>" style="width:<?= /* @noEscape */ $titlePct ?>%"></div></div>
+            <div style="font-size:10px;color:var(--pseo-muted);margin-top:3px;">
+              <?= /* @noEscape */ $titleLen ?> / 60 chars ideal
+              <button type="button" class="pseo-copy" data-copy-val="<?= /* @noEscape */ $helper->esc($title) ?>">Copy</button>
+            </div>
+          </div>
+        </div>
+        <div class="pseo-row">
+          <div class="pseo-label">Description</div>
+          <div class="pseo-value">
+            <?= /* @noEscape */ $desc !== '' ? $helper->esc($desc) : '<span class="pseo-muted">Not set</span>' ?>
+            <div class="pseo-bar"><div class="pseo-bar-fill pseo-<?= /* @noEscape */ $helper->esc($descStatus) ?>" style="width:<?= /* @noEscape */ $descPct ?>%"></div></div>
+            <div style="font-size:10px;color:var(--pseo-muted);margin-top:3px;"><?= /* @noEscape */ $descLen ?> / 160 chars ideal</div>
+          </div>
+        </div>
+        <div class="pseo-row">
+          <div class="pseo-label">Robots</div>
+          <div class="pseo-value pseo-mono">
+            <span class="pseo-pill pseo-<?= /* @noEscape */ $helper->esc($robotsClass) ?>"><?= /* @noEscape */ $helper->esc($robots !== '' ? $robots : 'index,follow') ?></span>
+          </div>
+        </div>
+        <div class="pseo-row">
+          <div class="pseo-label">Canonical</div>
+          <div class="pseo-value pseo-mono">
+            <?= /* @noEscape */ $canonical !== '' ? '<a href="' . $helper->esc($canonical) . '" target="_blank" rel="noopener">' . $helper->esc($canonical) . '</a>' : '<span class="pseo-muted">Not set</span>' ?>
+            <?php if ($canonical !== ''): ?>
+              <button type="button" class="pseo-copy" data-copy-val="<?= /* @noEscape */ $helper->esc($canonical) ?>">Copy</button>
+            <?php endif; ?>
+          </div>
+        </div>
+        <div class="pseo-row">
+          <div class="pseo-label">Keywords</div>
+          <div class="pseo-value"><?= /* @noEscape */ $keywords !== '' ? $helper->esc($keywords) : '<span class="pseo-muted">Not set</span>' ?></div>
+        </div>
+        <div class="pseo-row">
+          <div class="pseo-label">Base URL</div>
+          <div class="pseo-value pseo-mono"><?= /* @noEscape */ $helper->esc($baseUrl) ?></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Open Graph -->
+    <div class="pseo-section">
+      <button type="button" class="pseo-section-head" aria-expanded="false">
+        <span class="pseo-section-title">Open Graph</span>
+        <span class="pseo-section-count"><?= /* @noEscape */ count($ogTags) ?></span>
+        <span class="pseo-section-caret">&#9656;</span>
+      </button>
+      <div class="pseo-section-body">
+        <?php if (empty($ogTags)): ?>
+          <div class="pseo-muted">None detected</div>
+        <?php else: ?>
+          <?php foreach ($ogTags as $prop => $val): ?>
+            <div class="pseo-row">
+              <div class="pseo-label"><?= /* @noEscape */ $helper->esc((string) $prop) ?></div>
+              <div class="pseo-value pseo-mono">
+                <?php if (stripos((string) $prop, 'image') !== false && $val !== ''): ?>
+                  <a href="<?= /* @noEscape */ $helper->esc((string) $val) ?>" target="_blank" rel="noopener"><?= /* @noEscape */ $helper->esc((string) $val) ?></a>
+                  <img class="pseo-img-preview" src="<?= /* @noEscape */ $helper->esc((string) $val) ?>" alt="og image preview" loading="lazy">
+                <?php elseif (stripos((string) $prop, 'url') !== false && $val !== ''): ?>
+                  <a href="<?= /* @noEscape */ $helper->esc((string) $val) ?>" target="_blank" rel="noopener"><?= /* @noEscape */ $helper->esc((string) $val) ?></a>
+                <?php else: ?>
+                  <?= /* @noEscape */ $helper->esc((string) $val) ?>
+                <?php endif; ?>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        <?php endif; ?>
+      </div>
+    </div>
+
+    <!-- 4. Twitter Card -->
+    <div class="pseo-section">
+      <button type="button" class="pseo-section-head" aria-expanded="false">
+        <span class="pseo-section-title">Twitter Card</span>
+        <span class="pseo-section-count"><?= /* @noEscape */ count($twitterTags) ?></span>
+        <span class="pseo-section-caret">&#9656;</span>
+      </button>
+      <div class="pseo-section-body">
+        <?php if (empty($twitterTags)): ?>
+          <div class="pseo-muted">None detected</div>
+        <?php else: ?>
+          <?php foreach ($twitterTags as $prop => $val): ?>
+            <div class="pseo-row">
+              <div class="pseo-label"><?= /* @noEscape */ $helper->esc((string) $prop) ?></div>
+              <div class="pseo-value pseo-mono">
+                <?php if (stripos((string) $prop, 'image') !== false && $val !== ''): ?>
+                  <a href="<?= /* @noEscape */ $helper->esc((string) $val) ?>" target="_blank" rel="noopener"><?= /* @noEscape */ $helper->esc((string) $val) ?></a>
+                  <img class="pseo-img-preview" src="<?= /* @noEscape */ $helper->esc((string) $val) ?>" alt="twitter image preview" loading="lazy">
+                <?php else: ?>
+                  <?= /* @noEscape */ $helper->esc((string) $val) ?>
+                <?php endif; ?>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        <?php endif; ?>
+      </div>
+    </div>
+
+    <!-- 5. Hreflang -->
+    <div class="pseo-section">
+      <button type="button" class="pseo-section-head" aria-expanded="false">
+        <span class="pseo-section-title">Hreflang Alternates</span>
+        <span class="pseo-section-count"><?= /* @noEscape */ count($hreflang) ?></span>
+        <span class="pseo-section-caret">&#9656;</span>
+      </button>
+      <div class="pseo-section-body">
+        <?php if (empty($hreflang)): ?>
+          <div class="pseo-muted">None</div>
+        <?php else: ?>
+          <?php foreach ($hreflang as $link): ?>
+            <?php
+                $locale = (string) ($link['locale'] ?? '');
+                $url    = (string) ($link['url'] ?? '');
+            ?>
+            <div class="pseo-row">
+              <div class="pseo-label"><?= /* @noEscape */ $helper->esc($locale) ?></div>
+              <div class="pseo-value pseo-mono">
+                <?php if ($url !== ''): ?>
+                  <a href="<?= /* @noEscape */ $helper->esc($url) ?>" target="_blank" rel="noopener"><?= /* @noEscape */ $helper->esc($url) ?></a>
+                <?php endif; ?>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        <?php endif; ?>
+      </div>
+    </div>
+
+    <!-- 6. JSON-LD -->
+    <div class="pseo-section">
+      <button type="button" class="pseo-section-head" aria-expanded="false">
+        <span class="pseo-section-title">JSON-LD Structured Data</span>
+        <span class="pseo-section-count"><?= /* @noEscape */ count($jsonldBlocks) ?></span>
+        <span class="pseo-section-caret">&#9656;</span>
+      </button>
+      <div class="pseo-section-body">
+        <?php if (empty($jsonldBlocks)): ?>
+          <div class="pseo-muted">No JSON-LD emitted</div>
+        <?php else: ?>
+          <div style="margin-bottom:8px;">
+            <?php foreach ($jsonldTypeList as $t): ?>
+              <span class="pseo-pill pseo-v" style="margin:0 4px 4px 0;"><?= /* @noEscape */ $helper->esc($t) ?></span>
+            <?php endforeach; ?>
+          </div>
+          <?php foreach ($jsonldBlocks as $i => $blk): ?>
+            <div class="pseo-jsonld-block" data-open="false">
+              <button type="button" class="pseo-jsonld-head" aria-expanded="false">
+                <span class="pseo-section-caret" style="font-size:9px">&#9656;</span>
+                <span>Block #<?= /* @noEscape */ (int) $i + 1 ?></span>
+                <?php foreach ((array) ($blk['types'] ?? []) as $t): ?>
+                  <span class="pseo-pill pseo-v"><?= /* @noEscape */ $helper->esc((string) $t) ?></span>
+                <?php endforeach; ?>
+              </button>
+              <pre class="pseo-json"><?= /* @noEscape */ $helper->escJson((string) ($blk['pretty'] ?? '')) ?></pre>
+            </div>
+          <?php endforeach; ?>
+        <?php endif; ?>
+        <?php if (!empty($jsonldWarns)): ?>
+          <div style="margin-top:10px;">
+            <div class="pseo-label" style="margin-bottom:4px;">Warnings</div>
+            <?php foreach ($jsonldWarns as $w): ?>
+              <div class="pseo-pill pseo-y" style="margin:0 4px 4px 0;"><?= /* @noEscape */ $helper->esc((string) $w) ?></div>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
+      </div>
+    </div>
+
+    <!-- 7. Headings (populated by JS) -->
+    <div class="pseo-section">
+      <button type="button" class="pseo-section-head" aria-expanded="false">
+        <span class="pseo-section-title">Headings</span>
+        <span class="pseo-section-count" data-js="headingCount">--</span>
+        <span class="pseo-section-caret">&#9656;</span>
+      </button>
+      <div class="pseo-section-body">
+        <div class="pseo-row">
+          <div class="pseo-label">H1</div>
+          <div class="pseo-value"><span class="pseo-pill" data-js="h1Pill">--</span></div>
+        </div>
+        <div class="pseo-row">
+          <div class="pseo-label">H2</div>
+          <div class="pseo-value" data-js="h2Count">--</div>
+        </div>
+        <div class="pseo-row">
+          <div class="pseo-label">H3</div>
+          <div class="pseo-value" data-js="h3Count">--</div>
+        </div>
+        <div class="pseo-row">
+          <div class="pseo-label">H1 Text</div>
+          <div class="pseo-value"><ul class="pseo-list" data-js="h1List"></ul></div>
+        </div>
+        <div class="pseo-row">
+          <div class="pseo-label">H2 Text</div>
+          <div class="pseo-value"><ul class="pseo-list" data-js="h2List"></ul></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. Images -->
+    <div class="pseo-section">
+      <button type="button" class="pseo-section-head" aria-expanded="false">
+        <span class="pseo-section-title">Images</span>
+        <span class="pseo-section-count" data-js="imgTotal">--</span>
+        <span class="pseo-section-caret">&#9656;</span>
+      </button>
+      <div class="pseo-section-body">
+        <div class="pseo-row"><div class="pseo-label">Total</div><div class="pseo-value" data-js="imgTotalVal">--</div></div>
+        <div class="pseo-row"><div class="pseo-label">Missing alt</div><div class="pseo-value" data-js="imgNoAlt">--</div></div>
+        <div class="pseo-row"><div class="pseo-label">Empty alt</div><div class="pseo-value" data-js="imgEmptyAlt">--</div></div>
+        <div class="pseo-row"><div class="pseo-label">loading=lazy</div><div class="pseo-value" data-js="imgLazy">--</div></div>
+        <div class="pseo-row"><div class="pseo-label">No alt (first 10)</div><div class="pseo-value"><ul class="pseo-list" data-js="imgNoAltList"></ul></div></div>
+      </div>
+    </div>
+
+    <!-- 9. Internal Links -->
+    <div class="pseo-section">
+      <button type="button" class="pseo-section-head" aria-expanded="false">
+        <span class="pseo-section-title">Internal Links</span>
+        <span class="pseo-section-count" data-js="intCount">--</span>
+        <span class="pseo-section-caret">&#9656;</span>
+      </button>
+      <div class="pseo-section-body">
+        <div class="pseo-row"><div class="pseo-label">Count</div><div class="pseo-value" data-js="intCountVal">--</div></div>
+        <div class="pseo-row"><div class="pseo-label">Nofollow</div><div class="pseo-value" data-js="intNofollow">--</div></div>
+      </div>
+    </div>
+
+    <!-- 10. External Links -->
+    <div class="pseo-section">
+      <button type="button" class="pseo-section-head" aria-expanded="false">
+        <span class="pseo-section-title">External Links</span>
+        <span class="pseo-section-count" data-js="extCount">--</span>
+        <span class="pseo-section-caret">&#9656;</span>
+      </button>
+      <div class="pseo-section-body">
+        <div class="pseo-row"><div class="pseo-label">Count</div><div class="pseo-value" data-js="extCountVal">--</div></div>
+        <div class="pseo-row"><div class="pseo-label">Nofollow</div><div class="pseo-value" data-js="extNofollow">--</div></div>
+        <div class="pseo-row"><div class="pseo-label">Unsafe _blank</div><div class="pseo-value" data-js="extUnsafe">--</div></div>
+      </div>
+    </div>
+
+    <!-- 12. Performance -->
+    <div class="pseo-section">
+      <button type="button" class="pseo-section-head" aria-expanded="false">
+        <span class="pseo-section-title">Performance</span>
+        <span class="pseo-section-caret">&#9656;</span>
+      </button>
+      <div class="pseo-section-body">
+        <div class="pseo-row"><div class="pseo-label">DOM Ready</div><div class="pseo-value" data-js="perfDom">--</div></div>
+        <div class="pseo-row"><div class="pseo-label">Load Event</div><div class="pseo-value" data-js="perfLoad">--</div></div>
+        <div class="pseo-row"><div class="pseo-label">Page size</div><div class="pseo-value" data-js="perfSize">--</div></div>
+        <div class="pseo-row"><div class="pseo-label">Scripts</div><div class="pseo-value" data-js="perfScripts">--</div></div>
+        <div class="pseo-row"><div class="pseo-label">Stylesheets</div><div class="pseo-value" data-js="perfStyles">--</div></div>
+        <div class="pseo-row"><div class="pseo-label">Images</div><div class="pseo-value" data-js="perfImgs">--</div></div>
+        <div class="pseo-row"><div class="pseo-label">preconnect</div><div class="pseo-value" data-js="perfPreconnect">--</div></div>
+        <div class="pseo-row"><div class="pseo-label">preload</div><div class="pseo-value" data-js="perfPreload">--</div></div>
+        <div class="pseo-row"><div class="pseo-label">Word count</div><div class="pseo-value" data-js="perfWords">--</div></div>
+      </div>
+    </div>
+
+    <!-- 13. HTTP Headers -->
+    <div class="pseo-section">
+      <button type="button" class="pseo-section-head" aria-expanded="false">
+        <span class="pseo-section-title">HTTP Headers</span>
+        <span class="pseo-section-count"><?= /* @noEscape */ count($headers) ?></span>
+        <span class="pseo-section-caret">&#9656;</span>
+      </button>
+      <div class="pseo-section-body">
+        <?php if (empty($headers)): ?>
+          <div class="pseo-muted">No headers captured (headers are flushed before the toolbar plugin runs on some stacks).</div>
+        <?php else: ?>
+          <?php foreach ($headers as $name => $value): ?>
+            <div class="pseo-row">
+              <div class="pseo-label"><?= /* @noEscape */ $helper->esc((string) $name) ?></div>
+              <div class="pseo-value pseo-mono"><?= /* @noEscape */ $helper->esc((string) $value) ?></div>
+            </div>
+          <?php endforeach; ?>
+        <?php endif; ?>
+      </div>
+    </div>
+
+    <!-- 14. Cookies -->
+    <div class="pseo-section">
+      <button type="button" class="pseo-section-head" aria-expanded="false">
+        <span class="pseo-section-title">Cookies</span>
+        <span class="pseo-section-count"><?= /* @noEscape */ count($cookies) ?></span>
+        <span class="pseo-section-caret">&#9656;</span>
+      </button>
+      <div class="pseo-section-body">
+        <?php if (empty($cookies)): ?>
+          <div class="pseo-muted">No cookies</div>
+        <?php else: ?>
+          <?php foreach ($cookies as $name): ?>
+            <div class="pseo-row">
+              <div class="pseo-label">&middot;</div>
+              <div class="pseo-value pseo-mono"><?= /* @noEscape */ $helper->esc($name) ?></div>
+            </div>
+          <?php endforeach; ?>
+        <?php endif; ?>
+      </div>
+    </div>
+
+    <!-- 15. SEO Score -->
+    <?php if ($score !== null): ?>
+    <div class="pseo-section">
+      <button type="button" class="pseo-section-head" aria-expanded="false">
+        <span class="pseo-section-title">SEO Score</span>
+        <span class="pseo-section-count"><?= /* @noEscape */ (int) $scoreValue ?>/100</span>
+        <span class="pseo-section-caret">&#9656;</span>
+      </button>
+      <div class="pseo-section-body">
+        <div class="pseo-row">
+          <div class="pseo-label">Score</div>
+          <div class="pseo-value"><span class="pseo-pill pseo-<?= /* @noEscape */ $helper->esc($scoreClass) ?>"><?= /* @noEscape */ (int) $scoreValue ?>/100 (<?= /* @noEscape */ $helper->esc($scoreGrade) ?>)</span></div>
+        </div>
+        <?php if (!empty($score['issues'])): ?>
+          <div class="pseo-row">
+            <div class="pseo-label">Issues</div>
+            <div class="pseo-value">
+              <ul class="pseo-list">
+                <?php foreach ($score['issues'] as $iss): ?>
+                  <li><?= /* @noEscape */ $helper->esc((string) $iss) ?></li>
+                <?php endforeach; ?>
+              </ul>
+            </div>
+          </div>
+        <?php endif; ?>
+      </div>
+    </div>
+    <?php endif; ?>
+
+    <!-- 16. Quick actions -->
+    <div class="pseo-section" data-open="true">
+      <button type="button" class="pseo-section-head" aria-expanded="true">
+        <span class="pseo-section-title">Quick Actions</span>
+        <span class="pseo-section-caret">&#9656;</span>
+      </button>
+      <div class="pseo-section-body">
+        <div class="pseo-actions">
+          <button type="button" class="pseo-action" data-action="copyTitle">Copy title</button>
+          <button type="button" class="pseo-action" data-action="copyCanonical">Copy canonical</button>
+          <button type="button" class="pseo-action" data-action="viewSource">View source</button>
+          <button type="button" class="pseo-action" data-action="richResults">Rich Results</button>
+          <button type="button" class="pseo-action" data-action="ogDebug">OG debug</button>
+          <button type="button" class="pseo-action" data-action="twitterDebug">Twitter</button>
+          <button type="button" class="pseo-action pseo-primary" data-action="refresh">Refresh</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.pseo-body -->
+
+  <div class="pseo-resize" id="pseo-resize" aria-hidden="true"></div>
+</section>
+
+<div class="pseo-toast" id="pseo-toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+  var STORAGE_KEY="pseo.toolbar.v2";
+  var root=document.getElementById("pseo-toolbar");
+  if(!root)return;
+  var badge=document.getElementById("pseo-badge");
+  var panel=document.getElementById("pseo-panel");
+  var closeBtn=document.getElementById("pseo-close");
+  var refreshBtn=document.getElementById("pseo-refresh");
+  var dragHead=document.getElementById("pseo-drag");
+  var resize=document.getElementById("pseo-resize");
+  var toast=document.getElementById("pseo-toast");
+  if(!badge||!panel)return;
+
+  function loadState(){
+    try{return JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}")||{};}
+    catch(e){return{};}
+  }
+  function saveState(s){
+    try{localStorage.setItem(STORAGE_KEY,JSON.stringify(s||{}));}catch(e){}
+  }
+  var state=loadState();
+
+  function showToast(msg,color){
+    if(!toast)return;
+    toast.textContent=msg;
+    toast.style.color=color||"var(--pseo-g)";
+    toast.classList.add("pseo-visible");
+    clearTimeout(toast._t);
+    toast._t=setTimeout(function(){toast.classList.remove("pseo-visible");},1600);
+  }
+
+  // ---------- expand / collapse ----------
+  function open(){
+    panel.classList.add("pseo-visible");
+    panel.setAttribute("aria-hidden","false");
+    badge.setAttribute("aria-expanded","true");
+    badge.style.display="none";
+    state.open=true;saveState(state);
+    setTimeout(runClientMetrics,0);
+  }
+  function collapse(){
+    panel.classList.remove("pseo-visible");
+    panel.setAttribute("aria-hidden","true");
+    badge.setAttribute("aria-expanded","false");
+    badge.style.display="";
+    state.open=false;saveState(state);
+  }
+  badge.addEventListener("click",open);
+  badge.addEventListener("keydown",function(e){
+    if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}
+  });
+  if(closeBtn)closeBtn.addEventListener("click",collapse);
+
+  // ---------- keyboard shortcut ----------
+  document.addEventListener("keydown",function(e){
+    if((e.ctrlKey||e.metaKey)&&e.shiftKey&&(e.key==="S"||e.key==="s")){
+      e.preventDefault();
+      if(panel.classList.contains("pseo-visible"))collapse();else open();
+    }
+  });
+
+  // ---------- restore state ----------
+  if(state.x!==undefined&&state.y!==undefined){
+    panel.style.right="auto";panel.style.bottom="auto";
+    panel.style.left=state.x+"px";panel.style.top=state.y+"px";
+  }
+  if(state.w)panel.style.width=state.w+"px";
+  if(state.h)panel.style.height=state.h+"px";
+  if(state.open)open();
+
+  // ---------- section collapse ----------
+  var sections=panel.querySelectorAll(".pseo-section");
+  sections.forEach(function(sec){
+    var head=sec.querySelector(".pseo-section-head");
+    if(!head)return;
+    head.addEventListener("click",function(){
+      var isOpen=sec.getAttribute("data-open")==="true";
+      sec.setAttribute("data-open",isOpen?"false":"true");
+      head.setAttribute("aria-expanded",isOpen?"false":"true");
+    });
+  });
+
+  // JSON-LD block expand
+  panel.querySelectorAll(".pseo-jsonld-block").forEach(function(blk){
+    var head=blk.querySelector(".pseo-jsonld-head");
+    if(!head)return;
+    head.addEventListener("click",function(){
+      var o=blk.getAttribute("data-open")==="true";
+      blk.setAttribute("data-open",o?"false":"true");
+      head.setAttribute("aria-expanded",o?"false":"true");
+      var json=blk.querySelector(".pseo-json");
+      if(json)json.style.display=o?"none":"block";
+    });
+  });
+
+  // ---------- copy buttons ----------
+  function copyText(text){
+    if(!text)return Promise.reject();
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function(res,rej){
+      try{
+        var ta=document.createElement("textarea");
+        ta.value=text;ta.style.position="fixed";ta.style.opacity="0";
+        document.body.appendChild(ta);ta.select();
+        document.execCommand("copy");document.body.removeChild(ta);res();
+      }catch(e){rej(e);}
+    });
+  }
+  panel.querySelectorAll(".pseo-copy").forEach(function(btn){
+    btn.addEventListener("click",function(e){
+      e.stopPropagation();
+      var v=btn.getAttribute("data-copy-val")||"";
+      copyText(v).then(function(){showToast("Copied");},function(){showToast("Copy failed","var(--pseo-r)");});
+    });
+  });
+
+  // ---------- quick actions ----------
+  var TITLE=<?= /* @noEscape */ json_encode($title, JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_UNESCAPED_SLASHES) ?>;
+  var CANONICAL=<?= /* @noEscape */ json_encode($canonical, JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT|JSON_UNESCAPED_SLASHES) ?>;
+  panel.querySelectorAll(".pseo-action").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      var act=btn.getAttribute("data-action");
+      var url=window.location.href;
+      if(act==="copyTitle"){copyText(TITLE||document.title).then(function(){showToast("Title copied");});}
+      else if(act==="copyCanonical"){copyText(CANONICAL||url).then(function(){showToast("Canonical copied");});}
+      else if(act==="viewSource"){
+        // Browsers block JS from navigating to view-source: URLs (only the
+        // address bar can). We instead grab the current document's outerHTML
+        // (no extra HTTP request, no auth issues) and serve it as a Blob in
+        // a new tab. The blob is text/plain so the browser shows it raw.
+        try{
+          var src=("<!doctype html>\n"+(document.documentElement&&document.documentElement.outerHTML?document.documentElement.outerHTML:""));
+          if(window.URL&&window.Blob){
+            var blob=new Blob([src],{type:"text/plain;charset=utf-8"});
+            var blobUrl=URL.createObjectURL(blob);
+            var w=window.open(blobUrl,"_blank","noopener,noreferrer");
+            if(!w){showToast("Pop-up blocked");}
+            // Free the blob URL after a minute so it does not leak.
+            setTimeout(function(){try{URL.revokeObjectURL(blobUrl);}catch(_e){}},60000);
+          } else {
+            // Last-resort fallback for ancient browsers
+            var w2=window.open("","_blank");
+            if(w2){w2.document.open();w2.document.write("<pre>"+src.replace(/[&<>]/g,function(c){return c==="&"?"&amp;":c==="<"?"&lt;":"&gt;";})+"</pre>");w2.document.close();}
+            else {showToast("Pop-up blocked");}
+          }
+        } catch(_e){showToast("View source failed");}
+      }
+      else if(act==="richResults"){window.open("https://search.google.com/test/rich-results?url="+encodeURIComponent(url),"_blank","noopener,noreferrer");}
+      else if(act==="ogDebug"){window.open("https://www.opengraph.xyz/url/"+encodeURIComponent(url),"_blank","noopener,noreferrer");}
+      else if(act==="twitterDebug"){window.open("https://cards-dev.twitter.com/validator","_blank","noopener,noreferrer");}
+      else if(act==="refresh"){runClientMetrics();showToast("Refreshed");}
+    });
+  });
+  if(refreshBtn)refreshBtn.addEventListener("click",function(){runClientMetrics();showToast("Refreshed");});
+
+  // ---------- drag ----------
+  (function(){
+    var dragging=false,startX=0,startY=0,origX=0,origY=0;
+    dragHead.addEventListener("pointerdown",function(e){
+      if(e.target.closest("button"))return;
+      dragging=true;
+      var r=panel.getBoundingClientRect();
+      origX=r.left;origY=r.top;startX=e.clientX;startY=e.clientY;
+      panel.style.right="auto";panel.style.bottom="auto";
+      panel.style.left=origX+"px";panel.style.top=origY+"px";
+      dragHead.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+    dragHead.addEventListener("pointermove",function(e){
+      if(!dragging)return;
+      var nx=origX+(e.clientX-startX);
+      var ny=origY+(e.clientY-startY);
+      nx=Math.max(0,Math.min(window.innerWidth-80,nx));
+      ny=Math.max(0,Math.min(window.innerHeight-40,ny));
+      panel.style.left=nx+"px";panel.style.top=ny+"px";
+    });
+    dragHead.addEventListener("pointerup",function(e){
+      if(!dragging)return;
+      dragging=false;
+      try{dragHead.releasePointerCapture(e.pointerId);}catch(er){}
+      var r=panel.getBoundingClientRect();
+      state.x=Math.round(r.left);state.y=Math.round(r.top);saveState(state);
+    });
+  })();
+
+  // ---------- resize (bottom-left handle, grows up/left) ----------
+  (function(){
+    if(!resize)return;
+    var resizing=false,startW=0,startH=0,startX=0,startY=0,origLeft=0,origTop=0;
+    resize.addEventListener("pointerdown",function(e){
+      resizing=true;
+      var r=panel.getBoundingClientRect();
+      startW=r.width;startH=r.height;startX=e.clientX;startY=e.clientY;
+      origLeft=r.left;origTop=r.top;
+      panel.style.right="auto";panel.style.bottom="auto";
+      panel.style.left=origLeft+"px";panel.style.top=origTop+"px";
+      resize.setPointerCapture(e.pointerId);
+      e.preventDefault();e.stopPropagation();
+    });
+    resize.addEventListener("pointermove",function(e){
+      if(!resizing)return;
+      var dx=e.clientX-startX;
+      var dy=e.clientY-startY;
+      var w=Math.max(320,startW-dx);
+      var h=Math.max(180,startH+dy);
+      panel.style.width=w+"px";panel.style.height=h+"px";
+      panel.style.maxHeight="none";
+      var newLeft=origLeft+(startW-w);
+      panel.style.left=newLeft+"px";
+    });
+    resize.addEventListener("pointerup",function(e){
+      if(!resizing)return;
+      resizing=false;
+      try{resize.releasePointerCapture(e.pointerId);}catch(er){}
+      var r=panel.getBoundingClientRect();
+      state.w=Math.round(r.width);state.h=Math.round(r.height);
+      state.x=Math.round(r.left);state.y=Math.round(r.top);
+      saveState(state);
+    });
+  })();
+
+  // ---------- client-side metrics ----------
+  function setText(key,value,pillClass){
+    var nodes=panel.querySelectorAll('[data-js="'+key+'"]');
+    nodes.forEach(function(n){
+      if(pillClass&&n.classList.contains("pseo-pill")){
+        n.classList.remove("pseo-g","pseo-y","pseo-r","pseo-b");
+        n.classList.add("pseo-"+pillClass);
+      }
+      n.textContent=value==null?"--":String(value);
+    });
+  }
+  function fillList(key,items){
+    var nodes=panel.querySelectorAll('[data-js="'+key+'"]');
+    nodes.forEach(function(ul){
+      ul.textContent="";
+      if(!items||!items.length){
+        var li=document.createElement("li");
+        li.className="pseo-muted";li.textContent="(none)";
+        ul.appendChild(li);return;
+      }
+      items.forEach(function(it){
+        var li=document.createElement("li");li.className="pseo-mono";
+        li.textContent=it;ul.appendChild(li);
+      });
+    });
+  }
+
+  function byText(el){return (el.textContent||"").replace(/\s+/g," ").trim();}
+
+  function runClientMetrics(){
+    try{
+      // Headings
+      var all=document.body.querySelectorAll("h1,h2,h3");
+      var h1s=[],h2s=[],h3s=[];
+      all.forEach(function(el){
+        if(el.closest("#pseo-toolbar"))return;
+        var tn=el.tagName;
+        if(tn==="H1")h1s.push(byText(el));
+        else if(tn==="H2")h2s.push(byText(el));
+        else if(tn==="H3")h3s.push(byText(el));
+      });
+      setText("headingCount",h1s.length+h2s.length+h3s.length);
+      setText("h2Count",h2s.length);
+      setText("h3Count",h3s.length);
+      var h1Status=h1s.length===1?"g":(h1s.length===0?"r":"y");
+      setText("h1Pill",h1s.length,h1Status);
+      var h1Pill=document.getElementById("pseo-pill-h1");
+      if(h1Pill){
+        h1Pill.classList.remove("pseo-g","pseo-y","pseo-r","pseo-b");
+        h1Pill.classList.add("pseo-"+h1Status);
+      }
+      var h1Count=document.getElementById("pseo-pill-h1-count");
+      if(h1Count)h1Count.textContent=h1s.length;
+      fillList("h1List",h1s);
+      fillList("h2List",h2s.slice(0,10));
+
+      // Images
+      var imgs=document.querySelectorAll("img");
+      var total=0,noAlt=0,emptyAlt=0,lazy=0,noAltList=[];
+      imgs.forEach(function(img){
+        if(img.closest("#pseo-toolbar"))return;
+        total++;
+        var alt=img.getAttribute("alt");
+        if(alt===null)noAlt++;
+        else if(alt.trim()==="")emptyAlt++;
+        if(img.getAttribute("loading")==="lazy")lazy++;
+        if((alt===null||alt.trim()==="")&&noAltList.length<10){
+          noAltList.push(img.src||"(no src)");
+        }
+      });
+      setText("imgTotal",total);
+      setText("imgTotalVal",total);
+      setText("imgNoAlt",noAlt);
+      setText("imgEmptyAlt",emptyAlt);
+      setText("imgLazy",lazy);
+      fillList("imgNoAltList",noAltList);
+
+      // Links
+      var links=document.querySelectorAll("a[href]");
+      var host=window.location.hostname;
+      var iCount=0,iNofollow=0,eCount=0,eNofollow=0,eUnsafe=0;
+      links.forEach(function(a){
+        if(a.closest("#pseo-toolbar"))return;
+        var href=a.getAttribute("href")||"";
+        if(!href||href.charAt(0)==="#"||href.indexOf("javascript:")===0||href.indexOf("mailto:")===0||href.indexOf("tel:")===0)return;
+        var linkHost="";
+        try{linkHost=new URL(a.href,window.location.origin).hostname;}catch(er){return;}
+        var rel=(a.getAttribute("rel")||"").toLowerCase();
+        var isNofollow=rel.indexOf("nofollow")!==-1;
+        if(linkHost===host||linkHost===""){
+          iCount++;if(isNofollow)iNofollow++;
+        }else{
+          eCount++;
+          if(isNofollow)eNofollow++;
+          if(a.getAttribute("target")==="_blank"&&rel.indexOf("noopener")===-1)eUnsafe++;
+        }
+      });
+      setText("intCount",iCount);setText("intCountVal",iCount);setText("intNofollow",iNofollow);
+      setText("extCount",eCount);setText("extCountVal",eCount);setText("extNofollow",eNofollow);
+      setText("extUnsafe",eUnsafe);
+
+      // Performance
+      var perf=window.performance;
+      if(perf&&perf.getEntriesByType){
+        var nav=perf.getEntriesByType("navigation")[0];
+        if(nav){
+          setText("perfDom",Math.round(nav.domContentLoadedEventEnd)+" ms");
+          setText("perfLoad",Math.round(nav.loadEventEnd||nav.duration)+" ms");
+          if(nav.transferSize)setText("perfSize",Math.round(nav.transferSize/1024)+" KB (transfer)");
+          else if(nav.encodedBodySize)setText("perfSize",Math.round(nav.encodedBodySize/1024)+" KB");
+        }
+      }
+      var htmlSize=(document.documentElement.outerHTML||"").length;
+      var sizeEl=panel.querySelector('[data-js="perfSize"]');
+      if(sizeEl&&sizeEl.textContent==="--")setText("perfSize",Math.round(htmlSize/1024)+" KB (DOM)");
+      setText("perfScripts",document.querySelectorAll("script").length);
+      setText("perfStyles",document.querySelectorAll('link[rel="stylesheet"],style').length);
+      setText("perfImgs",total);
+      setText("perfPreconnect",document.querySelectorAll('link[rel="preconnect"]').length);
+      setText("perfPreload",document.querySelectorAll('link[rel="preload"]').length);
+      var bodyText=(document.body.innerText||"").replace(/\s+/g," ").trim();
+      setText("perfWords",bodyText?bodyText.split(" ").length:0);
+    }catch(er){}
+  }
+
+  // run once at startup
+  if(document.readyState==="complete"){setTimeout(runClientMetrics,0);}
+  else{window.addEventListener("load",function(){setTimeout(runClientMetrics,0);});}
+})();
+</script>
+</div>
+<!-- /Panth_AdvancedSEO: SEO Toolbar -->

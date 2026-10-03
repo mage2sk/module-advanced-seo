@@ -1,0 +1,51 @@
+<!-- Panth AdvancedSEO: Live Google SERP Preview -->
+<div class="panth-serp-wrapper">
+    <div class="panth-serp-header">
+        <span class="panth-serp-label">Google Search Preview</span>
+    </div>
+
+    <!-- SERP Snippet Card -->
+    <div class="panth-serp-card">
+        <!-- Title (blue link) -->
+        <div class="panth-serp-title" data-bind="text: serpTitle"></div>
+
+        <!-- URL (green, breadcrumb-style) -->
+        <div class="panth-serp-url" data-bind="text: serpUrl"></div>
+
+        <!-- Description (gray) -->
+        <div class="panth-serp-desc" data-bind="text: serpDescription"></div>
+    </div>
+
+    <!-- Character Counters and Pixel-Width Bars -->
+    <div class="panth-serp-counters">
+        <!-- Title counter -->
+        <div class="panth-serp-counter-row">
+            <span class="panth-serp-counter-label">Title:</span>
+            <span class="panth-serp-counter-value"
+                  data-bind="text: titleCharCount() + ' / ' + titleMaxChars + ' chars',
+                             css: { 'panth-serp-counter-over': titleOverLimit }">
+            </span>
+            <div class="panth-serp-bar-track">
+                <div class="panth-serp-bar-fill"
+                     data-bind="style: { width: getTitleBarWidth() },
+                                css: getTitleBarClass()">
+                </div>
+            </div>
+        </div>
+
+        <!-- Description counter -->
+        <div class="panth-serp-counter-row">
+            <span class="panth-serp-counter-label">Description:</span>
+            <span class="panth-serp-counter-value"
+                  data-bind="text: descCharCount() + ' / ' + descriptionMaxChars + ' chars',
+                             css: { 'panth-serp-counter-over': descOverLimit }">
+            </span>
+            <div class="panth-serp-bar-track">
+                <div class="panth-serp-bar-fill"
+                     data-bind="style: { width: getDescBarWidth() },
+                                css: getDescBarClass()">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

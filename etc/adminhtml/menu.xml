@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <!-- Group header under Panth Infotech -->
+        <add id="Panth_AdvancedSEO::root"
+             title="Advanced SEO"
+             module="Panth_AdvancedSEO"
+             parent="Panth_Core::panth_extensions"
+             sortOrder="15"
+             resource="Panth_AdvancedSEO::manage"/>
+
+        <add id="Panth_AdvancedSEO::seo_dashboard"
+             title="SEO Dashboard"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="10"
+             action="panth_seo/dashboard/index"
+             resource="Panth_AdvancedSEO::dashboard"/>
+
+        <add id="Panth_AdvancedSEO::templates"
+             title="Meta Templates"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="20"
+             action="panth_seo/template/index"
+             resource="Panth_AdvancedSEO::templates"/>
+
+        <add id="Panth_AdvancedSEO::rules"
+             title="SEO Rules"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="25"
+             action="panth_seo/rule/index"
+             resource="Panth_AdvancedSEO::rules"/>
+
+        <add id="Panth_AdvancedSEO::bulkeditor"
+             title="Bulk Meta Editor"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="30"
+             action="panth_seo/bulkeditor/index"
+             resource="Panth_AdvancedSEO::bulkeditor"/>
+
+        <add id="Panth_AdvancedSEO::custom_canonical"
+             title="Custom Canonicals"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="40"
+             action="panth_seo/customcanonical/index"
+             resource="Panth_AdvancedSEO::custom_canonical"/>
+
+        <add id="Panth_AdvancedSEO::feeds"
+             title="Product Feeds"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="62"
+             action="panth_seo/feed/index"
+             resource="Panth_AdvancedSEO::feeds"/>
+
+        <add id="Panth_AdvancedSEO::missing_meta"
+             title="Missing Meta Report"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="70"
+             action="panth_seo/report/missingMeta"
+             resource="Panth_AdvancedSEO::reports"/>
+
+        <add id="Panth_AdvancedSEO::audit"
+             title="SEO Audit"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="75"
+             action="panth_seo/audit/index"
+             resource="Panth_AdvancedSEO::audit"/>
+
+        <add id="Panth_AdvancedSEO::crawl_results"
+             title="Crawl Results"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="77"
+             action="panth_seo/audit/crawlResults"
+             resource="Panth_AdvancedSEO::crawl_audit"/>
+
+        <add id="Panth_AdvancedSEO::config"
+             title="Configuration"
+             module="Panth_AdvancedSEO"
+             parent="Panth_AdvancedSEO::root"
+             sortOrder="100"
+             action="adminhtml/system_config/edit/section/panth_seo"
+             resource="Panth_AdvancedSEO::config"/>
+    </menu>
+</config>

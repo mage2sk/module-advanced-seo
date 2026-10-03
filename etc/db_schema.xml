@@ -1,0 +1,393 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+
+    <!-- ============================================================ -->
+    <!-- panth_seo_template                                             -->
+    <!-- ============================================================ -->
+    <table name="panth_seo_template" resource="default" engine="innodb" comment="Panth SEO Meta Templates">
+        <column xsi:type="int" name="template_id" unsigned="true" nullable="false" identity="true" comment="Template ID"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0" comment="Store ID"/>
+        <column xsi:type="varchar" name="entity_type" length="32" nullable="false" comment="Entity type: product|category|cms|other"/>
+        <column xsi:type="varchar" name="scope" length="64" nullable="false" default="default" comment="Sub-scope (e.g. attribute set code)"/>
+        <column xsi:type="varchar" name="name" length="255" nullable="false" comment="Template name"/>
+        <column xsi:type="varchar" name="meta_title" length="512" nullable="true" comment="Meta title pattern"/>
+        <column xsi:type="text" name="meta_description" nullable="true" comment="Meta description pattern"/>
+        <column xsi:type="varchar" name="meta_keywords" length="512" nullable="true" comment="Meta keywords pattern"/>
+        <column xsi:type="varchar" name="seo_name" length="512" nullable="true" comment="SEO Name pattern"/>
+        <column xsi:type="varchar" name="og_title" length="512" nullable="true" comment="OG title"/>
+        <column xsi:type="text" name="og_description" nullable="true" comment="OG description"/>
+        <column xsi:type="varchar" name="og_image" length="512" nullable="true" comment="OG image"/>
+        <column xsi:type="varchar" name="twitter_card" length="32" nullable="true" comment="Twitter card type"/>
+        <column xsi:type="varchar" name="robots" length="64" nullable="true" comment="Robots directive"/>
+        <column xsi:type="int" name="priority" unsigned="true" nullable="false" default="10" comment="Priority"/>
+        <column xsi:type="boolean" name="is_active" nullable="false" default="true" comment="Active"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <column xsi:type="mediumtext" name="conditions_serialized" nullable="true" comment="Serialized conditions for template matching"/>
+        <column xsi:type="varchar" name="url_key_template" length="512" nullable="true" comment="URL key template pattern"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Updated at"/>
+        <column xsi:type="boolean" name="is_cron_enabled" nullable="false" default="false" comment="Enable cron auto-apply"/>
+        <column xsi:type="timestamp" name="last_applied_at" on_update="false" nullable="true" comment="Last cron application timestamp"/>
+        <column xsi:type="int" name="apply_count" unsigned="true" nullable="false" default="0" comment="Number of cron applications"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="template_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="PANTH_SEO_TEMPLATE_STORE_ID_STORE_STORE_ID"
+                    table="panth_seo_template" column="store_id"
+                    referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+        <index referenceId="PANTH_SEO_TEMPLATE_IDX_STORE_ENTITY" indexType="btree">
+            <column name="store_id"/>
+            <column name="entity_type"/>
+            <column name="scope"/>
+            <column name="is_active"/>
+        </index>
+    </table>
+
+    <!-- ============================================================ -->
+    <!-- panth_seo_override                                             -->
+    <!-- ============================================================ -->
+    <table name="panth_seo_override" resource="default" engine="innodb" comment="Per-entity SEO overrides">
+        <column xsi:type="int" name="override_id" unsigned="true" nullable="false" identity="true" comment="Override ID"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0" comment="Store ID"/>
+        <column xsi:type="varchar" name="entity_type" length="32" nullable="false" comment="Entity type"/>
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" comment="Entity ID"/>
+        <column xsi:type="varchar" name="meta_title" length="512" nullable="true" comment="Meta title override"/>
+        <column xsi:type="text" name="meta_description" nullable="true" comment="Meta description override"/>
+        <column xsi:type="varchar" name="meta_keywords" length="512" nullable="true" comment="Meta keywords override"/>
+        <column xsi:type="varchar" name="canonical_url" length="1024" nullable="true" comment="Canonical URL override"/>
+        <column xsi:type="varchar" name="robots" length="64" nullable="true" comment="Robots override"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Updated at"/>
+        <column xsi:type="varchar" name="hreflang_identifier" length="255" nullable="true" comment="Hreflang identifier for cross-store linking"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="override_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="PANTH_SEO_OVERRIDE_UNQ_STORE_ENTITY">
+            <column name="store_id"/>
+            <column name="entity_type"/>
+            <column name="entity_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="PANTH_SEO_OVERRIDE_STORE_ID_STORE_STORE_ID"
+                    table="panth_seo_override" column="store_id"
+                    referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+    </table>
+
+    <!-- ============================================================ -->
+    <!-- panth_seo_resolved                                             -->
+    <!-- ============================================================ -->
+    <table name="panth_seo_resolved" resource="default" engine="innodb" comment="Indexer output: resolved meta">
+        <column xsi:type="int" name="resolved_id" unsigned="true" nullable="false" identity="true" comment="Resolved ID"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0" comment="Store ID"/>
+        <column xsi:type="varchar" name="entity_type" length="32" nullable="false" comment="Entity type"/>
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" comment="Entity ID"/>
+        <column xsi:type="varchar" name="meta_title" length="512" nullable="true" comment="Meta title"/>
+        <column xsi:type="text" name="meta_description" nullable="true" comment="Meta description"/>
+        <column xsi:type="varchar" name="meta_keywords" length="512" nullable="true" comment="Meta keywords"/>
+        <column xsi:type="varchar" name="canonical_url" length="1024" nullable="true" comment="Canonical URL"/>
+        <column xsi:type="varchar" name="robots" length="64" nullable="true" comment="Robots"/>
+        <column xsi:type="text" name="og_payload" nullable="true" comment="OG JSON payload"/>
+        <column xsi:type="mediumtext" name="jsonld_payload" nullable="true" comment="JSON-LD payload"/>
+        <column xsi:type="text" name="hreflang_payload" nullable="true" comment="Hreflang JSON payload"/>
+        <column xsi:type="varchar" name="source" length="32" nullable="false" default="template" comment="Source: override|rule|template|fallback"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Updated at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="resolved_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="PANTH_SEO_RESOLVED_UNQ_STORE_ENTITY">
+            <column name="store_id"/>
+            <column name="entity_type"/>
+            <column name="entity_id"/>
+        </constraint>
+        <index referenceId="PANTH_SEO_RESOLVED_IDX_TYPE_ID" indexType="btree">
+            <column name="entity_type"/>
+            <column name="entity_id"/>
+        </index>
+    </table>
+
+    <!-- ============================================================ -->
+    <!-- panth_seo_rule                                                 -->
+    <!-- ============================================================ -->
+    <table name="panth_seo_rule" resource="default" engine="innodb" comment="SEO Rules">
+        <column xsi:type="int" name="rule_id" unsigned="true" nullable="false" identity="true" comment="Rule ID"/>
+        <column xsi:type="varchar" name="name" length="255" nullable="false" comment="Name"/>
+        <column xsi:type="varchar" name="entity_type" length="32" nullable="false" comment="Entity type"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0" comment="Store ID"/>
+        <column xsi:type="int" name="priority" unsigned="true" nullable="false" default="10" comment="Priority"/>
+        <column xsi:type="boolean" name="is_active" nullable="false" default="true" comment="Active"/>
+        <column xsi:type="boolean" name="stop_on_match" nullable="false" default="false" comment="Stop processing subsequent rules"/>
+        <column xsi:type="mediumtext" name="conditions_serialized" nullable="false" comment="Serialized conditions combine"/>
+        <column xsi:type="mediumtext" name="actions_serialized" nullable="false" comment="Serialized actions"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Updated at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="rule_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="PANTH_SEO_RULE_STORE_ID_STORE_STORE_ID"
+                    table="panth_seo_rule" column="store_id"
+                    referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+        <index referenceId="PANTH_SEO_RULE_IDX_STORE_ACTIVE" indexType="btree">
+            <column name="store_id"/>
+            <column name="is_active"/>
+            <column name="priority"/>
+        </index>
+    </table>
+
+    <!-- ============================================================ -->
+    <!-- panth_seo_score                                                -->
+    <!-- ============================================================ -->
+    <table name="panth_seo_score" resource="default" engine="innodb" comment="SEO Scores">
+        <column xsi:type="int" name="score_id" unsigned="true" nullable="false" identity="true" comment="Score ID"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0" comment="Store ID"/>
+        <column xsi:type="varchar" name="entity_type" length="32" nullable="false" comment="Entity type"/>
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" comment="Entity ID"/>
+        <column xsi:type="smallint" name="score" unsigned="true" nullable="false" default="0" comment="Score 0-100"/>
+        <column xsi:type="varchar" name="grade" length="2" nullable="false" default="F" comment="Grade A-F"/>
+        <column xsi:type="text" name="breakdown" nullable="true" comment="JSON breakdown per check"/>
+        <column xsi:type="text" name="issues" nullable="true" comment="JSON issues list"/>
+        <column xsi:type="timestamp" name="computed_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Computed at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="score_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="PANTH_SEO_SCORE_UNQ_STORE_ENTITY">
+            <column name="store_id"/>
+            <column name="entity_type"/>
+            <column name="entity_id"/>
+        </constraint>
+        <index referenceId="PANTH_SEO_SCORE_IDX_GRADE" indexType="btree">
+            <column name="grade"/>
+        </index>
+    </table>
+
+    <!-- ============================================================ -->
+    <!-- panth_seo_meta_embedding                                       -->
+    <!-- ============================================================ -->
+    <table name="panth_seo_meta_embedding" resource="default" engine="innodb" comment="Meta text embeddings">
+        <column xsi:type="int" name="embedding_id" unsigned="true" nullable="false" identity="true" comment="Embedding ID"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0" comment="Store ID"/>
+        <column xsi:type="varchar" name="entity_type" length="32" nullable="false" comment="Entity type"/>
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" comment="Entity ID"/>
+        <column xsi:type="varchar" name="field" length="32" nullable="false" comment="Field: title|description"/>
+        <column xsi:type="varchar" name="hash" length="64" nullable="false" comment="Content hash"/>
+        <column xsi:type="blob" name="vector" nullable="false" comment="Packed float32 vector"/>
+        <column xsi:type="smallint" name="dimensions" unsigned="true" nullable="false" default="384" comment="Vector dimensions"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="embedding_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="PANTH_SEO_EMBED_UNQ_STORE_ENTITY_FIELD">
+            <column name="store_id"/>
+            <column name="entity_type"/>
+            <column name="entity_id"/>
+            <column name="field"/>
+        </constraint>
+        <index referenceId="PANTH_SEO_EMBED_IDX_HASH" indexType="btree">
+            <column name="hash"/>
+        </index>
+    </table>
+
+    <!-- ============================================================ -->
+    <!-- panth_seo_duplicate                                            -->
+    <!-- ============================================================ -->
+    <table name="panth_seo_duplicate" resource="default" engine="innodb" comment="Detected duplicate meta groups">
+        <column xsi:type="int" name="duplicate_id" unsigned="true" nullable="false" identity="true" comment="Duplicate ID"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0" comment="Store ID"/>
+        <column xsi:type="varchar" name="field" length="32" nullable="false" comment="Field"/>
+        <column xsi:type="varchar" name="hash" length="64" nullable="false" comment="Content hash"/>
+        <column xsi:type="int" name="count" unsigned="true" nullable="false" default="0" comment="Duplicate count"/>
+        <column xsi:type="text" name="sample_entities" nullable="true" comment="JSON sample entities"/>
+        <column xsi:type="timestamp" name="detected_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Detected at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="duplicate_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="PANTH_SEO_DUPLICATE_UNQ_STORE_FIELD_HASH">
+            <column name="store_id"/>
+            <column name="field"/>
+            <column name="hash"/>
+        </constraint>
+    </table>
+
+    <!-- ============================================================ -->
+    <!-- panth_seo_custom_canonical                                     -->
+    <!-- ============================================================ -->
+    <table name="panth_seo_custom_canonical" resource="default" engine="innodb" comment="Panth SEO Custom Canonical URLs">
+        <column xsi:type="int" name="canonical_id" unsigned="true" nullable="false" identity="true"/>
+        <column xsi:type="varchar" name="source_entity_type" length="32" nullable="false"/>
+        <column xsi:type="int" name="source_entity_id" unsigned="true" nullable="false"/>
+        <column xsi:type="varchar" name="target_url" length="512" nullable="true"/>
+        <column xsi:type="varchar" name="target_entity_type" length="32" nullable="true"/>
+        <column xsi:type="int" name="target_entity_id" unsigned="true" nullable="true"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0"/>
+        <column xsi:type="boolean" name="is_active" nullable="false" default="true"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY"><column name="canonical_id"/></constraint>
+        <constraint xsi:type="unique" referenceId="PANTH_SEO_CUSTOM_CANONICAL_UNQ"><column name="source_entity_type"/><column name="source_entity_id"/><column name="store_id"/></constraint>
+    </table>
+
+    <!-- ============================================================ -->
+    <!-- panth_seo_crawl_result                                         -->
+    <!-- ============================================================ -->
+    <table name="panth_seo_crawl_result" resource="default" engine="innodb" comment="Panth SEO Crawl Audit Results">
+        <column xsi:type="int" name="id" unsigned="true" nullable="false" identity="true" comment="Row ID"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0" comment="Store ID"/>
+        <column xsi:type="varchar" name="url" length="1024" nullable="false" comment="Crawled URL"/>
+        <column xsi:type="smallint" name="status_code" unsigned="true" nullable="false" default="0" comment="HTTP status code"/>
+        <column xsi:type="varchar" name="meta_title" length="512" nullable="true" comment="Meta title found"/>
+        <column xsi:type="text" name="meta_description" nullable="true" comment="Meta description found"/>
+        <column xsi:type="varchar" name="canonical" length="1024" nullable="true" comment="Canonical URL found"/>
+        <column xsi:type="varchar" name="robots" length="64" nullable="true" comment="Robots directive found"/>
+        <column xsi:type="mediumtext" name="issues_json" nullable="true" comment="JSON array of detected issues"/>
+        <column xsi:type="timestamp" name="crawled_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Crawled at"/>
+        <column xsi:type="int" name="job_id" unsigned="true" nullable="true" comment="Crawl job ID"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="PANTH_SEO_CRAWL_RESULT_STORE_ID_STORE_STORE_ID"
+                    table="panth_seo_crawl_result" column="store_id"
+                    referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+        <index referenceId="PANTH_SEO_CRAWL_RESULT_IDX_STORE" indexType="btree">
+            <column name="store_id"/>
+        </index>
+        <index referenceId="PANTH_SEO_CRAWL_RESULT_IDX_JOB" indexType="btree">
+            <column name="job_id"/>
+        </index>
+        <index referenceId="PANTH_SEO_CRAWL_RESULT_IDX_STATUS" indexType="btree">
+            <column name="status_code"/>
+        </index>
+    </table>
+
+    <!-- ============================================================ -->
+    <!-- panth_seo_related                                              -->
+    <!-- ============================================================ -->
+    <table name="panth_seo_related" resource="default" engine="innodb" comment="Panth SEO related / internal linking suggestions">
+        <column xsi:type="int" name="related_id" unsigned="true" nullable="false" identity="true" comment="Related ID"/>
+        <column xsi:type="varchar" name="source_type" length="32" nullable="false" comment="Source entity type"/>
+        <column xsi:type="int" name="source_id" unsigned="true" nullable="false" comment="Source entity ID"/>
+        <column xsi:type="varchar" name="target_type" length="32" nullable="false" comment="Target entity type"/>
+        <column xsi:type="int" name="target_id" unsigned="true" nullable="false" comment="Target entity ID"/>
+        <column xsi:type="decimal" name="score" scale="6" precision="12" nullable="false" default="0" comment="Score"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0" comment="Store ID"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP" comment="Updated at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="related_id"/>
+        </constraint>
+        <index referenceId="PANTH_SEO_RELATED_IDX_SOURCE" indexType="btree">
+            <column name="source_type"/>
+            <column name="source_id"/>
+            <column name="store_id"/>
+        </index>
+        <index referenceId="PANTH_SEO_RELATED_IDX_TARGET" indexType="btree">
+            <column name="target_type"/>
+            <column name="target_id"/>
+        </index>
+    </table>
+
+    <!-- ============================================================ -->
+    <!-- panth_seo_feed_profile                                        -->
+    <!-- ============================================================ -->
+    <table name="panth_seo_feed_profile" resource="default" engine="innodb" comment="Panth SEO Feed Profiles">
+        <column xsi:type="int" name="feed_id" unsigned="true" nullable="false" identity="true" comment="Feed Profile ID"/>
+        <column xsi:type="varchar" name="name" nullable="false" length="255" comment="Feed Name"/>
+        <column xsi:type="varchar" name="feed_type" nullable="false" length="32" default="google_shopping" comment="Feed Type"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="1" comment="Store ID"/>
+        <column xsi:type="varchar" name="filename" nullable="false" length="255" default="google_feed.xml" comment="Output Filename"/>
+        <column xsi:type="varchar" name="output_format" nullable="false" length="16" default="xml" comment="Output Format (xml or csv)"/>
+        <column xsi:type="smallint" name="is_active" unsigned="true" nullable="false" default="1" comment="Is Active"/>
+        <column xsi:type="text" name="field_mapping" nullable="true" comment="Field Mapping JSON"/>
+        <column xsi:type="text" name="conditions_serialized" nullable="true" comment="Product Filter Conditions JSON"/>
+        <column xsi:type="smallint" name="include_out_of_stock" unsigned="true" nullable="false" default="0" comment="Include Out of Stock"/>
+        <column xsi:type="smallint" name="include_disabled" unsigned="true" nullable="false" default="0" comment="Include Disabled Products"/>
+        <column xsi:type="smallint" name="include_not_visible" unsigned="true" nullable="false" default="0" comment="Include Not Visible Individually"/>
+        <column xsi:type="text" name="category_filter" nullable="true" comment="Category IDs Filter (comma-separated)"/>
+        <column xsi:type="text" name="attribute_set_filter" nullable="true" comment="Attribute Set IDs Filter (comma-separated)"/>
+        <column xsi:type="varchar" name="delivery_country" nullable="true" length="2" default="US" comment="Delivery Country Code"/>
+        <column xsi:type="varchar" name="currency" nullable="true" length="3" default="USD" comment="Currency Code"/>
+        <column xsi:type="smallint" name="cron_enabled" unsigned="true" nullable="false" default="0" comment="Cron Enabled"/>
+        <column xsi:type="varchar" name="cron_schedule" nullable="true" length="64" default="0 1 * * *" comment="Cron Schedule Expression"/>
+        <column xsi:type="timestamp" name="last_generated_at" nullable="true" comment="Last Generated At"/>
+        <column xsi:type="int" name="generation_time" unsigned="true" nullable="true" comment="Generation Time in Seconds"/>
+        <column xsi:type="int" name="product_count" unsigned="true" nullable="false" default="0" comment="Product Count"/>
+        <column xsi:type="int" name="file_size" unsigned="true" nullable="false" default="0" comment="File Size in Bytes"/>
+        <column xsi:type="varchar" name="file_url" nullable="true" length="512" comment="Generated File URL"/>
+        <column xsi:type="smallint" name="delivery_enabled" unsigned="true" nullable="false" default="0" comment="FTP/SFTP Delivery Enabled"/>
+        <column xsi:type="varchar" name="delivery_type" nullable="false" length="10" default="ftp" comment="Delivery Type (ftp or sftp)"/>
+        <column xsi:type="varchar" name="delivery_host" nullable="true" length="255" comment="FTP/SFTP Host"/>
+        <column xsi:type="varchar" name="delivery_user" nullable="true" length="255" comment="FTP/SFTP Username"/>
+        <column xsi:type="varchar" name="delivery_password" nullable="true" length="255" comment="FTP/SFTP Password (encrypted)"/>
+        <column xsi:type="varchar" name="delivery_path" nullable="true" length="255" comment="Remote Directory Path"/>
+        <column xsi:type="smallint" name="delivery_passive_mode" unsigned="true" nullable="false" default="1" comment="FTP Passive Mode"/>
+        <column xsi:type="varchar" name="utm_source" nullable="true" length="255" comment="Google Analytics UTM Source"/>
+        <column xsi:type="varchar" name="utm_medium" nullable="true" length="255" comment="Google Analytics UTM Medium"/>
+        <column xsi:type="varchar" name="utm_campaign" nullable="true" length="255" comment="Google Analytics UTM Campaign"/>
+        <column xsi:type="varchar" name="compress" nullable="true" length="10" comment="Compression Type (zip, gzip)"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="false" comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP" on_update="true" comment="Updated At"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="feed_id"/>
+        </constraint>
+        <index referenceId="PANTH_SEO_FEED_PROFILE_IDX_STORE" indexType="btree">
+            <column name="store_id"/>
+        </index>
+        <index referenceId="PANTH_SEO_FEED_PROFILE_IDX_ACTIVE" indexType="btree">
+            <column name="is_active"/>
+        </index>
+    </table>
+
+    <!-- ============================================================ -->
+    <!-- panth_seo_feed_field                                          -->
+    <!-- ============================================================ -->
+    <table name="panth_seo_feed_field" resource="default" engine="innodb" comment="Panth SEO Feed Field Mapping">
+        <column xsi:type="int" name="field_id" unsigned="true" nullable="false" identity="true" comment="Field ID"/>
+        <column xsi:type="int" name="feed_id" unsigned="true" nullable="false" comment="Feed Profile ID"/>
+        <column xsi:type="varchar" name="feed_field" nullable="false" length="255" comment="Output Feed Field Name (e.g. g:title)"/>
+        <column xsi:type="varchar" name="source_type" nullable="false" length="50" comment="Source Type (attribute, static, template, parent_attribute)"/>
+        <column xsi:type="varchar" name="source_value" nullable="false" length="255" comment="Source Value (attribute code, static text, or template token)"/>
+        <column xsi:type="varchar" name="default_value" nullable="true" length="500" comment="Default Value if Source is Empty"/>
+        <column xsi:type="int" name="sort_order" unsigned="true" nullable="false" default="0" comment="Sort Order"/>
+        <column xsi:type="boolean" name="is_required" nullable="false" default="false" comment="Is Required (skip product if empty)"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="field_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="PANTH_SEO_FEED_FIELD_FEED_ID"
+                    table="panth_seo_feed_field" column="feed_id"
+                    referenceTable="panth_seo_feed_profile" referenceColumn="feed_id"
+                    onDelete="CASCADE"/>
+        <index referenceId="PANTH_SEO_FEED_FIELD_IDX_FEED" indexType="btree">
+            <column name="feed_id"/>
+        </index>
+        <index referenceId="PANTH_SEO_FEED_FIELD_IDX_SORT" indexType="btree">
+            <column name="sort_order"/>
+        </index>
+    </table>
+
+
+    <table name="panth_seo_audit_issue" resource="default" engine="innodb" comment="Panth SEO Site Audit issues">
+        <column xsi:type="int" name="id" unsigned="true" nullable="false" identity="true" comment="Row ID"/>
+        <column xsi:type="int" name="run_id" unsigned="true" nullable="false" comment="Audit run ID"/>
+        <column xsi:type="smallint" name="store_id" unsigned="true" nullable="false" default="0" comment="Store ID"/>
+        <column xsi:type="varchar" name="code" length="64" nullable="false" comment="Issue code"/>
+        <column xsi:type="varchar" name="severity" length="16" nullable="false" comment="error, warning or notice"/>
+        <column xsi:type="varchar" name="category" length="32" nullable="false" comment="Issue category"/>
+        <column xsi:type="varchar" name="url" length="512" nullable="false" comment="Affected URL"/>
+        <column xsi:type="varchar" name="element" length="1024" nullable="true" comment="Offending element"/>
+        <column xsi:type="text" name="detail" nullable="true" comment="Detail"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP" comment="Created at"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="PANTH_SEO_AUDIT_ISSUE_STORE_ID_STORE_STORE_ID"
+                    table="panth_seo_audit_issue" column="store_id"
+                    referenceTable="store" referenceColumn="store_id" onDelete="CASCADE"/>
+        <index referenceId="PANTH_SEO_AUDIT_ISSUE_RUN_ID_CODE" indexType="btree">
+            <column name="run_id"/>
+            <column name="code"/>
+        </index>
+        <index referenceId="PANTH_SEO_AUDIT_ISSUE_RUN_ID_URL" indexType="btree">
+            <column name="run_id"/>
+            <column name="url"/>
+        </index>
+        <index referenceId="PANTH_SEO_AUDIT_ISSUE_STORE_ID_RUN_ID" indexType="btree">
+            <column name="store_id"/>
+            <column name="run_id"/>
+        </index>
+    </table>
+
+</schema>

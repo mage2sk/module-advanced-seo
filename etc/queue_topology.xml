@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework-message-queue:etc/topology.xsd">
+    <exchange name="panth_seo.exchange" type="topic" connection="db">
+        <binding id="panth_seo_score_entity_binding" topic="panth_seo.score_entity" destinationType="queue" destination="panth_seo.score_entity.q"/>
+    </exchange>
+</config>

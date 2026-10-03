@@ -1,0 +1,472 @@
+<?php
+declare(strict_types=1);
+
+namespace Panth\AdvancedSEO\Model\Feed;
+
+use Magento\Catalog\Model\Product;
+use Magento\Catalog\Model\Product\Attribute\Source\Status;
+use Magento\Catalog\Model\Product\Visibility;
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory as ProductCollectionFactory;
+use Magento\ConfigurableProduct\Model\ResourceModel\Product\Type\Configurable as ConfigurableResource;
+use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\Filesystem;
+use Magento\Store\Model\StoreManagerInterface;
+use Psr\Log\LoggerInterface;
+
+class ProfileBasedFeedBuilder
+{
+    private const BATCH_SIZE = 500;
+
+    public function __construct(
+        private readonly ProductCollectionFactory $productCollectionFactory,
+        private readonly ConfigurableResource $configurableResource,
+        private readonly ResourceConnection $resourceConnection,
+        private readonly StoreManagerInterface $storeManager,
+        private readonly Filesystem $filesystem,
+        private readonly FieldResolver $fieldResolver,
+        private readonly XmlFeedWriter $xmlFeedWriter,
+        private readonly CsvFeedWriter $csvFeedWriter,
+        private readonly LoggerInterface $logger,
+        private readonly FtpDelivery $ftpDelivery
+    ) {
+    }
+
+    public function generateById(int $feedId): array
+    {
+        $profile = $this->loadProfile($feedId);
+        if ($profile === null) {
+            throw new \RuntimeException(sprintf('Feed profile #%d not found.', $feedId));
+        }
+
+        return $this->generate($profile);
+    }
+
+    public function generate(array $profile, bool $deliver = true): array
+    {
+        $startTime = microtime(true);
+
+        $feedId = (int) $profile['feed_id'];
+        $storeId = (int) $profile['store_id'];
+        $format = $profile['output_format'] ?? 'xml';
+        $filename = basename((string) (($profile['filename'] ?? '') ?: ('feed_' . $feedId . '.' . $format)));
+        if (!preg_match('/^[A-Za-z0-9][A-Za-z0-9._-]*\.(xml|csv|txt|tsv)$/i', $filename)) {
+            throw new \RuntimeException(sprintf('Invalid file name for feed profile #%d.', $feedId));
+        }
+
+        $fields = $this->loadFieldMappings($feedId);
+        if (empty($fields)) {
+            throw new \RuntimeException(sprintf('No field mappings found for feed profile #%d.', $feedId));
+        }
+
+        $mediaDir = $this->filesystem->getDirectoryWrite(DirectoryList::MEDIA);
+        $feedDir = 'panth_seo/feeds';
+        $mediaDir->create($feedDir);
+        $filePath = $mediaDir->getAbsolutePath($feedDir . '/' . $filename);
+
+        $attributeCodes = $this->collectAttributeCodes($fields);
+
+        $store = $this->storeManager->getStore($storeId);
+        $writer = ($format === 'csv') ? $this->csvFeedWriter : $this->xmlFeedWriter;
+        $writer->open($filePath, $store);
+
+        $productCount = 0;
+        $page = 1;
+
+        $needsParent = $this->fieldsNeedParent($fields);
+
+        do {
+            $collection = $this->buildProductCollection($profile, $storeId, $attributeCodes, $page);
+            $products = $collection->getItems();
+
+            foreach ($products as $product) {
+                try {
+                    $parent = null;
+                    if ($needsParent) {
+                        $parent = $this->loadParentProduct($product, $storeId, $attributeCodes);
+                    }
+
+                    $resolvedFields = $this->resolveProductFields($fields, $product, $storeId, $parent);
+
+                    $resolvedFields = $this->applyUtmParameters($resolvedFields, $profile);
+
+                    if ($this->hasMissingRequiredFields($fields, $resolvedFields)) {
+                        continue;
+                    }
+
+                    $writer->writeItem($resolvedFields);
+                    $productCount++;
+                } catch (\Throwable $e) {
+                    $this->logger->warning(sprintf(
+                        'Panth SEO Feed: failed to process product SKU "%s" for feed #%d: %s',
+                        $product->getSku(),
+                        $feedId,
+                        $e->getMessage()
+                    ));
+                }
+            }
+
+            $writer->flush();
+            $page++;
+        } while (count($products) >= self::BATCH_SIZE);
+
+        $writer->close();
+
+        $compress = trim((string) ($profile['compress'] ?? ''));
+        if ($compress !== '' && file_exists($filePath)) {
+            $filePath = $this->compressFile($filePath, $compress);
+            $filename = basename($filePath);
+        }
+
+        $generationTime = round(microtime(true) - $startTime, 2);
+        $fileSize = file_exists($filePath) ? (int) filesize($filePath) : 0;
+
+        $baseMediaUrl = rtrim($store->getBaseUrl(\Magento\Framework\UrlInterface::URL_TYPE_MEDIA), '/');
+        $fileUrl = $baseMediaUrl . '/' . $feedDir . '/' . $filename;
+
+        $this->updateProfileStats($feedId, $productCount, $fileSize, $generationTime, $fileUrl);
+
+        if ($deliver && !empty($profile['delivery_enabled']) && file_exists($filePath)) {
+            try {
+                $this->ftpDelivery->deliver($profile, $filePath);
+            } catch (\Throwable $e) {
+                $this->logger->error(sprintf(
+                    'Panth SEO Feed: FTP/SFTP delivery failed for profile #%d: %s',
+                    $feedId,
+                    $e->getMessage()
+                ));
+            }
+        }
+
+        return [
+            'product_count'   => $productCount,
+            'file_size'       => $fileSize,
+            'generation_time' => $generationTime,
+            'file_path'       => $filePath,
+            'file_url'        => $fileUrl,
+        ];
+    }
+
+    public function generateAllActive(?int $storeId = null, bool $cronOnly = false): array
+    {
+        $profiles = $this->loadActiveProfiles($storeId, $cronOnly);
+        $results = [];
+
+        foreach ($profiles as $profile) {
+            $feedId = (int) $profile['feed_id'];
+            try {
+                $results[$feedId] = $this->generate($profile);
+            } catch (\Throwable $e) {
+                $this->logger->error(sprintf(
+                    'Panth SEO Feed: generation failed for profile #%d "%s": %s',
+                    $feedId,
+                    $profile['name'] ?? '',
+                    $e->getMessage()
+                ));
+                $results[$feedId] = ['error' => $e->getMessage()];
+            }
+        }
+
+        return $results;
+    }
+
+    public function loadProfile(int $feedId): ?array
+    {
+        $connection = $this->resourceConnection->getConnection();
+        $tableName = $this->resourceConnection->getTableName('panth_seo_feed_profile');
+
+        if (!$connection->isTableExists($tableName)) {
+            return null;
+        }
+
+        $select = $connection->select()
+            ->from($tableName)
+            ->where('feed_id = ?', $feedId);
+
+        $row = $connection->fetchRow($select);
+        return $row ?: null;
+    }
+
+    public function loadActiveProfiles(?int $storeId = null, bool $cronOnly = false): array
+    {
+        $connection = $this->resourceConnection->getConnection();
+        $tableName = $this->resourceConnection->getTableName('panth_seo_feed_profile');
+
+        if (!$connection->isTableExists($tableName)) {
+            return [];
+        }
+
+        $select = $connection->select()
+            ->from($tableName)
+            ->where('is_active = ?', 1);
+
+        if ($storeId !== null) {
+            $select->where('store_id = ?', $storeId);
+        }
+
+        if ($cronOnly) {
+            $select->where('cron_enabled = ?', 1);
+        }
+
+        return $connection->fetchAll($select);
+    }
+
+    private function loadFieldMappings(int $feedId): array
+    {
+        $connection = $this->resourceConnection->getConnection();
+        $tableName = $this->resourceConnection->getTableName('panth_seo_feed_field');
+
+        if (!$connection->isTableExists($tableName)) {
+            return [];
+        }
+
+        $select = $connection->select()
+            ->from($tableName)
+            ->where('feed_id = ?', $feedId)
+            ->order('sort_order ASC');
+
+        return $connection->fetchAll($select);
+    }
+
+    private function collectAttributeCodes(array $fields): array
+    {
+        $codes = [
+            'name', 'sku', 'url_key', 'image', 'price', 'special_price',
+            'special_from_date', 'special_to_date', 'status', 'visibility',
+            'weight', 'manufacturer', 'description', 'short_description',
+        ];
+
+        foreach ($fields as $field) {
+            $sourceType = $field['source_type'] ?? '';
+            $sourceValue = $field['source_value'] ?? '';
+
+            if (in_array($sourceType, ['attribute', 'parent_attribute'], true) && $sourceValue !== '') {
+                $codes[] = $sourceValue;
+            }
+        }
+
+        return array_unique($codes);
+    }
+
+    private function fieldsNeedParent(array $fields): bool
+    {
+        foreach ($fields as $field) {
+            if (($field['source_type'] ?? '') === 'parent_attribute') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private function buildProductCollection(
+        array $profile,
+        int $storeId,
+        array $attributeCodes,
+        int $page
+    ): \Magento\Catalog\Model\ResourceModel\Product\Collection {
+        $collection = $this->productCollectionFactory->create();
+        $collection->setStoreId($storeId);
+        $collection->addStoreFilter($storeId);
+
+        if (empty($profile['include_disabled'])) {
+            $collection->addAttributeToFilter('status', Status::STATUS_ENABLED);
+        }
+
+        if (empty($profile['include_not_visible'])) {
+            $collection->addAttributeToFilter('visibility', ['in' => [
+                Visibility::VISIBILITY_IN_CATALOG,
+                Visibility::VISIBILITY_BOTH,
+            ]]);
+        }
+
+        $collection->addAttributeToSelect($attributeCodes);
+        $collection->addUrlRewrite();
+        if (empty($profile['include_out_of_stock'])) {
+            $collection->addFinalPrice();
+        } else {
+            $collection->setFlag('has_stock_status_filter', true);
+        }
+
+        $categoryFilter = trim((string) ($profile['category_filter'] ?? ''));
+        if ($categoryFilter !== '') {
+            $categoryIds = array_filter(array_map('intval', explode(',', $categoryFilter)));
+            if (!empty($categoryIds)) {
+                $collection->addCategoriesFilter(['in' => $categoryIds]);
+            }
+        }
+
+        $attrSetFilter = trim((string) ($profile['attribute_set_filter'] ?? ''));
+        if ($attrSetFilter !== '') {
+            $attrSetIds = array_filter(array_map('intval', explode(',', $attrSetFilter)));
+            if (!empty($attrSetIds)) {
+                $collection->addFieldToFilter('attribute_set_id', ['in' => $attrSetIds]);
+            }
+        }
+
+        if (empty($profile['include_out_of_stock'])) {
+            $collection->getSelect()->joinLeft(
+                ['_stock_filter' => $collection->getTable('cataloginventory_stock_item')],
+                'e.entity_id = _stock_filter.product_id AND _stock_filter.stock_id = 1',
+                []
+            )->where('_stock_filter.is_in_stock = ?', 1);
+        }
+
+        $collection->setPageSize(self::BATCH_SIZE);
+        $collection->setCurPage($page);
+
+        return $collection;
+    }
+
+    private function loadParentProduct(Product $product, int $storeId, array $attributeCodes): ?Product
+    {
+        if ($product->getTypeId() !== \Magento\Catalog\Model\Product\Type::DEFAULT_TYPE) {
+            return null;
+        }
+
+        try {
+            $parentIds = $this->configurableResource->getParentIdsByChild($product->getId());
+            if (empty($parentIds)) {
+                return null;
+            }
+
+            $parentId = (int) reset($parentIds);
+            $parentCollection = $this->productCollectionFactory->create();
+            $parentCollection->setStoreId($storeId);
+            $parentCollection->addAttributeToSelect($attributeCodes);
+            $parentCollection->addIdFilter($parentId);
+            $parentCollection->addUrlRewrite();
+            $parentCollection->setPageSize(1);
+
+            $parent = $parentCollection->getFirstItem();
+            return ($parent && $parent->getId()) ? $parent : null;
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    private function resolveProductFields(
+        array $fields,
+        Product $product,
+        int $storeId,
+        ?Product $parent
+    ): array {
+        $resolved = [];
+
+        foreach ($fields as $fieldConfig) {
+            $feedField = $fieldConfig['feed_field'] ?? '';
+            if ($feedField === '') {
+                continue;
+            }
+
+            $value = $this->fieldResolver->resolve($fieldConfig, $product, $storeId, $parent);
+            $resolved[$feedField] = $value;
+        }
+
+        return $resolved;
+    }
+
+    private function hasMissingRequiredFields(array $fields, array $resolved): bool
+    {
+        foreach ($fields as $fieldConfig) {
+            $feedField = $fieldConfig['feed_field'] ?? '';
+            $isRequired = !empty($fieldConfig['is_required']);
+
+            if ($isRequired && ($resolved[$feedField] ?? '') === '') {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function updateProfileStats(
+        int $feedId,
+        int $productCount,
+        int $fileSize,
+        float $generationTime,
+        string $fileUrl
+    ): void {
+        try {
+            $connection = $this->resourceConnection->getConnection();
+            $tableName = $this->resourceConnection->getTableName('panth_seo_feed_profile');
+
+            $connection->update(
+                $tableName,
+                [
+                    'product_count'   => $productCount,
+                    'file_size'       => $fileSize,
+                    'generation_time' => round($generationTime, 2),
+                    'last_generated_at' => (new \DateTime())->format('Y-m-d H:i:s'),
+                    'file_url'        => mb_substr($fileUrl, 0, 512),
+                    'updated_at'      => (new \DateTime())->format('Y-m-d H:i:s'),
+                ],
+                ['feed_id = ?' => $feedId]
+            );
+        } catch (\Throwable $e) {
+            $this->logger->warning(sprintf(
+                'Panth SEO Feed: failed to update stats for profile #%d: %s',
+                $feedId,
+                $e->getMessage()
+            ));
+        }
+    }
+
+    private function applyUtmParameters(array $resolvedFields, array $profile): array
+    {
+        $utmSource = trim((string) ($profile['utm_source'] ?? ''));
+        if ($utmSource === '') {
+            return $resolvedFields;
+        }
+
+        $utmParams = ['utm_source' => $utmSource];
+        $utmMedium = trim((string) ($profile['utm_medium'] ?? ''));
+        if ($utmMedium !== '') {
+            $utmParams['utm_medium'] = $utmMedium;
+        }
+        $utmCampaign = trim((string) ($profile['utm_campaign'] ?? ''));
+        if ($utmCampaign !== '') {
+            $utmParams['utm_campaign'] = $utmCampaign;
+        }
+
+        $queryString = http_build_query($utmParams);
+
+        $urlFields = ['link', 'g:link', 'url', 'product_url', 'canonical_link'];
+        foreach ($urlFields as $urlField) {
+            if (isset($resolvedFields[$urlField]) && $resolvedFields[$urlField] !== '') {
+                $separator = str_contains($resolvedFields[$urlField], '?') ? '&' : '?';
+                $resolvedFields[$urlField] .= $separator . $queryString;
+            }
+        }
+
+        return $resolvedFields;
+    }
+
+    private function compressFile(string $filePath, string $method): string
+    {
+        if ($method === 'gzip') {
+            $gzPath = $filePath . '.gz';
+            $fp = fopen($filePath, 'rb');
+            $gz = gzopen($gzPath, 'wb9');
+            if ($fp && $gz) {
+                while (!feof($fp)) {
+                    gzwrite($gz, fread($fp, 8192));
+                }
+                gzclose($gz);
+                fclose($fp);
+                unlink($filePath);
+                return $gzPath;
+            }
+        } elseif ($method === 'zip') {
+            $zipPath = $filePath . '.zip';
+            $zip = new \ZipArchive();
+            if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === true) {
+                $zip->addFile($filePath, basename($filePath));
+                $zip->close();
+                unlink($filePath);
+                return $zipPath;
+            }
+        }
+
+        return $filePath;
+    }
+}
