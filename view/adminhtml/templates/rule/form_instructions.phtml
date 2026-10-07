@@ -1,0 +1,52 @@
+<?php /** @var \Magento\Backend\Block\Template $block */ ?>
+<div style="padding:15px;background:#f8f8f8;border:1px solid #ddd;border-radius:4px;font-size:13px;line-height:1.8;">
+    <h3 style="margin:0 0 10px;font-size:15px;font-weight:bold;">How SEO Rules Work</h3>
+    <p>SEO Rules are evaluated <strong>automatically in real-time</strong> on every frontend page load. No manual "Apply" action is needed.</p>
+
+    <h4 style="margin:15px 0 8px;font-size:14px;font-weight:bold;">Evaluation Flow</h4>
+    <table style="width:100%;border-collapse:collapse;">
+        <tbody>
+            <tr><td style="padding:6px;border:1px solid #ddd;width:30px;text-align:center;font-weight:bold;background:#E8F5E9;">1</td><td style="padding:6px;border:1px solid #ddd;">Visitor or search bot loads a product, category, or CMS page</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:bold;background:#E8F5E9;">2</td><td style="padding:6px;border:1px solid #ddd;">Rule engine loads all <strong>active rules</strong> matching the entity type and store view</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:bold;background:#E8F5E9;">3</td><td style="padding:6px;border:1px solid #ddd;">Each rule's <strong>conditions</strong> are checked against the entity (visibility, category, product type, etc.)</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:bold;background:#E8F5E9;">4</td><td style="padding:6px;border:1px solid #ddd;">Matching rule's <strong>actions</strong> override: meta title, meta description, robots, or canonical URL</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;text-align:center;font-weight:bold;background:#E8F5E9;">5</td><td style="padding:6px;border:1px solid #ddd;">If "Stop Processing" = Yes, no further rules are evaluated after this match</td></tr>
+        </tbody>
+    </table>
+
+    <h4 style="margin:15px 0 8px;font-size:14px;font-weight:bold;">Priority & Precedence</h4>
+    <ul style="margin:0;padding-left:20px;">
+        <li><strong>Lower number = higher priority.</strong> A rule with priority 5 runs before priority 10.</li>
+        <li>Multiple rules can match the same entity. Actions are merged (first non-empty value wins per field).</li>
+        <li>Rule results are <strong>cached for 1 hour.</strong> Flush "Config" cache to see changes immediately.</li>
+    </ul>
+
+    <h4 style="margin:15px 0 8px;font-size:14px;font-weight:bold;">Rules vs Templates</h4>
+    <table style="width:100%;border-collapse:collapse;">
+        <thead>
+            <tr style="background:#e8e8e8;">
+                <th style="text-align:left;padding:6px;border:1px solid #ddd;"></th>
+                <th style="text-align:left;padding:6px;border:1px solid #ddd;">Meta Templates</th>
+                <th style="text-align:left;padding:6px;border:1px solid #ddd;">SEO Rules</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-weight:bold;">When applied</td><td style="padding:6px;border:1px solid #ddd;">On-demand (Apply Now / Cron)</td><td style="padding:6px;border:1px solid #ddd;">Real-time on every page load</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-weight:bold;">Where stored</td><td style="padding:6px;border:1px solid #ddd;">Written to product/category EAV attributes</td><td style="padding:6px;border:1px solid #ddd;">Evaluated live, nothing stored</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-weight:bold;">Best for</td><td style="padding:6px;border:1px solid #ddd;">Bulk meta title/description generation</td><td style="padding:6px;border:1px solid #ddd;">Conditional overrides (robots, noindex, specific conditions)</td></tr>
+            <tr><td style="padding:6px;border:1px solid #ddd;font-weight:bold;">Performance</td><td style="padding:6px;border:1px solid #ddd;">Fast (pre-computed)</td><td style="padding:6px;border:1px solid #ddd;">Slightly slower (evaluated + cached per request)</td></tr>
+        </tbody>
+    </table>
+
+    <h4 style="margin:15px 0 8px;font-size:14px;font-weight:bold;">Available Tokens for Title/Description Templates</h4>
+    <p style="margin:0;">
+        <code>{{name}}</code>, <code>{{sku}}</code>, <code>{{price}}</code>, <code>{{brand}}</code>,
+        <code>{{category}}</code>, <code>{{category.name}}</code>, <code>{{store}}</code>, <code>{{store.name}}</code>,
+        <code>{{page}}</code>, <code>{{short_description}}</code>, <code>{{description}}</code>,
+        <code>{{attribute:color}}</code>, <code>{{url_key}}</code>
+    </p>
+    <p style="margin:5px 0 0;">
+        <strong>Filters:</strong> <code>{{name|upper}}</code>, <code>{{description|truncate:155}}</code>,
+        <code>{{brand|default:'Shop'}}</code>, <code>{{description|strip}}</code>
+    </p>
+</div>

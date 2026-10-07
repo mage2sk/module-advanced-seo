@@ -1,0 +1,91 @@
+<?php
+/** @var \Panth\AdvancedSEO\Block\Adminhtml\Feed\FieldInfo $block */
+?>
+<div class="admin__fieldset" style="margin-bottom: 20px; background: #f8f8f8; border: 1px solid #e3e3e3; padding: 15px; border-radius: 4px;">
+    <h3 style="margin-top: 0; margin-bottom: 10px; font-size: 16px; font-weight: 600;">Field Mapping Reference</h3>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+            <h4 style="margin-top: 0; margin-bottom: 8px; font-weight: 600;">Source Types</h4>
+            <table class="data-grid" style="font-size: 12px;">
+                <thead>
+                    <tr>
+                        <th class="data-grid-th" style="padding: 6px 10px;">Type</th>
+                        <th class="data-grid-th" style="padding: 6px 10px;">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 6px 10px;"><code>attribute</code></td>
+                        <td style="padding: 6px 10px;">Product attribute code (e.g. <code>name</code>, <code>sku</code>, <code>description</code>, <code>manufacturer</code>)</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 6px 10px;"><code>static</code></td>
+                        <td style="padding: 6px 10px;">A fixed text value (e.g. <code>new</code>, <code>false</code>, <code>US</code>)</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 6px 10px;"><code>template</code></td>
+                        <td style="padding: 6px 10px;">A computed value from a template token (see below)</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 6px 10px;"><code>parent_attribute</code></td>
+                        <td style="padding: 6px 10px;">Same as <code>attribute</code> but reads from the parent configurable product</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4 style="margin-top: 15px; margin-bottom: 8px; font-weight: 600;">Available Template Tokens</h4>
+            <table class="data-grid" style="font-size: 12px;">
+                <thead>
+                    <tr>
+                        <th class="data-grid-th" style="padding: 6px 10px;">Token</th>
+                        <th class="data-grid-th" style="padding: 6px 10px;">Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td style="padding: 4px 10px;"><code>product_url</code></td><td style="padding: 4px 10px;">Full product URL</td></tr>
+                    <tr><td style="padding: 4px 10px;"><code>product_image_url</code></td><td style="padding: 4px 10px;">Main product image URL</td></tr>
+                    <tr><td style="padding: 4px 10px;"><code>additional_images</code></td><td style="padding: 4px 10px;">Comma-separated additional image URLs</td></tr>
+                    <tr><td style="padding: 4px 10px;"><code>product_price</code></td><td style="padding: 4px 10px;">Formatted price with currency (e.g. "29.99 USD")</td></tr>
+                    <tr><td style="padding: 4px 10px;"><code>product_special_price</code></td><td style="padding: 4px 10px;">Sale price if active, empty otherwise</td></tr>
+                    <tr><td style="padding: 4px 10px;"><code>stock_status</code></td><td style="padding: 4px 10px;">"in_stock", "out of stock", or "preorder"</td></tr>
+                    <tr><td style="padding: 4px 10px;"><code>category_path</code></td><td style="padding: 4px 10px;">Full category path (e.g. "Clothing > Shirts > T-Shirts")</td></tr>
+                    <tr><td style="padding: 4px 10px;"><code>product_weight</code></td><td style="padding: 4px 10px;">Product weight with unit (e.g. "1.5 kg")</td></tr>
+                    <tr><td style="padding: 4px 10px;"><code>parent_sku</code></td><td style="padding: 4px 10px;">Parent configurable product SKU</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div>
+            <h4 style="margin-top: 0; margin-bottom: 8px; font-weight: 600;">Google Shopping Required Fields</h4>
+            <ul style="font-size: 12px; margin: 0; padding-left: 18px;">
+                <li><code>g:id</code> - Unique product identifier</li>
+                <li><code>g:title</code> - Product title (max 150 chars)</li>
+                <li><code>g:description</code> - Product description (max 5000 chars)</li>
+                <li><code>g:link</code> - Product page URL</li>
+                <li><code>g:image_link</code> - Main product image URL</li>
+                <li><code>g:price</code> - Product price with currency</li>
+                <li><code>g:availability</code> - in_stock / out of stock / preorder</li>
+            </ul>
+
+            <h4 style="margin-top: 15px; margin-bottom: 8px; font-weight: 600;">Recommended Fields</h4>
+            <ul style="font-size: 12px; margin: 0; padding-left: 18px;">
+                <li><code>g:brand</code> - Product brand/manufacturer</li>
+                <li><code>g:gtin</code> / <code>g:mpn</code> - Product identifiers</li>
+                <li><code>g:condition</code> - new / refurbished / used</li>
+                <li><code>g:product_type</code> - Category path</li>
+                <li><code>g:sale_price</code> - Sale price if applicable</li>
+                <li><code>g:shipping_weight</code> - Product weight</li>
+                <li><code>g:color</code>, <code>g:size</code>, <code>g:material</code> - Variant attributes</li>
+                <li><code>g:item_group_id</code> - Groups variants together</li>
+                <li><code>g:identifier_exists</code> - Set to "false" if no GTIN/MPN</li>
+            </ul>
+
+            <p style="font-size: 12px; margin-top: 15px;">
+                <a href="https://support.google.com/merchants/answer/7052112" target="_blank" rel="noopener">
+                    Google Merchant Center Feed Specification &rarr;
+                </a>
+            </p>
+        </div>
+    </div>
+</div>

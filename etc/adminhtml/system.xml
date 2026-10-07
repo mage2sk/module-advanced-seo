@@ -1,0 +1,396 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="panth_seo" translate="label" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>Advanced SEO</label>
+            <tab>panth</tab>
+            <resource>Panth_AdvancedSEO::config</resource>
+
+            <group id="general" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General</label>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Module</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Master switch for all Panth Advanced SEO features.</comment>
+                </field>
+                <field id="debug" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Debug Logging</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Writes detailed SEO processing logs to var/log/panth_seo.log. Disable in production for performance.</comment>
+                </field>
+            </group>
+
+            <group id="meta" translate="label" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Meta Tags</label>
+                <field id="use_templates" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Use Meta Templates</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Generate meta titles and descriptions from token-based templates when entities lack custom meta values.</comment>
+                </field>
+                <field id="title_max_length" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Meta Title Max Length</label>
+                    <validate>validate-digits validate-digits-range digits-range-20-200</validate>
+                    <comment>Maximum characters for the meta title tag. Google typically displays 50-60 characters. Recommended: 60.</comment>
+                </field>
+                <field id="description_max_length" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Meta Description Max Length</label>
+                    <validate>validate-digits validate-digits-range digits-range-50-320</validate>
+                    <comment>Maximum characters for the meta description tag. Google typically displays 150-160 characters. Recommended: 160.</comment>
+                </field>
+                <field id="append_store_name" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Append Store Name to Title</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Appends " - Store Name" to all meta titles for brand consistency.</comment>
+                </field>
+                <field id="strip_title_prefix_suffix" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Strip Native Title Prefix/Suffix</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Removes Magento's default title prefix/suffix (configured in Content > Design > HTML Head) to give full control to templates.</comment>
+                </field>
+                <field id="seo_name_enabled" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable SEO Name Token</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Enables the {{seo_name}} token in meta templates, which uses the product's dedicated SEO name attribute if available.</comment>
+                </field>
+                <field id="pagination_position" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Pagination Label Position</label>
+                    <source_model>Panth\AdvancedSEO\Model\Config\Source\PaginationPosition</source_model>
+                    <comment>Where to place the page number indicator in the meta title: prefix, suffix, or none.</comment>
+                </field>
+                <field id="pagination_format" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Pagination Format</label>
+                    <comment>Use %p as the page number placeholder. Default: | Page %p</comment>
+                </field>
+                <field id="force_template_over_existing" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Force Template Over Existing Meta</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>When enabled, meta templates always override manually set meta title/description on products and categories. When disabled (default), entities with existing meta values keep them.</comment>
+                    <depends>
+                        <field id="use_templates">1</field>
+                    </depends>
+                </field>
+                <field id="noindex_noroute" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Noindex 404 (No-Route) Page</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>When enabled (default), the 404 no-route page gets robots "noindex,follow" and no canonical tag. When disabled, the 404 page uses the normal meta resolution.</comment>
+                </field>
+            </group>
+
+            <group id="canonical" translate="label" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Canonical URLs</label>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Emit Canonical Tag</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Outputs a rel="canonical" link tag on all pages to prevent duplicate content issues.</comment>
+                </field>
+                <field id="strip_query" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Strip Query String</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Removes all query parameters (e.g. ?p=2, ?product_list_order=name) from canonical URLs.</comment>
+                </field>
+                <field id="lowercase_host" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Lowercase Host</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Forces the hostname portion of canonical URLs to lowercase to prevent case-sensitive duplicates.</comment>
+                </field>
+                <field id="remove_trailing_slash" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Remove Trailing Slash</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Removes trailing slashes from canonical URLs (except homepage, controlled separately).</comment>
+                </field>
+                <field id="paginated_canonical_to_first" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Paginated Pages Canonical to Page 1</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>When enabled, all paginated pages (p=2, p=3, etc.) point their canonical to page 1. When disabled (recommended), each page self-canonicalizes.</comment>
+                </field>
+                <field id="associated_product_canonical" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Associated Product Canonical to Parent</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Simple products used in configurables/grouped/bundles will point their canonical to the parent product URL.</comment>
+                </field>
+                <field id="cross_domain_store" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Cross-Domain Canonical Store</label>
+                    <source_model>Panth\AdvancedSEO\Model\Config\Source\CrossDomainStore</source_model>
+                    <comment>Store view whose domain is used in canonical URLs, for stores that share the same catalog on several domains. None keeps the domain of the current store view.</comment>
+                </field>
+                <field id="canonical_ignore_pages" translate="label" type="textarea" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Ignore Pages (one URL path per line)</label>
+                    <comment>Pages matching these paths will not emit a canonical tag.</comment>
+                </field>
+                <field id="disable_canonical_for_noindex" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Disable Canonical for NOINDEX Pages</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Suppresses the canonical tag on pages marked as noindex, since search engines should not index them anyway.</comment>
+                </field>
+                <field id="product_canonical_type" translate="label comment" type="select" sortOrder="95" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Product Canonical URL Type</label>
+                    <source_model>Panth\AdvancedSEO\Model\Config\Source\ProductCanonicalType</source_model>
+                    <comment>Controls how product canonical URLs are built: without any category path, with the shortest category path, or with the longest/deepest category path.</comment>
+                </field>
+                <field id="use_short_category_url" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Use Short Category URL for Canonical</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>When enabled, uses the shortest (shallowest) URL path for category canonical URLs instead of the full nested path.</comment>
+                </field>
+                <field id="trailing_slash_homepage" translate="label comment" type="select" sortOrder="105" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Trailing Slash on Homepage</label>
+                    <source_model>Panth\AdvancedSEO\Model\Config\Source\TrailingSlashHomepage</source_model>
+                    <comment>Controls trailing slash behavior for the homepage canonical URL, independent of the general "Remove Trailing Slash" setting.</comment>
+                </field>
+                <field id="strip_params" translate="label comment" type="textarea" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Strip Query Parameters</label>
+                    <comment>Comma-separated list of query parameter names to strip from canonical URLs (e.g. utm_source,utm_medium,gclid,fbclid). These are removed in addition to the "Strip Query String" option which removes all parameters.</comment>
+                </field>
+            </group>
+
+            <!--
+                Group id="social" (Open Graph / Twitter Card) has been moved
+                to the standalone Panth_SocialMeta module. The fields are
+                merged back into this same panth_seo section at runtime via
+                system.xml merging.
+            -->
+
+            <group id="url" translate="label" sortOrder="43" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>URL Key Automation</label>
+                <field id="auto_url_key_enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Auto-Generate URL Key on Product Creation</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>When enabled, new products without a manually entered URL key receive one generated from the template below.</comment>
+                </field>
+                <field id="url_key_template" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>URL Key Template</label>
+                    <comment><![CDATA[Tokens: {{name}}, {{sku}}, {{attribute:code}}. Filters: |truncate:N, |lower. Example: <code>{{name}}-{{sku}}</code>]]></comment>
+                    <depends>
+                        <field id="auto_url_key_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="auto_url_key_for_existing" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Also Apply to Existing Products on Save</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>When enabled, the URL key template is re-applied every time an existing product is saved (overwriting any previous key).</comment>
+                    <depends>
+                        <field id="auto_url_key_enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+
+            <group id="reports" translate="label" sortOrder="75" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Reports &amp; Diagnostics</label>
+                <field id="enable_crawl_audit" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Scheduled Crawl Audit</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Runs the crawl audit once a day by cron, checking for broken links, missing meta and redirect chains. Resource intensive on large catalogues. This controls the <strong>scheduled</strong> run only - <strong>Run Crawl</strong> on the SEO Audit page and <code>bin/magento panth:seo:crawl</code> work either way, and the settings below apply to all three.]]></comment>
+                </field>
+                <field id="crawl_depth" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Crawl Depth (max pages)</label>
+                    <validate>validate-digits</validate>
+                    <comment><![CDATA[Maximum number of pages to crawl per run, for the scheduled audit, <strong>Run Crawl</strong> and the CLI alike. Default: 100. A crawl started from the admin while cron is not running is capped at 25 pages.]]></comment>
+                </field>
+                <field id="crawl_exclude_paths" translate="label comment" type="textarea" sortOrder="22" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Crawl Exclude Paths (one per line)</label>
+                    <comment><![CDATA[URL paths the crawl audit must not follow. Customer, checkout and other private pages are noindex by design, so auditing them wastes the page budget. Wildcards supported: <code>*</code>. Clear the field to crawl everything.]]></comment>
+                </field>
+                <field id="crawl_follow_filtered" translate="label comment" type="select" sortOrder="24" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Follow Filtered And Sorted URLs</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[Any URL carrying a query string, so layered navigation, sorting, page size and paging. These multiply without bound and mostly repeat the same template, so leaving this off keeps the crawl budget on distinct indexable pages. Turn it on to audit filtered and paginated URLs too.]]></comment>
+                </field>
+                <field id="crawl_verify_tls" translate="label comment" type="select" sortOrder="26" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Verify TLS Certificate While Crawling</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Leave on. Turn it off only on a local or staging site using a self-signed certificate, where the crawl would otherwise fail to connect.</comment>
+                </field>
+                <field id="seo_toolbar_enabled" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable SEO Toolbar</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Shows an on-page SEO diagnostics toolbar on the storefront for allowed IPs.</comment>
+                </field>
+                <field id="seo_toolbar_allowed_ips" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>SEO Toolbar Allowed IPs</label>
+                    <comment><![CDATA[Comma-separated IP literals or CIDR ranges (e.g. <code>10.0.0.5,192.168.0.0/16</code>). When the toolbar fires it disables Full Page Cache for that response, so the allow-list MUST be tight in production. Leave empty to render the toolbar only in <code>MAGE_MODE=developer</code>. Use <code>*</code> as a single entry to explicitly allow every visitor (this WILL disable FPC site-wide; only use on staging).]]></comment>
+                </field>
+            </group>
+
+            <group id="audit" translate="label" sortOrder="76" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Site Audit Checks</label>
+                <field id="check_external_links" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Check External Links</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment><![CDATA[HEAD-checks every external link found by the crawl (GET as fallback, 8 in parallel, 5 s timeout, one retry). 403, 405 and 429 answers from social networks such as linkedin.com, x.com, facebook.com, instagram.com and medium.com are reported as unverifiable, not broken.]]></comment>
+                </field>
+                <field id="max_external_checks" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Max External Checks per Crawl</label>
+                    <validate>validate-digits</validate>
+                    <comment>Upper limit of distinct external URLs checked per crawl. Default: 500. Set 0 to skip external checks.</comment>
+                </field>
+                <field id="sitemap_sample" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Sitemap Sample per Sub-Sitemap</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <comment>At most this many URLs are read from each sub-sitemap for the orphan check; larger sitemaps are sampled evenly and the report says "sampled". Default: 300.</comment>
+                </field>
+                <field id="slow_page_seconds" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Slow Page Threshold (seconds)</label>
+                    <validate>validate-number validate-greater-than-zero</validate>
+                    <comment>A page whose HTML takes longer than this to load (cache-busted fetch) is reported as slow_page. Default: 3.</comment>
+                </field>
+                <field id="timing_sample" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Cache-Busted Timing Sample</label>
+                    <validate>validate-digits</validate>
+                    <comment>Number of crawled pages fetched a second time with a cache-busting parameter to measure TTFB and total load time. The parameter is never used to judge robots or content. Default: 50. 0 uses the crawl timing.</comment>
+                </field>
+                <field id="history_runs" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Issue Runs to Keep</label>
+                    <validate>validate-digits validate-greater-than-zero</validate>
+                    <comment>Audit runs kept per store view in panth_seo_audit_issue for the "Compare with previous run" column. Minimum 2. Default: 5.</comment>
+                </field>
+            </group>
+
+            <group id="audit_fixes" translate="label" sortOrder="77" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Site Audit Fixes (opt-in)</label>
+                <field id="strip_invalid_schema_props" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Strip Invalid Schema Properties</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Removes JSON-LD properties that the node's schema.org @type does not define (for example datePublished and dateModified on Product) from the structured-data provider output, using the same allow-list as the structured_data_invalid check. Clean the full page cache after changing it.</comment>
+                </field>
+                <field id="rewrite_relative_readme_links" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Rewrite Relative README Links</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>At render time, rewrites href="docs/..." and href="./docs/..." in product and CMS content to the raw.githubusercontent.com base of the image inside the link, and github.com/org/repo/raw/main/#anchor links to github.com/org/repo#anchor.</comment>
+                </field>
+                <field id="hreflang_group_guard" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Hreflang Group Guard</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Refuses to save a hreflang group (Panth_Hreflang admin) in which two members use the same locale. A group links translations of one page; topic clusters belong in internal links.</comment>
+                </field>
+                <field id="seo_title_wins_over_h1" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>SEO Title Wins Over H1</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>When this module resolved an SEO title, re-applies it after the layout is built so a block or controller that later sets the page title to the H1 heading does not overwrite it. The on-page H1 keeps the heading.</comment>
+                </field>
+            </group>
+
+            <group id="merchant_feed" translate="label" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Google Merchant Feed</label>
+                <comment><![CDATA[Generate a Google Shopping XML product feed for free listings. The feed is served at <code>/panth_seo/feed/google</code> and regenerated daily by cron to <code>pub/media/panth_seo/google_feed_{store_code}.xml</code>. CLI: <code>bin/magento panth:seo:feed</code>.]]></comment>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Google Merchant Feed</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>When enabled, the Google Shopping XML feed is served at /panth_seo/feed/google and regenerated daily.</comment>
+                </field>
+                <field id="include_out_of_stock" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Include Out of Stock Products</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>When enabled, out-of-stock products are included in the feed with availability "out of stock".</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="default_condition" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Default Product Condition</label>
+                    <comment>Condition sent in the feed for products without their own condition value; also used as the itemCondition of the product structured data.</comment>
+                    <source_model>Panth\AdvancedSEO\Model\Config\Source\GoogleProductCondition</source_model>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="google_category_attribute" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Google Product Category Attribute</label>
+                    <comment><![CDATA[Product attribute code that holds the Google product category taxonomy value (e.g. <code>google_product_category</code>). Leave empty to omit.]]></comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="shipping_country" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Shipping Country</label>
+                    <comment>Two-letter ISO country code, e.g. US, GB, DE. Leave empty to omit the shipping element.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="shipping_price" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Shipping Price</label>
+                    <validate>validate-number</validate>
+                    <comment>Flat shipping price (e.g. 5.99). Leave empty to omit the shipping element.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+
+            <group id="analytics" translate="label" sortOrder="91" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Google Analytics 4</label>
+                <comment><![CDATA[Integrate GA4 measurement and enhanced ecommerce tracking. Outputs the <code>gtag.js</code> snippet and fires <code>view_item</code>, <code>view_item_list</code>, and <code>add_to_cart</code> events.]]></comment>
+                <field id="ga4_enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable GA4</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Enable Google Analytics 4 script output on the storefront.</comment>
+                </field>
+                <field id="ga4_measurement_id" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Measurement ID</label>
+                    <comment><![CDATA[Your GA4 Measurement ID (e.g. <code>G-XXXXXXXXXX</code>). Find it in Google Analytics &gt; Admin &gt; Data Streams. Only alphanumerics, dash and underscore are accepted; any other character is rejected both client-side and server-side.]]></comment>
+                    <validate>validate-alphanum-with-dash</validate>
+                    <backend_model>Panth\AdvancedSEO\Model\Config\Backend\Ga4MeasurementId</backend_model>
+                    <depends>
+                        <field id="ga4_enabled">1</field>
+                    </depends>
+                </field>
+                <field id="ga4_enhanced_ecommerce" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enhanced Ecommerce Events</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>When enabled, fires GA4 enhanced ecommerce events (view_item, view_item_list) on product and category pages.</comment>
+                    <depends>
+                        <field id="ga4_enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+
+            <group id="search_console" translate="label" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Google Search Console</label>
+                <comment><![CDATA[Search Console site verification and Google Indexing API integration for instant URL submission. <a href="https://developers.google.com/search/apis/indexing-api/v3/quickstart" target="_blank">Indexing API docs</a>.]]></comment>
+                <field id="site_verification_code" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Site Verification Code</label>
+                    <comment><![CDATA[The <code>content</code> value from the Google HTML tag verification method (e.g. <code>abc123def456</code>). Outputs a <code>&lt;meta name="google-site-verification"&gt;</code> tag.]]></comment>
+                </field>
+                <field id="indexing_api_enabled" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Indexing API</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>When enabled, product, category, and CMS page saves automatically submit the changed URL to the Google Indexing API. Rate limited to 200 submissions per day.</comment>
+                </field>
+                <field id="service_account_json" translate="label comment" type="obscure" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Service Account JSON Key</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <comment><![CDATA[Paste the full JSON contents of your Google Cloud service account key file. The service account must have the <strong>Indexing API</strong> role. Stored encrypted.]]></comment>
+                    <depends>
+                        <field id="indexing_api_enabled">1</field>
+                    </depends>
+                </field>
+            </group>
+
+            <group id="advanced" translate="label" sortOrder="95" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Advanced</label>
+                <field id="async_indexing" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Async Indexing via Queue</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Offloads SEO data indexing to the message queue for non-blocking catalog saves. Requires a running consumer.</comment>
+                </field>
+                <field id="mview_enabled" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Use MView for Incremental Rebuild</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Uses Magento's materialized view (changelog) system for incremental SEO data rebuilds instead of full reindex.</comment>
+                </field>
+                <field id="last_modified_header" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Last-Modified HTTP Header</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Sets Last-Modified and ETag headers on product and category pages using the entity's updated_at timestamp. Enables efficient browser caching and CDN revalidation.</comment>
+                </field>
+                <field id="speculation_rules_enabled" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Speculation Rules API</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Outputs browser-native Speculation Rules for prefetch/prerender on hover. Supported in Chrome 121+. Prerenders product pages and prefetches category pages. Excludes checkout, customer, wishlist, and cart paths. Hyva themes output their own speculation rules, so this setting is skipped on Hyva store views and the page gets only one rule set.</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

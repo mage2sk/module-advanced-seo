@@ -1,0 +1,523 @@
+<?php
+declare(strict_types=1);
+
+namespace Panth\AdvancedSEO\Helper;
+
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Encryption\EncryptorInterface;
+use Magento\Store\Model\ScopeInterface;
+
+class Config
+{
+    public const XML_GENERAL_ENABLED     = 'panth_seo/general/enabled';
+    public const XML_GENERAL_DEBUG       = 'panth_seo/general/debug';
+
+    public const XML_META_USE_TEMPLATES  = 'panth_seo/meta/use_templates';
+    public const XML_META_TITLE_MAX      = 'panth_seo/meta/title_max_length';
+    public const XML_META_DESC_MAX       = 'panth_seo/meta/description_max_length';
+    public const XML_META_APPEND_STORE              = 'panth_seo/meta/append_store_name';
+    public const XML_META_FORCE_TEMPLATE_OVER_EXISTING = 'panth_seo/meta/force_template_over_existing';
+    public const XML_META_NOINDEX_NOROUTE   = 'panth_seo/meta/noindex_noroute';
+
+    public const XML_CANONICAL_ENABLED           = 'panth_seo/canonical/enabled';
+    public const XML_CANONICAL_STRIP_QUERY       = 'panth_seo/canonical/strip_query';
+    public const XML_CANONICAL_LOWERCASE_HOST    = 'panth_seo/canonical/lowercase_host';
+    public const XML_CANONICAL_REMOVE_TRAILING   = 'panth_seo/canonical/remove_trailing_slash';
+    public const XML_CANONICAL_PAGINATED_TO_FIRST = 'panth_seo/canonical/paginated_canonical_to_first';
+
+    public const XML_CANONICAL_ASSOCIATED_PRODUCT  = 'panth_seo/canonical/associated_product_canonical';
+    public const XML_CANONICAL_CROSS_DOMAIN_STORE  = 'panth_seo/canonical/cross_domain_store';
+    public const XML_CANONICAL_IGNORE_PAGES        = 'panth_seo/canonical/canonical_ignore_pages';
+    public const XML_CANONICAL_DISABLE_FOR_NOINDEX = 'panth_seo/canonical/disable_canonical_for_noindex';
+
+    public const XML_SD_BRAND_ATTRIBUTE          = 'panth_structured_data/structured_data/brand_attribute';
+    public const XML_SD_GTIN_ATTRIBUTE           = 'panth_structured_data/structured_data/gtin_attribute';
+    public const XML_SD_MPN_ATTRIBUTE            = 'panth_structured_data/structured_data/mpn_attribute';
+
+    public const XML_SD_BRAND_ATTRIBUTE_LEGACY   = 'panth_seo/structured_data/brand_attribute';
+    public const XML_SD_GTIN_ATTRIBUTE_LEGACY    = 'panth_seo/structured_data/gtin_attribute';
+    public const XML_SD_MPN_ATTRIBUTE_LEGACY     = 'panth_seo/structured_data/mpn_attribute';
+
+    public const XML_META_STRIP_TITLE_PREFIX_SUFFIX = 'panth_seo/meta/strip_title_prefix_suffix';
+    public const XML_META_SEO_NAME_ENABLED          = 'panth_seo/meta/seo_name_enabled';
+    public const XML_META_PAGINATION_POSITION       = 'panth_seo/meta/pagination_position';
+    public const XML_META_PAGINATION_FORMAT          = 'panth_seo/meta/pagination_format';
+
+    public const XML_CANONICAL_PRODUCT_CANONICAL_TYPE = 'panth_seo/canonical/product_canonical_type';
+
+    public const XML_CANONICAL_USE_SHORT_CATEGORY_URL = 'panth_seo/canonical/use_short_category_url';
+
+    public const XML_CANONICAL_TRAILING_SLASH_HOMEPAGE = 'panth_seo/canonical/trailing_slash_homepage';
+
+    public const XML_URL_AUTO_URL_KEY_ENABLED      = 'panth_seo/url/auto_url_key_enabled';
+    public const XML_URL_URL_KEY_TEMPLATE          = 'panth_seo/url/url_key_template';
+    public const XML_URL_AUTO_URL_KEY_FOR_EXISTING = 'panth_seo/url/auto_url_key_for_existing';
+
+    public const XML_REPORTS_CRAWL_AUDIT_ENABLED = 'panth_seo/reports/enable_crawl_audit';
+    public const XML_REPORTS_CRAWL_EXCLUDE_PATHS   = 'panth_seo/reports/crawl_exclude_paths';
+    public const XML_REPORTS_CRAWL_FOLLOW_FILTERED = 'panth_seo/reports/crawl_follow_filtered';
+    public const XML_REPORTS_CRAWL_VERIFY_TLS      = 'panth_seo/reports/crawl_verify_tls';
+    public const XML_REPORTS_CRAWL_DEPTH         = 'panth_seo/reports/crawl_depth';
+    public const XML_REPORTS_TOOLBAR_ENABLED      = 'panth_seo/reports/seo_toolbar_enabled';
+    public const XML_REPORTS_TOOLBAR_ALLOWED_IPS  = 'panth_seo/reports/seo_toolbar_allowed_ips';
+
+    public const XML_AUDIT_MAX_EXTERNAL_CHECKS  = 'panth_seo/audit/max_external_checks';
+    public const XML_AUDIT_CHECK_EXTERNAL_LINKS = 'panth_seo/audit/check_external_links';
+    public const XML_AUDIT_SITEMAP_SAMPLE       = 'panth_seo/audit/sitemap_sample';
+    public const XML_AUDIT_SLOW_PAGE_SECONDS    = 'panth_seo/audit/slow_page_seconds';
+    public const XML_AUDIT_TIMING_SAMPLE        = 'panth_seo/audit/timing_sample';
+    public const XML_AUDIT_HISTORY_RUNS         = 'panth_seo/audit/history_runs';
+    public const XML_AUDIT_FIXES_PREFIX         = 'panth_seo/audit_fixes/';
+
+    public const AUDIT_FIX_STRIP_INVALID_SCHEMA_PROPS    = 'strip_invalid_schema_props';
+    public const AUDIT_FIX_REWRITE_RELATIVE_README_LINKS = 'rewrite_relative_readme_links';
+    public const AUDIT_FIX_HREFLANG_GROUP_GUARD          = 'hreflang_group_guard';
+    public const AUDIT_FIX_SEO_TITLE_WINS_OVER_H1        = 'seo_title_wins_over_h1';
+
+    public const XML_ADV_ASYNC_INDEXING          = 'panth_seo/advanced/async_indexing';
+    public const XML_ADV_MVIEW_ENABLED           = 'panth_seo/advanced/mview_enabled';
+    public const XML_ADV_LAST_MODIFIED_HEADER    = 'panth_seo/advanced/last_modified_header';
+    public const XML_ADV_SPECULATION_RULES       = 'panth_seo/advanced/speculation_rules_enabled';
+
+    public const XML_CANONICAL_STRIP_PARAMS = 'panth_seo/canonical/strip_params';
+
+    public const XML_SD_DEFAULT_BRAND        = 'panth_structured_data/structured_data/default_brand';
+    public const XML_SD_DEFAULT_BRAND_LEGACY = 'panth_seo/structured_data/default_brand';
+
+    public const XML_GA4_ENABLED        = 'panth_seo/analytics/ga4_enabled';
+    public const XML_GA4_MEASUREMENT_ID = 'panth_seo/analytics/ga4_measurement_id';
+    public const XML_GA4_ENHANCED_ECOM  = 'panth_seo/analytics/ga4_enhanced_ecommerce';
+
+    public const XML_SC_INDEXING_API_ENABLED     = 'panth_seo/search_console/indexing_api_enabled';
+    public const XML_SC_SERVICE_ACCOUNT_JSON     = 'panth_seo/search_console/service_account_json';
+    public const XML_SC_SITE_VERIFICATION_CODE   = 'panth_seo/search_console/site_verification_code';
+
+    public const XML_MERCHANT_FEED_ENABLED              = 'panth_seo/merchant_feed/enabled';
+    public const XML_MERCHANT_FEED_INCLUDE_OOS          = 'panth_seo/merchant_feed/include_out_of_stock';
+    public const XML_MERCHANT_FEED_DEFAULT_CONDITION     = 'panth_seo/merchant_feed/default_condition';
+    public const XML_MERCHANT_FEED_GOOGLE_CAT_ATTRIBUTE = 'panth_seo/merchant_feed/google_category_attribute';
+    public const XML_MERCHANT_FEED_SHIPPING_COUNTRY     = 'panth_seo/merchant_feed/shipping_country';
+    public const XML_MERCHANT_FEED_SHIPPING_PRICE       = 'panth_seo/merchant_feed/shipping_price';
+
+    public function __construct(
+        private readonly ScopeConfigInterface $scopeConfig,
+        private readonly EncryptorInterface $encryptor
+    ) {
+    }
+
+    public function isEnabled(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_GENERAL_ENABLED, $storeId);
+    }
+
+    public function isDebug(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_GENERAL_DEBUG, $storeId);
+    }
+
+    public function useTemplates(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_META_USE_TEMPLATES, $storeId);
+    }
+
+    public function isNoindexNoRoute(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_META_NOINDEX_NOROUTE, $storeId);
+    }
+
+    public function getTitleMaxLength(?int $storeId = null): int
+    {
+        return (int) ($this->value(self::XML_META_TITLE_MAX, $storeId) ?? 60);
+    }
+
+    public function getDescriptionMaxLength(?int $storeId = null): int
+    {
+        return (int) ($this->value(self::XML_META_DESC_MAX, $storeId) ?? 160);
+    }
+
+    public function appendStoreName(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_META_APPEND_STORE, $storeId);
+    }
+
+    public function isCanonicalEnabled(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_CANONICAL_ENABLED, $storeId);
+    }
+
+    public function stripCanonicalQuery(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_CANONICAL_STRIP_QUERY, $storeId);
+    }
+
+    public function canonicalLowercaseHost(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_CANONICAL_LOWERCASE_HOST, $storeId);
+    }
+
+    public function canonicalRemoveTrailingSlash(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_CANONICAL_REMOVE_TRAILING, $storeId);
+    }
+
+    public function canonicalPaginatedToFirst(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_CANONICAL_PAGINATED_TO_FIRST, $storeId);
+    }
+
+    public function isStructuredDataEnabled(string $code, ?int $storeId = null): bool
+    {
+        static $codeToConfigKey = [
+            'return_policy'      => 'return_policy_days',
+            'configurable_offer' => 'configurable_multi_offer',
+            'productList'        => 'enable_product_list_schema',
+            'product_group'      => 'product_group_enabled',
+            'pros_cons'          => 'pros_cons_enabled',
+            'bundle_offer'       => 'product',
+            'grouped_offer'      => 'product',
+            'deliveryMethod'     => 'delivery_methods',
+            'paymentMethod'      => 'accepted_payment_methods',
+            'custom_properties'  => 'custom_properties',
+            'multiRegionShipping' => 'delivery_methods',
+        ];
+
+        $configKey = $codeToConfigKey[$code] ?? $code;
+        $path = 'panth_seo/structured_data/' . $configKey;
+
+        if (in_array($code, ['return_policy', 'deliveryMethod', 'paymentMethod', 'custom_properties', 'multiRegionShipping'], true)) {
+            $val = $this->value($path, $storeId);
+            return $val !== null && $val !== '' && $val !== '0';
+        }
+
+        return $this->flag($path, $storeId);
+    }
+
+    public function isAssociatedProductCanonical(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_CANONICAL_ASSOCIATED_PRODUCT, $storeId);
+    }
+
+    public function getCrossDomainCanonicalStore(?int $storeId = null): int
+    {
+        return (int) ($this->value(self::XML_CANONICAL_CROSS_DOMAIN_STORE, $storeId) ?? 0);
+    }
+
+    public function getCanonicalIgnorePages(?int $storeId = null): string
+    {
+        return (string) ($this->value(self::XML_CANONICAL_IGNORE_PAGES, $storeId) ?? '');
+    }
+
+    public function isCanonicalDisabledForNoindex(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_CANONICAL_DISABLE_FOR_NOINDEX, $storeId);
+    }
+
+    public function getProductCanonicalType(?int $storeId = null): string
+    {
+        return (string) ($this->value(self::XML_CANONICAL_PRODUCT_CANONICAL_TYPE, $storeId) ?? 'without_category');
+    }
+
+    public function getBrandAttribute(?int $storeId = null): string
+    {
+        $value = $this->valueWithLegacy(self::XML_SD_BRAND_ATTRIBUTE, self::XML_SD_BRAND_ATTRIBUTE_LEGACY, $storeId);
+
+        return $value !== '' ? $value : 'manufacturer';
+    }
+
+    public function getGtinAttribute(?int $storeId = null): string
+    {
+        return $this->valueWithLegacy(self::XML_SD_GTIN_ATTRIBUTE, self::XML_SD_GTIN_ATTRIBUTE_LEGACY, $storeId);
+    }
+
+    public function getMpnAttribute(?int $storeId = null): string
+    {
+        return $this->valueWithLegacy(self::XML_SD_MPN_ATTRIBUTE, self::XML_SD_MPN_ATTRIBUTE_LEGACY, $storeId);
+    }
+
+    public function isStripTitlePrefixSuffix(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_META_STRIP_TITLE_PREFIX_SUFFIX, $storeId);
+    }
+
+    public function isSeoNameEnabled(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_META_SEO_NAME_ENABLED, $storeId);
+    }
+
+    public function isForceTemplateOverExisting(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_META_FORCE_TEMPLATE_OVER_EXISTING, $storeId);
+    }
+
+    public function getValue(string $path, ?int $storeId = null): mixed
+    {
+        return $this->value($path, $storeId);
+    }
+
+    public function isAsyncIndexing(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_ADV_ASYNC_INDEXING, $storeId);
+    }
+
+    public function isMviewEnabled(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_ADV_MVIEW_ENABLED, $storeId);
+    }
+
+    public function getPaginationPosition(?int $storeId = null): string
+    {
+        return (string) ($this->value(self::XML_META_PAGINATION_POSITION, $storeId) ?? 'suffix');
+    }
+
+    public function getPaginationFormat(?int $storeId = null): string
+    {
+        return (string) ($this->value(self::XML_META_PAGINATION_FORMAT, $storeId) ?? '| Page %p');
+    }
+
+    public function useShortCategoryUrl(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_CANONICAL_USE_SHORT_CATEGORY_URL, $storeId);
+    }
+
+    public function getTrailingSlashHomepage(?int $storeId = null): string
+    {
+        return (string) ($this->value(self::XML_CANONICAL_TRAILING_SLASH_HOMEPAGE, $storeId) ?? 'none');
+    }
+
+    public function getProductConditionSchemaUrl(?int $storeId = null): string
+    {
+        $map = [
+            'new'          => 'https://schema.org/NewCondition',
+            'used'         => 'https://schema.org/UsedCondition',
+            'refurbished'  => 'https://schema.org/RefurbishedCondition',
+            'damaged'      => 'https://schema.org/DamagedCondition',
+        ];
+
+        return $map[$this->getMerchantFeedDefaultCondition($storeId)] ?? 'https://schema.org/NewCondition';
+    }
+
+    public function isAutoUrlKeyEnabled(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_URL_AUTO_URL_KEY_ENABLED, $storeId);
+    }
+
+    public function getUrlKeyTemplate(?int $storeId = null): string
+    {
+        return (string) ($this->value(self::XML_URL_URL_KEY_TEMPLATE, $storeId) ?? '{{name}}');
+    }
+
+    public function isAutoUrlKeyForExisting(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_URL_AUTO_URL_KEY_FOR_EXISTING, $storeId);
+    }
+
+    public function isCrawlAuditEnabled(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_REPORTS_CRAWL_AUDIT_ENABLED, $storeId);
+    }
+
+    public function getCrawlExcludePaths(?int $storeId = null): string
+    {
+        return (string) ($this->value(self::XML_REPORTS_CRAWL_EXCLUDE_PATHS, $storeId) ?? '');
+    }
+
+    public function crawlVerifiesTls(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_REPORTS_CRAWL_VERIFY_TLS, $storeId);
+    }
+
+    public function crawlFollowsFilteredUrls(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_REPORTS_CRAWL_FOLLOW_FILTERED, $storeId);
+    }
+
+    public function getCrawlDepth(?int $storeId = null): int
+    {
+        return (int) ($this->value(self::XML_REPORTS_CRAWL_DEPTH, $storeId) ?? 100);
+    }
+
+    public function isSeoToolbarEnabled(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_REPORTS_TOOLBAR_ENABLED, $storeId);
+    }
+
+    public function getSeoToolbarAllowedIps(?int $storeId = null): string
+    {
+        return (string) ($this->value(self::XML_REPORTS_TOOLBAR_ALLOWED_IPS, $storeId) ?? '');
+    }
+
+    private function isSafeHttpUrl(string $url): bool
+    {
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+            return false;
+        }
+        $scheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
+        if ($scheme !== 'http' && $scheme !== 'https') {
+            return false;
+        }
+        $host = (string) parse_url($url, PHP_URL_HOST);
+        return $host !== '';
+    }
+
+    public function isMerchantFeedEnabled(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_MERCHANT_FEED_ENABLED, $storeId);
+    }
+
+    public function isMerchantFeedIncludeOutOfStock(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_MERCHANT_FEED_INCLUDE_OOS, $storeId);
+    }
+
+    public function getMerchantFeedDefaultCondition(?int $storeId = null): string
+    {
+        $value = (string) ($this->value(self::XML_MERCHANT_FEED_DEFAULT_CONDITION, $storeId) ?? 'new');
+        $allowed = ['new', 'used', 'refurbished'];
+        return in_array($value, $allowed, true) ? $value : 'new';
+    }
+
+    public function getMerchantFeedGoogleCategoryAttribute(?int $storeId = null): string
+    {
+        $value = trim((string) ($this->value(self::XML_MERCHANT_FEED_GOOGLE_CAT_ATTRIBUTE, $storeId) ?? ''));
+        if ($value === '') {
+            return '';
+        }
+
+        if (preg_match('/^[a-z][a-z0-9_]{0,59}$/', $value) !== 1) {
+            return '';
+        }
+        return $value;
+    }
+
+    public function getMerchantFeedShippingCountry(?int $storeId = null): string
+    {
+        $value = strtoupper(trim((string) ($this->value(self::XML_MERCHANT_FEED_SHIPPING_COUNTRY, $storeId) ?? '')));
+        if ($value === '') {
+            return '';
+        }
+        if (preg_match('/^[A-Z]{2}$/', $value) !== 1) {
+            return '';
+        }
+        return $value;
+    }
+
+    public function getMerchantFeedShippingPrice(?int $storeId = null): string
+    {
+        $raw = trim((string) ($this->value(self::XML_MERCHANT_FEED_SHIPPING_PRICE, $storeId) ?? ''));
+        if ($raw === '') {
+            return '';
+        }
+        if (!is_numeric($raw) || (float) $raw < 0) {
+            return '';
+        }
+        return number_format((float) $raw, 2, '.', '');
+    }
+
+    public function isGa4Enabled(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_GA4_ENABLED, $storeId);
+    }
+
+    public function getGa4MeasurementId(?int $storeId = null): string
+    {
+        return trim((string) ($this->value(self::XML_GA4_MEASUREMENT_ID, $storeId) ?? ''));
+    }
+
+    public function isGa4EnhancedEcommerceEnabled(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_GA4_ENHANCED_ECOM, $storeId);
+    }
+
+    public function isSearchConsoleIndexingEnabled(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_SC_INDEXING_API_ENABLED, $storeId);
+    }
+
+    public function getSearchConsoleServiceAccountJson(?int $storeId = null): string
+    {
+        $raw = (string) ($this->value(self::XML_SC_SERVICE_ACCOUNT_JSON, $storeId) ?? '');
+        return $raw === '' ? '' : $this->encryptor->decrypt($raw);
+    }
+
+    public function getSearchConsoleVerificationCode(?int $storeId = null): string
+    {
+        return trim((string) ($this->value(self::XML_SC_SITE_VERIFICATION_CODE, $storeId) ?? ''));
+    }
+
+    public function getCanonicalStripParams(?int $storeId = null): string
+    {
+        return (string) ($this->value(self::XML_CANONICAL_STRIP_PARAMS, $storeId) ?? '');
+    }
+
+    public function isLastModifiedHeaderEnabled(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_ADV_LAST_MODIFIED_HEADER, $storeId);
+    }
+
+    public function isSpeculationRulesEnabled(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_ADV_SPECULATION_RULES, $storeId);
+    }
+
+    public function getDefaultBrand(?int $storeId = null): string
+    {
+        return $this->valueWithLegacy(self::XML_SD_DEFAULT_BRAND, self::XML_SD_DEFAULT_BRAND_LEGACY, $storeId);
+    }
+
+    public function getAuditMaxExternalChecks(?int $storeId = null): int
+    {
+        return max(0, (int) ($this->value(self::XML_AUDIT_MAX_EXTERNAL_CHECKS, $storeId) ?? 500));
+    }
+
+    public function isAuditExternalLinkCheckEnabled(?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_AUDIT_CHECK_EXTERNAL_LINKS, $storeId);
+    }
+
+    public function getAuditSitemapSample(?int $storeId = null): int
+    {
+        return max(1, (int) ($this->value(self::XML_AUDIT_SITEMAP_SAMPLE, $storeId) ?? 300));
+    }
+
+    public function getAuditSlowPageSeconds(?int $storeId = null): float
+    {
+        $seconds = (float) ($this->value(self::XML_AUDIT_SLOW_PAGE_SECONDS, $storeId) ?? 3);
+
+        return $seconds > 0 ? $seconds : 3.0;
+    }
+
+    public function getAuditTimingSample(?int $storeId = null): int
+    {
+        return max(0, (int) ($this->value(self::XML_AUDIT_TIMING_SAMPLE, $storeId) ?? 50));
+    }
+
+    public function getAuditHistoryRuns(?int $storeId = null): int
+    {
+        return max(2, (int) ($this->value(self::XML_AUDIT_HISTORY_RUNS, $storeId) ?? 5));
+    }
+
+    public function isAuditFixEnabled(string $fix, ?int $storeId = null): bool
+    {
+        return $this->flag(self::XML_AUDIT_FIXES_PREFIX . $fix, $storeId);
+    }
+
+    private function flag(string $path, ?int $storeId): bool
+    {
+        return $this->scopeConfig->isSetFlag($path, ScopeInterface::SCOPE_STORE, $storeId);
+    }
+
+    private function value(string $path, ?int $storeId): mixed
+    {
+        return $this->scopeConfig->getValue($path, ScopeInterface::SCOPE_STORE, $storeId);
+    }
+
+    private function valueWithLegacy(string $path, string $legacyPath, ?int $storeId): string
+    {
+        $value = trim((string) ($this->value($path, $storeId) ?? ''));
+        if ($value !== '') {
+            return $value;
+        }
+
+        return trim((string) ($this->value($legacyPath, $storeId) ?? ''));
+    }
+}

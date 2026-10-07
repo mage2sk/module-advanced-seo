@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Example Extension</title>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+ {"@type":"Product","@id":"https://example.com/example-extension.html#product","name":"Example Extension","sku":"EX-1",
+  "offers":{"@type":"Offer","price":"19.00","priceCurrency":"USD","availability":"https://schema.org/InStock"},
+  "aggregateRating":{"@type":"AggregateRating","ratingValue":"4.5","reviewCount":"3"}},
+ {"@type":"WebSite","@id":"https://example.com/#website","url":"https://example.com/",
+  "potentialAction":{"@type":"SearchAction","target":"https://example.com/catalogsearch/result/?q={search_term_string}","query-input":"required name=search_term_string"}},
+ {"@type":"BlogPosting","headline":"Release notes","datePublished":"2024-01-10","dateModified":"2024-02-01"}
+]}
+</script>
+</head>
+<body><main><h1>Example Extension</h1></main></body>
+</html>

@@ -1,0 +1,86 @@
+<?php
+/** @var \Magento\Backend\Block\Template $block */
+/** @var \Magento\Framework\Escaper $escaper */
+$templateId = (int) $block->getRequest()->getParam('id');
+$previewUrl = $block->getUrl('panth_seo/template/preview', ['template_id' => $templateId]);
+?>
+<div class="panth-seo-template-preview" style="padding:15px;border:1px solid #ddd;border-radius:4px;background:#fff;">
+    <?php if ($templateId <= 0): ?>
+        <p style="margin:0;"><?= $escaper->escapeHtml(__('Save the template first to preview its saved meta patterns on matching products or categories.')) ?></p>
+    <?php else: ?>
+        <p style="margin:0 0 12px;"><?= $escaper->escapeHtml(__('Shows the saved meta title and description patterns rendered for up to 10 matching products or categories of the template store view. Nothing is written.')) ?></p>
+        <button type="button" class="action-secondary" id="panth-seo-template-preview-run"
+                data-url="<?= $escaper->escapeUrl($previewUrl) ?>">
+            <span><?= $escaper->escapeHtml(__('Preview Saved Patterns')) ?></span>
+        </button>
+        <p id="panth-seo-template-preview-status" role="status" aria-live="polite" style="margin:12px 0 0;"></p>
+        <div style="overflow-x:auto;">
+            <table class="data-grid" id="panth-seo-template-preview-table" style="display:none;margin-top:12px;">
+                <thead>
+                <tr>
+                    <th class="data-grid-th"><?= $escaper->escapeHtml(__('ID')) ?></th>
+                    <th class="data-grid-th"><?= $escaper->escapeHtml(__('Name')) ?></th>
+                    <th class="data-grid-th"><?= $escaper->escapeHtml(__('Current Meta Title')) ?></th>
+                    <th class="data-grid-th"><?= $escaper->escapeHtml(__('Preview Meta Title')) ?></th>
+                    <th class="data-grid-th"><?= $escaper->escapeHtml(__('Preview Meta Description')) ?></th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <script>
+            (function () {
+                var button = document.getElementById('panth-seo-template-preview-run');
+                var status = document.getElementById('panth-seo-template-preview-status');
+                var table = document.getElementById('panth-seo-template-preview-table');
+                if (!button || !status || !table) {
+                    return;
+                }
+                var labels = {
+                    loading: <?= /* @noEscape */ json_encode((string) __('Loading preview...')) ?>,
+                    none: <?= /* @noEscape */ json_encode((string) __('No matching products or categories were found for this template.')) ?>,
+                    failed: <?= /* @noEscape */ json_encode((string) __('The preview could not be loaded.')) ?>,
+                    shown: <?= /* @noEscape */ json_encode((string) __('Showing %1 matching item(s).')) ?>
+                };
+                button.addEventListener('click', function () {
+                    var body = table.querySelector('tbody');
+                    body.textContent = '';
+                    table.style.display = 'none';
+                    status.textContent = labels.loading;
+                    button.disabled = true;
+                    fetch(button.getAttribute('data-url') + '?isAjax=true', {
+                        credentials: 'same-origin',
+                        headers: {'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json'}
+                    }).then(function (response) {
+                        return response.json();
+                    }).then(function (data) {
+                        if (!data || !data.success) {
+                            status.textContent = (data && data.message) ? data.message : labels.failed;
+                            return;
+                        }
+                        var items = data.items || [];
+                        if (!items.length) {
+                            status.textContent = labels.none;
+                            return;
+                        }
+                        items.forEach(function (item) {
+                            var row = document.createElement('tr');
+                            [item.entity_id, item.name, item.current_title, item.preview_title, item.preview_desc].forEach(function (value) {
+                                var cell = document.createElement('td');
+                                cell.textContent = value === null || value === undefined ? '' : String(value);
+                                row.appendChild(cell);
+                            });
+                            body.appendChild(row);
+                        });
+                        table.style.display = '';
+                        status.textContent = labels.shown.replace('%1', String(items.length));
+                    }).catch(function () {
+                        status.textContent = labels.failed;
+                    }).then(function () {
+                        button.disabled = false;
+                    });
+                });
+            })();
+        </script>
+    <?php endif; ?>
+</div>

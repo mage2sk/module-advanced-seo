@@ -1,0 +1,8 @@
+# Example Store
+
+> Store summary.
+
+## Priority URLs
+
+- https://example.com/service-a
+- https://example.com/contact-us

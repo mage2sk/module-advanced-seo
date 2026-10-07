@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <!--
+            Force Magento native canonical tag emission OFF at the module
+            default level. Panth\AdvancedSEO\Block\Head\Canonical owns the
+            canonical URL for category and product pages (with pagination and
+            resolver rules). Shipping these defaults at 0 prevents duplicate
+            <link rel="canonical"> tags when the module is installed on a
+            store that previously had the native catalog/seo/*_canonical_tag
+            flags enabled. Runtime suppression is also applied via the
+            NativeCanonicalSuppressor plugin as a belt-and-braces safeguard.
+        -->
+        <catalog>
+            <seo>
+                <category_canonical_tag>0</category_canonical_tag>
+                <product_canonical_tag>0</product_canonical_tag>
+            </seo>
+        </catalog>
+        <panth_seo>
+            <general>
+                <enabled>1</enabled>
+                <debug>0</debug>
+            </general>
+            <meta>
+                <use_templates>1</use_templates>
+                <title_max_length>60</title_max_length>
+                <description_max_length>160</description_max_length>
+                <append_store_name>0</append_store_name>
+                <strip_title_prefix_suffix>0</strip_title_prefix_suffix>
+                <seo_name_enabled>1</seo_name_enabled>
+                <pagination_position>suffix</pagination_position>
+                <pagination_format> | Page %p</pagination_format>
+                <force_template_over_existing>0</force_template_over_existing>
+                <noindex_noroute>1</noindex_noroute>
+            </meta>
+            <canonical>
+                <enabled>1</enabled>
+                <strip_query>1</strip_query>
+                <lowercase_host>1</lowercase_host>
+                <remove_trailing_slash>1</remove_trailing_slash>
+                <paginated_canonical_to_first>0</paginated_canonical_to_first>
+                <associated_product_canonical>1</associated_product_canonical>
+                <cross_domain_store>0</cross_domain_store>
+                <canonical_ignore_pages></canonical_ignore_pages>
+                <disable_canonical_for_noindex>1</disable_canonical_for_noindex>
+                <product_canonical_type>without_category</product_canonical_type>
+                <use_short_category_url>0</use_short_category_url>
+                <trailing_slash_homepage>none</trailing_slash_homepage>
+                <strip_params></strip_params>
+            </canonical>
+            <!--
+                panth_seo/social/* defaults are owned by Panth_SocialMeta
+                (see packages/module-social-meta/etc/config.xml). Removed
+                from this module to keep a single source of truth.
+            -->
+            <!--
+                panth_seo/social_profiles, organization, structured_data,
+                breadcrumbs defaults are owned by Panth_StructuredData
+                (see packages/module-structured-data/etc/config.xml).
+            -->
+            <!--
+                panth_seo/hreflang defaults are owned by Panth_Hreflang
+                (see packages/module-hreflang/etc/config.xml).
+            -->
+            <!--
+                panth_seo/filter_urls, filter_meta defaults are owned by
+                Panth_FilterSeo (see packages/module-filter-seo/etc/config.xml).
+            -->
+            <!--
+                panth_seo/image defaults are owned by Panth_ImageSeo
+                (see packages/module-image-seo/etc/config.xml).
+            -->
+            <!--
+                panth_seo/indexnow defaults are owned by Panth_IndexNow
+                (see packages/module-index-now/etc/config.xml).
+            -->
+            <!--
+                panth_seo/llms_txt defaults are owned by Panth_LlmsTxt
+                (see packages/module-llms-txt/etc/config.xml).
+            -->
+            <url>
+                <auto_url_key_enabled>0</auto_url_key_enabled>
+                <url_key_template>{{name}}</url_key_template>
+                <auto_url_key_for_existing>0</auto_url_key_for_existing>
+            </url>
+            <reports>
+                <enable_crawl_audit>0</enable_crawl_audit>
+                <crawl_depth>100</crawl_depth>
+                <crawl_follow_filtered>0</crawl_follow_filtered>
+                <crawl_verify_tls>1</crawl_verify_tls>
+                <crawl_exclude_paths>/customer/*
+/checkout
+/checkout/*
+/wishlist/*
+/catalog/product_compare/*
+/catalogsearch/*
+/cdn-cgi/*
+/sales/*
+/newsletter/*
+/review/customer/*
+/downloadable/customer/*
+/multishipping/*
+/paypal/*
+/vault/*
+/captcha/*
+/sendfriend/*
+/oauth/*
+/connect/*</crawl_exclude_paths>
+                <seo_toolbar_enabled>0</seo_toolbar_enabled>
+                <seo_toolbar_allowed_ips></seo_toolbar_allowed_ips>
+            </reports>
+            <audit>
+                <check_external_links>1</check_external_links>
+                <max_external_checks>500</max_external_checks>
+                <sitemap_sample>300</sitemap_sample>
+                <slow_page_seconds>3</slow_page_seconds>
+                <timing_sample>50</timing_sample>
+                <history_runs>5</history_runs>
+            </audit>
+            <audit_fixes>
+                <strip_invalid_schema_props>0</strip_invalid_schema_props>
+                <rewrite_relative_readme_links>0</rewrite_relative_readme_links>
+                <hreflang_group_guard>0</hreflang_group_guard>
+                <seo_title_wins_over_h1>0</seo_title_wins_over_h1>
+            </audit_fixes>
+            <merchant_feed>
+                <enabled>0</enabled>
+                <include_out_of_stock>0</include_out_of_stock>
+                <default_condition>new</default_condition>
+                <google_category_attribute></google_category_attribute>
+                <shipping_country></shipping_country>
+                <shipping_price></shipping_price>
+            </merchant_feed>
+            <analytics>
+                <ga4_enabled>0</ga4_enabled>
+                <ga4_measurement_id/>
+                <ga4_enhanced_ecommerce>1</ga4_enhanced_ecommerce>
+            </analytics>
+            <search_console>
+                <indexing_api_enabled>0</indexing_api_enabled>
+                <service_account_json/>
+                <site_verification_code/>
+            </search_console>
+            <advanced>
+                <async_indexing>1</async_indexing>
+                <mview_enabled>1</mview_enabled>
+                <last_modified_header>1</last_modified_header>
+                <speculation_rules_enabled>0</speculation_rules_enabled>
+            </advanced>
+        </panth_seo>
+    </default>
+</config>
